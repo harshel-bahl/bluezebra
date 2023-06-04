@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22D49" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Channel" representedClassName=".Channel" syncable="YES">
+        <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="channelID" optional="YES" attributeType="String"/>
+        <attribute name="channelType" optional="YES" attributeType="String"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="creationUserID" optional="YES" attributeType="String"/>
+        <attribute name="lastMessageDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="teamID" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="ChannelDeletion" representedClassName=".ChannelDeletion" syncable="YES">
+        <attribute name="channelType" optional="YES" attributeType="String"/>
+        <attribute name="deletionDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletionID" optional="YES" attributeType="String"/>
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="isOrigin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="nUsers" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="remoteDeletedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="toDeleteUserIDs" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="ChannelRequest" representedClassName=".ChannelRequest" syncable="YES">
+        <attribute name="channelID" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isSender" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="requestingUserID" optional="YES" attributeType="String"/>
+        <attribute name="teamID" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Message" representedClassName=".Message" syncable="YES">
+        <attribute name="channelID" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="delivered" optional="YES" attributeType="String"/>
+        <attribute name="isSender" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="message" optional="YES" attributeType="String"/>
+        <attribute name="messageID" optional="YES" attributeType="String"/>
+        <attribute name="read" optional="YES" attributeType="String"/>
+        <attribute name="remoteDeleted" optional="YES" attributeType="String"/>
+        <attribute name="sent" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="RemoteUser" representedClassName=".RemoteUser" syncable="YES">
+        <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="avatar" optional="YES" attributeType="String"/>
+        <attribute name="blocked" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+        <attribute name="username" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Settings" representedClassName=".Settings" syncable="YES">
+        <attribute name="biometricSetup" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Team" representedClassName=".Team" syncable="YES">
+        <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="creationUserID" optional="YES" attributeType="String"/>
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="leads" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="nUsers" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="teamDescription" optional="YES" attributeType="String"/>
+        <attribute name="teamID" optional="YES" attributeType="String"/>
+        <attribute name="userIDs" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="User" representedClassName=".User" syncable="YES">
+        <attribute name="avatar" optional="YES" attributeType="String"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="pin" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+        <attribute name="username" optional="YES" attributeType="String"/>
+    </entity>
+</model>

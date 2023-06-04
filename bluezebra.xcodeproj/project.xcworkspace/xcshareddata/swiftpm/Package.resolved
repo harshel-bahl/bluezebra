@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "emojipicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kelvas09/EmojiPicker.git",
+      "state" : {
+        "revision" : "d787591e2121b617209172ad6a8ebf2975f605ae",
+        "version" : "1.0.1"
+      }
+    },
+    {
+      "identity" : "smile",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onmyway133/Smile",
+      "state" : {
+        "revision" : "40604722a7a56f735124e069fcbb58307637744b",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "socket.io-client-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/socketio/socket.io-client-swift.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "a1ed825835a2d8c2555938e96557ccc05e4bebf3"
+      }
+    },
+    {
+      "identity" : "starscream",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/daltoniam/Starscream",
+      "state" : {
+        "revision" : "df8d82047f6654d8e4b655d1b1525c64e1059d21",
+        "version" : "4.0.4"
+      }
+    }
+  ],
+  "version" : 2
+}
