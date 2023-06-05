@@ -33,7 +33,6 @@
 		34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632764299B7CD600FACB50 /* ChatsTab.swift */; };
 		34632767299B7CDF00FACB50 /* MediaTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632766299B7CDF00FACB50 /* MediaTab.swift */; };
 		34632769299B7CE700FACB50 /* HelpTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632768299B7CE700FACB50 /* HelpTab.swift */; };
-		346879C72980785F002F3B5E /* AddUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346879C62980785F002F3B5E /* AddUser.swift */; };
 		346879CB298858AF002F3B5E /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 346879CA298858AF002F3B5E /* SocketIO */; };
 		346879CD2988596B002F3B5E /* SocketController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346879CC2988596B002F3B5E /* SocketController.swift */; };
 		346C302D29EACFBF0075107E /* DataPersistenceController+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C302C29EACFBF0075107E /* DataPersistenceController+Create.swift */; };
@@ -74,7 +73,6 @@
 		349CE200296D353B00F8E4F9 /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349CE1FF296D353B00F8E4F9 /* Login.swift */; };
 		349CE22C296FB15500F8E4F9 /* MessageDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349CE22B296FB15500F8E4F9 /* MessageDataController.swift */; };
 		34AFD46729DD1EC700B2AC74 /* UserRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AFD46629DD1EC700B2AC74 /* UserRequestsView.swift */; };
-		34C839EE29CFD7110093C48B /* ChannelRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839ED29CFD7110093C48B /* ChannelRequests.swift */; };
 		34C839F029CFD9C10093C48B /* DeletionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839EF29CFD9C10093C48B /* DeletionLog.swift */; };
 		34C839F329CFE23A0093C48B /* AddUserRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839F229CFE23A0093C48B /* AddUserRow.swift */; };
 		34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839F629CFE6110093C48B /* ChannelRequestRow.swift */; };
@@ -118,7 +116,6 @@
 		34632764299B7CD600FACB50 /* ChatsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsTab.swift; sourceTree = "<group>"; };
 		34632766299B7CDF00FACB50 /* MediaTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTab.swift; sourceTree = "<group>"; };
 		34632768299B7CE700FACB50 /* HelpTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpTab.swift; sourceTree = "<group>"; };
-		346879C62980785F002F3B5E /* AddUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUser.swift; sourceTree = "<group>"; };
 		346879CC2988596B002F3B5E /* SocketController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketController.swift; sourceTree = "<group>"; };
 		346879CE29886F12002F3B5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		346C302C29EACFBF0075107E /* DataPersistenceController+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPersistenceController+Create.swift"; sourceTree = "<group>"; };
@@ -159,7 +156,6 @@
 		349CE1FF296D353B00F8E4F9 /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		349CE22B296FB15500F8E4F9 /* MessageDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDataController.swift; sourceTree = "<group>"; };
 		34AFD46629DD1EC700B2AC74 /* UserRequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRequestsView.swift; sourceTree = "<group>"; };
-		34C839ED29CFD7110093C48B /* ChannelRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelRequests.swift; sourceTree = "<group>"; };
 		34C839EF29CFD9C10093C48B /* DeletionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionLog.swift; sourceTree = "<group>"; };
 		34C839F229CFE23A0093C48B /* AddUserRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserRow.swift; sourceTree = "<group>"; };
 		34C839F629CFE6110093C48B /* ChannelRequestRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelRequestRow.swift; sourceTree = "<group>"; };
@@ -331,8 +327,6 @@
 		34938E07296396D500EA95CF /* Channels */ = {
 			isa = PBXGroup;
 			children = (
-				34C839F529CFE5F80093C48B /* DeletionLog */,
-				34C839F129CFE2290093C48B /* UserRequests */,
 				349CE1F12969ECF800F8E4F9 /* ChannelsList.swift */,
 				3463275C29935C3D00FACB50 /* ChannelView.swift */,
 			);
@@ -382,6 +376,8 @@
 				F04AEC3B2A2C10AD00276FF4 /* Common */,
 				349CE1F6296C85DC00F8E4F9 /* Authentication */,
 				34106DD729D8E5AB0075EF7E /* Teams */,
+				34C839F529CFE5F80093C48B /* DeletionLog */,
+				34C839F129CFE2290093C48B /* UserRequests */,
 				34938E07296396D500EA95CF /* Channels */,
 				34938E09296396EB00EA95CF /* Profile */,
 				347E680529C6FACE0047DB46 /* Chat */,
@@ -407,9 +403,7 @@
 			isa = PBXGroup;
 			children = (
 				34AFD46629DD1EC700B2AC74 /* UserRequestsView.swift */,
-				346879C62980785F002F3B5E /* AddUser.swift */,
 				34C839F229CFE23A0093C48B /* AddUserRow.swift */,
-				34C839ED29CFD7110093C48B /* ChannelRequests.swift */,
 				34C839F629CFE6110093C48B /* ChannelRequestRow.swift */,
 			);
 			path = UserRequests;
@@ -559,7 +553,6 @@
 				349CE1FA296CA7DF00F8E4F9 /* SignUp.swift in Sources */,
 				34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */,
 				341065ED2962E857001644B0 /* ChatView.swift in Sources */,
-				346879C72980785F002F3B5E /* AddUser.swift in Sources */,
 				34632767299B7CDF00FACB50 /* MediaTab.swift in Sources */,
 				3482D78F2A0A33C200B8F0AE /* ChannelDataController+Packets.swift in Sources */,
 				3489D5D929F850AF0074EF5E /* Channel.swift in Sources */,
@@ -573,7 +566,6 @@
 				34D3494229C1C47400FD7C8B /* ChannelDataControllerEventQueue.swift in Sources */,
 				341A0DA72A21C03400C5B00C /* DataUtilities.swift in Sources */,
 				345EEF5729F4175B00861DB9 /* MessageDataController+Events.swift in Sources */,
-				34C839EE29CFD7110093C48B /* ChannelRequests.swift in Sources */,
 				34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */,
 				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
 				F04AEC3D2A2CBE7500276FF4 /* UsernameTextField.swift in Sources */,

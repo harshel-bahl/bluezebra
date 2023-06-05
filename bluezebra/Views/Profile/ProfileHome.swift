@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import EmojiPicker
 
 struct ProfileHome: View {
     
@@ -13,13 +14,15 @@ struct ProfileHome: View {
     
     @EnvironmentObject var SP: ScreenProperties
     
-    var profileTabs: [String] = ["Account",
-                                 "Security Features",
-                                 "Privacy",
-                                 "Notifications",
+    @State var selectedEmoji: Emoji?
+    @State var displayEmojiPicker = false
+    
+    var profileTabs: [String] = ["Account Actions",
                                  "Chats",
-                                 "Media",
-                                 "Help"]
+                                 "Authentication",
+                                 "Encryption",
+                                 "Notifications",
+                                 "Prviacy Policy"]
     
     var body: some View {
         
@@ -30,72 +33,65 @@ struct ProfileHome: View {
                 
                 VStack(spacing: 0) {
                     
-                    VStack(spacing: 0) {
-                        
-                        Spacer()
-                        
-                        banner
-                    }
-                    .padding(.leading, SP.width*0.05)
-                    .padding(.trailing, SP.width*0.05)
-                    .frame(height: getBannerHeight(geometryHeight: geometry.size.height))
+                    banner
+                        .padding(.leading, SP.width*0.05)
+                        .padding(.trailing, SP.width*0.05)
+                        .padding(.bottom, 10)
+                        .padding(.top, 12.5)
                     
                     Divider()
                     
-                    List() {
-                        ForEach(profileTabs, id: \.self) { tab in
-
-                            NavigationLink(destination: {
-                                receiveProfileTab(tab: tab)
-                            }, label: {
-                                Text(tab)
-                                    .font(.headline)
-                                    .foregroundColor(Color("text1"))
-                            })
-                            .listRowBackground(Color.clear)
-                        }
+                    HStack(spacing: 0) {
+                        
                     }
-                    .listStyle(.plain)
+//                    Form {
+//                        ForEach(profileTabs, id: \.self) { tab in
+//
+//                            NavigationLink(destination: {
+//                                receiveProfileTab(tab: tab)
+//                            }, label: {
+//                                Text(tab)
+//                                    .font(.headline)
+//                                    .foregroundColor(Color("text1"))
+//                            })
+//                        }
+//                    }
                 }
-            }
-        }
-    }
-    
-    func getBannerHeight(geometryHeight: CGFloat,
-                         type: String? = "banner") -> CGFloat {
-        if SP.topSafeAreaInset/SP.safeAreaHeight > 0.05 {
-            if type=="banner" {
-                return geometryHeight*0.065
-            } else {
-                return geometryHeight*0.935
-            }
-        } else {
-            if type=="banner" {
-                return geometryHeight*0.08
-            } else {
-                return geometryHeight*0.92
             }
         }
     }
     
     var banner: some View {
-        GeometryReader { geometry in
-            ZStack {
-                HStack(alignment: .center, spacing: 0) {
-                    
-                    Spacer()
-                    
-                    Text("Profile")
-                        .font(.system(size: geometry.size.height*0.425))
-                        .frame(height: geometry.size.height*0.425)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color("text1"))
-                    
-                    Spacer()
-                }
+        HStack(alignment: .center, spacing: 0) {
+            
+            Spacer()
+            
+            Text("Profile")
+                .font(.system(size: 16))
+                .fontWeight(.bold)
+                .foregroundColor(Color("text1"))
+                .offset(x: -2.5)
+            
+            Spacer()
+        }
+        .frame(height: 25)
+    }
+    
+    var avatarButton: some View {
+        Button(action: {
+            displayEmojiPicker = true
+        }) {
+            if let selectedEmoji = selectedEmoji {
+                Text(selectedEmoji.value)
+                    .font(.system(size: SP.width*0.125))
+                    .frame(height: SP.width*0.15)
+            } else {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: SP.width*0.15)
+                    .foregroundColor(Color("blueAccent1"))
             }
-            .frame(width: geometry.size.width,
-                   height: geometry.size.height)
         }
     }
     

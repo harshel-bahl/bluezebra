@@ -64,29 +64,16 @@ struct HomePage: View {
                     NavigationView {
                         VStack(spacing: 0) {
                             
-                            if SP.topSafeAreaInset != 0 {
-                                Color("background1")
-                                    .frame(width: SP.width,
-                                           height: SP.topSafeAreaInset)
-                            }
+                            Color("background1")
+                                .frame(width: SP.width,
+                                       height: SP.topSafeAreaInset)
                             
                             ChannelsList()
-                                .frame(width: SP.width,
-                                       height: getHeight(type: "mainView"))
                             
                             CustomTabView(tab: $tab)
-                                .frame(width: SP.width,
-                                       height: getHeight())
                             
-                            if SP.bottomSafeAreaInset != 0 {
-                                Color("background3")
-                                    .frame(width: SP.width,
-                                           height: SP.bottomSafeAreaInset)
-                            } else {
-                                Color("background3")
-                                    .frame(width: SP.width,
-                                           height: SP.safeAreaHeight*0.09*0.2)
-                            }
+                            Color("background3")
+                                .frame(height: SP.bottomSafeAreaInset)
                         }
                         .ignoresSafeArea()
                     }
@@ -97,29 +84,16 @@ struct HomePage: View {
                         
                         VStack(spacing: 0) {
                             
-                            if SP.topSafeAreaInset != 0 {
-                                Color("background1")
-                                    .frame(width: SP.width,
-                                           height: SP.topSafeAreaInset)
-                            }
+                            Color("background1")
+                                .frame(width: SP.width,
+                                       height: SP.topSafeAreaInset)
                             
                             ProfileHome()
-                                .frame(width: SP.width,
-                                       height: getHeight(type: "mainView"))
                             
                             CustomTabView(tab: $tab)
-                                .frame(width: SP.width,
-                                       height: getHeight())
                             
-                            if SP.bottomSafeAreaInset != 0 {
-                                Color("background3")
-                                    .frame(width: SP.width,
-                                           height: SP.bottomSafeAreaInset)
-                            } else {
-                                Color("background3")
-                                    .frame(width: SP.width,
-                                           height: SP.safeAreaHeight*0.09*0.2)
-                            }
+                            Color("background3")
+                                .frame(height: SP.bottomSafeAreaInset)
                         }
                         .ignoresSafeArea()
                     }

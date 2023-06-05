@@ -14,11 +14,7 @@ class MessageDC: ObservableObject {
     static let shared = MessageDC()
     
     /// personalMessages: personal channel messages
-    @Published var personalMessages = [SMessage]() {
-        didSet {
-            print(personalMessages)
-        }
-    }
+    @Published var personalMessages = [SMessage]() 
     
     /// userMessages: [channelID: Messages]
     /// First message is the latest message

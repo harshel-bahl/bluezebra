@@ -9,10 +9,9 @@ import SwiftUI
 
 struct UsernameTextField: View {
     
-    @ObservedObject var userDC = UserDC.shared
     @ObservedObject var usernameTextManager = TextBindingManager(limit: 13)
     
-    @FocusState var usernameField: Bool
+    var action: (String)->()
     
     var body: some View {
         TextField("Username",
@@ -24,15 +23,7 @@ struct UsernameTextField: View {
                   onCommit: {
             let username = usernameTextManager.username.replacingOccurrences(of: "@", with: "")
             
-            userDC.checkUsername(username: username) { result in
-                switch result {
-                case .success(let result): break
-                    //                                        withAnimation(.easeInOut(duration: 0.3)) {
-                    //                                            self.checkedUsername = result
-                    //                                        }
-                case .failure(_): break
-                }
-            }
+            action(username)
         })
         .autocapitalization(.none)
         .disableAutocorrection(true)
@@ -41,7 +32,6 @@ struct UsernameTextField: View {
         .scrollContentBackground(.hidden)
         .font(.headline)
         .fontWeight(.regular)
-        .focused($usernameField)
         .submitLabel(.go)
         .onChange(of: usernameTextManager.username) { username in
             if username.isEmpty {

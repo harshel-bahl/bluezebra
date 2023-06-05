@@ -23,7 +23,6 @@ struct ChannelsList: View {
     @State var textSize: CGSize = .zero
     
     var body: some View {
-        
         GeometryReader { geometry in
             ZStack {
                 
@@ -31,29 +30,25 @@ struct ChannelsList: View {
                 
                 VStack(spacing: 0) {
                     
-                    VStack(spacing: 0) {
-                        
-                        Spacer()
-                        
-                        banner
-                    }
-                    .padding(.leading, SP.width*0.05)
-                    .padding(.trailing, SP.width*0.05)
-                    .frame(height: getBannerHeight(geometryHeight: geometry.size.height))
+                    banner
+                        .padding(.leading, SP.width*0.05)
+                        .padding(.trailing, SP.width*0.05)
+                        .padding(.bottom, 10)
+                        .padding(.top, 12.5)
+                    
+                    Divider()
                     
                     
                     ScrollView {
                         
                         meChannel
                         
-//                        ForEach(channelDC.userChannels, id: \.channelID) { channel in
-//
-//                            ChannelView(channel: channel)
-//                                .listRowBackground(Color.black)
-//                        }
+                        //                        ForEach(channelDC.userChannels, id: \.channelID) { channel in
+                        //
+                        //                            ChannelView(channel: channel)
+                        //                                .listRowBackground(Color.black)
+                        //                        }
                     }
-                    .frame(width: geometry.size.width,
-                           height: getBannerHeight(geometryHeight: geometry.size.height, type: "mainView"))
                     .listStyle(.plain)
                     
                 }
@@ -64,76 +59,38 @@ struct ChannelsList: View {
                     DeletionLog()
                 })
                 
-                VStack(spacing: 0) {
-                    Spacer()
-                    
-                    Divider()
-                }
-                .padding(.bottom, getBannerHeight(geometryHeight: geometry.size.height, type: "mainView"))
-                .frame(width: geometry.size.width,
-                       height: geometry.size.height)
             }
-        }
-    }
-    
-    func getBannerHeight(geometryHeight: CGFloat,
-                         type: String? = "banner") -> CGFloat {
-        if SP.topSafeAreaInset/SP.safeAreaHeight > 0.05 {
-            if type=="banner" {
-                return geometryHeight*0.065
-            } else {
-                return geometryHeight*0.935
-            }
-        } else {
-            if type=="banner" {
-                return geometryHeight*0.08
-            } else {
-                return geometryHeight*0.92
-            }
+            .ignoresSafeArea(.keyboard)
         }
     }
     
     var banner: some View {
-        GeometryReader { geometry in
-            ZStack {
-                HStack(alignment: .center, spacing: 0) {
-                    
-                    Button(action: { showDeletionLog.toggle() }, label: {
-                        Image(systemName: "arrow.uturn.backward.circle")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: geometry.size.height*0.625)
-                            .foregroundColor(Color("blueAccent1"))
-                        
-                    })
-                    
-                    Spacer()
-                    
-                    Button(action: { showUserRequestsView.toggle() }, label: {
-                        Image(systemName: "plus.circle")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: geometry.size.height*0.625)
-                            .foregroundColor(Color("blueAccent1"))
-                    })
-                }
-                
-                HStack(alignment: .center, spacing: 0) {
-                    
-                    Spacer()
-                    
-                    Text("Channels")
-                        .font(.system(size: geometry.size.height*0.425))
-                        .frame(height: geometry.size.height*0.425)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color("text1"))
-                    
-                    Spacer()
-                }
-            }
-            .frame(width: geometry.size.width,
-                   height: geometry.size.height)
+        HStack(alignment: .center, spacing: 0) {
+            
+            Button(action: { showDeletionLog.toggle() }, label: {
+                Image(systemName: "arrow.uturn.backward.circle")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(Color("blueAccent1"))
+            })
+            
+            Spacer()
+            
+            Text("Channels")
+                .font(.system(size: 16))
+                .fontWeight(.bold)
+                .foregroundColor(Color("text1"))
+            
+            Spacer()
+            
+            Button(action: { showUserRequestsView.toggle() }, label: {
+                Image(systemName: "plus.circle")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(Color("blueAccent1"))
+            })
         }
+        .frame(height: 25)
     }
     
     var meChannel: some View {
@@ -245,8 +202,8 @@ struct ChannelsList: View {
                             //                            .lineLimit(1)
                             
                             HStack(spacing: 0) {
-                                Text(messageDC.personalMessages.first?.message ?? "-")
-                                    .font(.caption)
+                                Text(messageDC.personalMessages.first?.message ?? "Tap to chat!")
+                                    .font(.subheadline)
                                 //                            .fontWeight(.regular) make bold for unread
                                     .foregroundColor(Color("text2"))
                                     .multilineTextAlignment(.leading)
@@ -272,11 +229,16 @@ struct ChannelsList: View {
                     }
                 }
                 .contextMenu() {
-                    Button(action: {
+                    Button("Clear media", action: {
                         
-                        //                    channelDC.deleteChannel(channel: channel) {_ in}
-                    }, label: {
-                        Text("Clear Channel")
+                    })
+                    
+                    Button("Clear channel", action: {
+                        
+                    })
+                    
+                    Button("Delete channel", action: {
+                        
                     })
                 }
             }
