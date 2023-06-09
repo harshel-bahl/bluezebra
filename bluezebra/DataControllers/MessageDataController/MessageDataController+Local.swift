@@ -23,11 +23,12 @@ extension MessageDC {
     
     func createMessage(channelID: String = "personal",
                        message: String,
-                       type: String) async throws -> SMessage {
+                       type: String,
+                       date: Date) async throws -> SMessage {
         let sMO = try await DataPC.shared.createMessage(channelID: channelID,
                                                         userID: UserDC.shared.userData!.userID,
                                                         type: type,
-                                                        date: DU.shared.date,
+                                                        date: date,
                                                         message: message,
                                                         isSender: true,
                                                         sent: nil,

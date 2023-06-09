@@ -13,11 +13,28 @@ struct AccountTab: View {
     @ObservedObject var channelDC = ChannelDC.shared
     
     var body: some View {
-        Button(action: {
-            userDC.deleteUser() { result in }
-        }, label: {
-            Text("Delete User")
+        VStack {
+            
+            HStack(spacing: 0) {
+                if let created = userDC.userData?.creationDate {
+                    (Text("Created: ")
+                        .fontWeight(.regular) +
+                     Text(DateU.shared.dateDMY(date: created))
+                        .fontWeight(.bold)
+                    )
+                    .font(.subheadline)
+                    .foregroundColor(Color("text2"))
+                }
+                
+                Spacer()
+            }
+            
+            Button(action: {
+                userDC.deleteUser() { result in }
+            }, label: {
+                Text("Delete User")
         })
+        }
     }
 }
 

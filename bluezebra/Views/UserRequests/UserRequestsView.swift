@@ -18,7 +18,7 @@ struct UserRequestsView: View {
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     
-    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13)
+    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13, text: "@")
     
     @State var fetchedUsers = [RemoteUserPacket]()
     
@@ -64,7 +64,8 @@ struct UserRequestsView: View {
     var addUser: some View {
         VStack(spacing: 0) {
             
-            UsernameTextField { username in
+            UsernameTextField(limit: 13,
+                              text: "@") { username in
                 channelDC.fetchRemoteUser(userID: nil, username: username) { (userDataList) in
                     switch userDataList {
                     case .success(let users):

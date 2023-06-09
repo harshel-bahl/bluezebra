@@ -191,8 +191,8 @@ struct ChatView: View {
         if let messageIndex = messages.firstIndex(where: { $0.messageID == thisMessage.messageID }) {
             if messageIndex == 0 { return true }
             
-            let prevMessageDate = DU.shared.extractedDate(date: messages[messageIndex].date)
-            let currMessageDate = DU.shared.extractedDate(date: messages[messageIndex - 1].date)
+            let prevMessageDate = DU.shared.dateDMY(date: messages[messageIndex].date)
+            let currMessageDate = DU.shared.dateDMY(date: messages[messageIndex - 1].date)
             
             if prevMessageDate == currMessageDate {
                 return false
@@ -212,7 +212,7 @@ struct ChatView: View {
         } else if Calendar.current.isDateInYesterday(date) {
             dateText = "Yesterday"
         } else {
-            dateText = DU.shared.extractedDate(date: date)
+            dateText = DU.shared.dateDMY(date: date)
         }
         
         return Text(dateText ?? "-")

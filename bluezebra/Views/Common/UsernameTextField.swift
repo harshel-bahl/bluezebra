@@ -9,9 +9,17 @@ import SwiftUI
 
 struct UsernameTextField: View {
     
-    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13)
+    @ObservedObject var usernameTextManager: TextBindingManager
     
-    var action: (String)->()
+    var commitAction: (String)->()
+    
+    init(limit: Int,
+         text: String,
+         commitAction: @escaping (String)->()) {
+        self._usernameTextManager = ObservedObject(wrappedValue: TextBindingManager(limit: limit,
+                                                                                    text: text))
+        self.commitAction = commitAction
+    }
     
     var body: some View {
         TextField("Username",
@@ -23,7 +31,7 @@ struct UsernameTextField: View {
                   onCommit: {
             let username = usernameTextManager.username.replacingOccurrences(of: "@", with: "")
             
-            action(username)
+            commitAction(username)
         })
         .autocapitalization(.none)
         .disableAutocorrection(true)
@@ -33,40 +41,38 @@ struct UsernameTextField: View {
         .font(.headline)
         .fontWeight(.regular)
         .submitLabel(.go)
-        .onChange(of: usernameTextManager.username) { username in
-            if username.isEmpty {
-                usernameTextManager.username = username + "@"
-            } else if username.first != "@" {
-                usernameTextManager.username.insert("@", at: usernameTextManager.username.startIndex)
-            }
-        }
     }
 }
 
 class TextBindingManager: ObservableObject {
-    @Published var username = "@" {
-        didSet {
+    
+    let characterLimit: Int
+    
+    @Published var username: String {
+        didSet { // didSet works on Published but doesn't work on @State:
+                // perhaps because @Published is a struct on a class with a new value each time, while @State is a class attached repeatedly to a struct?
             if username.count > characterLimit && oldValue.count <= characterLimit {
                 username = oldValue
             }
-        }
-    }
-    let characterLimit: Int
-
-    init(limit: Int = 5) {
-        characterLimit = limit
-    }
-}
-
-extension Binding where Value == String {
-    
-    func limit(_ length: Int) -> Self {
-        if self.wrappedValue.count > length {
-            DispatchQueue.main.async {
-                self.wrappedValue = String(self.wrappedValue.prefix(length))
+            
+            if username.isEmpty {
+                username = "@"
+            }
+            
+            if username.first != "@" {
+                username = "@"
             }
         }
+    }
+
+    init(limit: Int,
+         text: String = "@") {
+        self.characterLimit = limit
         
-        return self
+        if text.first == "@" {
+            self._username = Published(wrappedValue: text)
+        } else {
+            self._username = Published(wrappedValue: "@" + text)
+        }
     }
 }

@@ -146,7 +146,7 @@ struct ChannelsList: View {
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
-                                    let time = DU.shared.extractedTime(date: latestDate)
+                                    let time = DU.shared.timeHM(date: latestDate)
                                     
                                     if Calendar.current.isDateInToday(latestDate) {
                                         Text("Today,")
@@ -169,7 +169,7 @@ struct ChannelsList: View {
                                             .padding(.trailing, 10)
                                             .padding(.leading, 2.5)
                                     } else {
-                                        let date = DU.shared.extractedDate(date: latestDate)
+                                        let date = DU.shared.dateDMY(date: latestDate)
                                         
                                         Text(date)
                                             .font(.caption)
@@ -230,7 +230,7 @@ struct ChannelsList: View {
                 }
                 .contextMenu() {
                     Button("Clear media", action: {
-                        
+                        print(dateU.shared.datetimeMedShor(date: dateU.shared.currDateTimeUTC))
                     })
                     
                     Button("Clear channel", action: {

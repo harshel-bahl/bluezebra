@@ -17,12 +17,12 @@ struct ProfileHome: View {
     @State var selectedEmoji: Emoji?
     @State var displayEmojiPicker = false
     
-    var profileTabs: [String] = ["Account Actions",
+    var profileTabs: [String] = ["Account",
                                  "Chats",
                                  "Authentication",
                                  "Encryption",
                                  "Notifications",
-                                 "Prviacy Policy"]
+                                 "Privacy Policy"]
     
     var body: some View {
         
@@ -41,21 +41,79 @@ struct ProfileHome: View {
                     
                     Divider()
                     
-                    HStack(spacing: 0) {
-                        
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            HStack(spacing: 0) {
+                                
+                                avatarButton
+                                    .padding(.trailing, SP.width*0.08)
+                                
+                                if let username = userDC.userData?.username {
+                                    UsernameTextField(limit: 13,
+                                                      text: username) { username in
+                                        
+                                    }
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.bottom, SP.safeAreaHeight*0.025)
+                            
+                            HStack(spacing: 0) {
+                                Text("Last Online: ")
+                                    .font(.subheadline)
+                                    .fontWeight(.regular)
+                                    .foregroundColor(Color("text2"))
+                                
+                                if let lastOnline = userDC.userData?.lastOnline {
+                                    DateTimeLabel(date: lastOnline,
+                                                  font: .subheadline,
+                                                  colour: Color("text2"))
+                                } else {
+                                    Text("-")
+                                        .font(.subheadline)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color("text2"))
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.bottom, SP.safeAreaHeight*0.02)
+                            
+                            Divider()
+                            
+                            ForEach(profileTabs, id: \.self) { tab in
+                                
+                                NavigationLink(destination: {
+                                    receiveProfileTab(tab: tab)
+                                }, label: {
+                                    VStack(spacing: 0) {
+                                        HStack(spacing: 0) {
+                                            Text(tab)
+                                                .font(.headline)
+                                                .foregroundColor(Color("text1"))
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "chevron.right")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 10, height: 10)
+                                        }
+                                        .padding()
+                                        
+                                        Divider()
+                                    }
+                                })
+                            }
+                        }
+                        .padding(.horizontal, SP.width*0.05)
+                        .padding(.vertical, SP.safeAreaHeight*0.025)
+                        .background(Color("background3"))
+                        .cornerRadius(10)
+                        .padding(.horizontal, SP.width*0.05)
+                        .padding(.top, SP.safeAreaHeight*0.025)
                     }
-//                    Form {
-//                        ForEach(profileTabs, id: \.self) { tab in
-//
-//                            NavigationLink(destination: {
-//                                receiveProfileTab(tab: tab)
-//                            }, label: {
-//                                Text(tab)
-//                                    .font(.headline)
-//                                    .foregroundColor(Color("text1"))
-//                            })
-//                        }
-//                    }
                 }
             }
         }
@@ -78,20 +136,22 @@ struct ProfileHome: View {
     }
     
     var avatarButton: some View {
-        Button(action: {
-            displayEmojiPicker = true
-        }) {
-            if let selectedEmoji = selectedEmoji {
-                Text(selectedEmoji.value)
-                    .font(.system(size: SP.width*0.125))
-                    .frame(height: SP.width*0.15)
-            } else {
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: SP.width*0.15)
-                    .foregroundColor(Color("blueAccent1"))
-            }
+        if let avatar = userDC.userData?.avatar,
+           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
+            return AnyView(Text(emoji.value)
+                .font(.system(size: SP.safeAreaHeight*0.06))
+                .frame(width: SP.safeAreaHeight*0.06,
+                       height: SP.safeAreaHeight*0.06)
+                .onTapGesture {
+                    // navigate to user profile
+                })
+        } else {
+            return AnyView(Image(systemName: "person.crop.circle.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: SP.safeAreaHeight*0.06,
+                       height: SP.safeAreaHeight*0.06)
+                .foregroundColor(Color("blueAccent1")))
         }
     }
     
@@ -101,20 +161,20 @@ struct ProfileHome: View {
         switch(tab) {
         case "Account":
             view = AnyView(AccountTab())
-        case "Security Features":
-            view = AnyView(SecurityFeaturesTab())
-        case "Privacy":
-            view = AnyView(PrivacyTab())
-        case "Notifications":
-            view = AnyView(NotificationsTab())
         case "Chats":
             view = AnyView(ChatsTab())
-        case "Media":
-            view = AnyView(MediaTab())
-        case "Help":
-            view = AnyView(HelpTab())
+        case "Authentication":
+            view = AnyView(AuthenticationTab())
+        case "Encryption":
+            view = AnyView(EncryptionTab())
+        case "Notifications":
+            view = AnyView(NotificationsTab())
+        case "Privacy Policy":
+            view = AnyView(PrivacyPolicyTab())
         default: break
         }
         return view
     }
+    
+    
 }

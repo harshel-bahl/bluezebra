@@ -7,51 +7,86 @@
 
 import Foundation
 
-class DU {
+class DataU {
     
-    static let shared = DU()
+    static let shared = DataU()
     
-    var date: Date {
-        return Date.now
-    }
-    
-    func currTime() -> String {
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
 
-        return df.string(from: d)
-    }
+//    var date: Date {
+//        return Date.now
+//    }
+//
+//    func currTime() -> String {
+//        let d = Date()
+//        let df = DateFormatter()
+//        df.dateFormat = "H:mm:ss.SSSS dd-MM"
+//
+//        return df.string(from: d)
+//    }
+//
+//    func timeHM(date: Date) -> String {
+//        let df = DateFormatter()
+//        df.dateFormat = "H:mm"
+//        df.locale = Locale.current
+//        return df.string(from: date)
+//    }
+//
+//    func dateDMY(date: Date) -> String {
+//        let df = DateFormatter()
+//        df.dateFormat = "dd-MM-y"
+//        return df.string(from: date)
+//    }
+//
+//    var dateString: String {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
+//        return dateFormatter.string(from: Date.now)
+//    }
+//
+//    let stringFromDate = { (date: Date) -> String? in
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
+//        return dateFormatter.string(from: date)
+//    }
+//
+//    let dateFromString =  { (dateString: String) -> Date? in
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
+//        return dateFormatter.date(from: dateString)
+//    }
+//
+//    func localToUTC(dateStr: String) -> String? {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "h:mm a"
+//        dateFormatter.calendar = Calendar.current
+//        dateFormatter.timeZone = TimeZone.current
+//
+//        if let date = dateFormatter.date(from: dateStr) {
+//            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+//            dateFormatter.dateFormat = "H:mm:ss"
+//
+//            return dateFormatter.string(from: date)
+//        }
+//        return nil
+//    }
+//
+//    func utcToLocal(dateStr: String) -> String? {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "H:mm:ss"
+//        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+//
+//        if let date = dateFormatter.date(from: dateStr) {
+//            dateFormatter.timeZone = TimeZone.current
+//            dateFormatter.dateFormat = "h:mm a"
+//
+//            return dateFormatter.string(from: date)
+//        }
+//        return nil
+//    }
+
     
-    func extractedTime(date: Date) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "H:mm"
-        return df.string(from: date)
-    }
     
-    func extractedDate(date: Date) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd"
-        return df.string(from: date)
-    }
     
-    var dateString: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: Date.now)
-    }
-    
-    let stringFromDate = { (date: Date) -> String? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: date)
-    }
-    
-    let dateFromString =  { (dateString: String) -> Date? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.date(from: dateString)
-    }
     
     let jsonEncode = { (data: Codable) throws -> Data in
         let jsonEncoder = JSONEncoder()
@@ -87,3 +122,4 @@ extension Thread {
         print("\r⚡️: \(Thread.current)\r" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")\r")
     }
 }
+

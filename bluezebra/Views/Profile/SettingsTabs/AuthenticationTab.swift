@@ -1,13 +1,13 @@
 //
-//  SecurityFeaturesTab.swift
-//  BlueZebra
+//  AuthenticationTab.swift
+//  bluezebra
 //
-//  Created by Harshel Bahl on 14/02/2023.
+//  Created by Harshel Bahl on 05/06/2023.
 //
 
 import SwiftUI
 
-struct SecurityFeaturesTab: View {
+struct AuthenticationTab: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }

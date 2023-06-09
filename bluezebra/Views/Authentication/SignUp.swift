@@ -14,7 +14,7 @@ struct SignUp: View {
     @ObservedObject var channelDC = ChannelDC.shared
     @EnvironmentObject var SP: ScreenProperties
     
-    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13)
+    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13, text: "@")
     
     @State var selectedEmoji: Emoji?
     @State var displayEmojiPicker = false
