@@ -31,7 +31,7 @@ extension ChannelRequest: ToSafeObject {
     func safeObject() throws -> SChannelRequest {
         guard let channelID = self.channelID,
               let date = self.date else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SChannelRequest(channelID: channelID,

@@ -34,7 +34,7 @@ struct DateTimeLabel: View {
                     Text(DateU.shared.timehma(date: date))
                         .font(font)
                         .foregroundColor(colour)
-                        .padding(.leading, 10)
+                        .padding(.leading, 2.5)
                 } else if Calendar.current.isDateInYesterday(date) {
                     Text("Yesterday,")
                         .font(font)
@@ -43,7 +43,7 @@ struct DateTimeLabel: View {
                     Text(DateU.shared.timehma(date: date))
                         .font(font)
                         .foregroundColor(colour)
-                        .padding(.leading, 10)
+                        .padding(.leading, 2.5)
                 } else if date.isInThisWeek {
                     Text(DateU.shared.datetimeDayha(date: date))
                         .font(font)
@@ -54,6 +54,10 @@ struct DateTimeLabel: View {
                             .font(font)
                             .foregroundColor(colour)
                     } else if mode==2 {
+                        Text(DateU.shared.datetimeMedShor(date: date))
+                            .font(font)
+                            .foregroundColor(colour)
+                    } else if mode==3 {
                         Text(DateU.shared.dateDMY(date: date))
                             .font(font)
                             .foregroundColor(colour)

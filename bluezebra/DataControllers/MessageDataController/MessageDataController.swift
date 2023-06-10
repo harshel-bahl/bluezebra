@@ -35,7 +35,7 @@ class MessageDC: ObservableObject {
         DispatchQueue.main.async {
             do {
                 if (data.first as? Bool)==true {
-                    print("SERVER \(Date.now) -- MessageDC.\(functionName): SUCCESS")
+                    print("SERVER \(DateU.shared.logTS) -- MessageDC.\(functionName): SUCCESS")
                     
                     if data.count > 1 {
                         completion(data[1])
@@ -50,7 +50,7 @@ class MessageDC: ObservableObject {
                     throw DCError.failed
                 }
             } catch {
-                print("SERVER \(Date.now) -- MessageDC.\(functionName): FAILED (\(error))")
+                print("SERVER \(DateU.shared.logTS) -- MessageDC.\(functionName): FAILED (\(error))")
                 if let failureCompletion = failureCompletion {
                     failureCompletion(.failure(error as? DCError ?? .failed))
                 }

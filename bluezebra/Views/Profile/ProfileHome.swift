@@ -68,7 +68,8 @@ struct ProfileHome: View {
                                 if let lastOnline = userDC.userData?.lastOnline {
                                     DateTimeLabel(date: lastOnline,
                                                   font: .subheadline,
-                                                  colour: Color("text2"))
+                                                  colour: Color("text2"),
+                                                  mode: 2)
                                 } else {
                                     Text("-")
                                         .font(.subheadline)

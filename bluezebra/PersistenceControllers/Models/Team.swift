@@ -44,7 +44,7 @@ extension Team: ToSafeObject {
               let icon = self.icon,
               let creationUserID = self.creationUserID,
               let creationDate = self.creationDate else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return STeam(teamID: teamID,

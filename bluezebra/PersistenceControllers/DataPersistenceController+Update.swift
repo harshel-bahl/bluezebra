@@ -44,14 +44,14 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.updateMO: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.updateMO: SUCCESS")
                 
                 return try MO.safeObject()
             }
             
             return sMO
         } catch {
-            print("CLIENT \(Date.now) -- DataPC.updateMO: FAILED (entity: \(String(describing: entity))) (\(error))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.updateMO: FAILED (entity: \(String(describing: entity))) (\(error))")
             
             throw error as? PError ?? .failed
         }

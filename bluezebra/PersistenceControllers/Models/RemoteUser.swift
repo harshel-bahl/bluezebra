@@ -32,7 +32,7 @@ extension RemoteUser: ToSafeObject {
         guard let userID = self.userID,
               let username = self.username,
               let avatar = self.avatar else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SRemoteUser(userID: userID,

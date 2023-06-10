@@ -19,8 +19,6 @@ struct ChatView: View {
     let channel: SChannel
     let remoteUser: SRemoteUser?
     
-    @State var todayPresent = 0
-    
     private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
         Publishers.Merge(
             NotificationCenter.default
@@ -191,8 +189,8 @@ struct ChatView: View {
         if let messageIndex = messages.firstIndex(where: { $0.messageID == thisMessage.messageID }) {
             if messageIndex == 0 { return true }
             
-            let prevMessageDate = DU.shared.dateDMY(date: messages[messageIndex].date)
-            let currMessageDate = DU.shared.dateDMY(date: messages[messageIndex - 1].date)
+            let prevMessageDate = DataU.shared.dateDMY(date: messages[messageIndex].date)
+            let currMessageDate = DataU.shared.dateDMY(date: messages[messageIndex - 1].date)
             
             if prevMessageDate == currMessageDate {
                 return false
@@ -212,7 +210,7 @@ struct ChatView: View {
         } else if Calendar.current.isDateInYesterday(date) {
             dateText = "Yesterday"
         } else {
-            dateText = DU.shared.dateDMY(date: date)
+            dateText = DataU.shared.dateDMY(date: date)
         }
         
         return Text(dateText ?? "-")

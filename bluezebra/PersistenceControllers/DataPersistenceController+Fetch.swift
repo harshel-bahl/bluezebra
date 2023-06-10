@@ -46,11 +46,11 @@ extension DataPC {
             if MOs.count > 1 { throw PError.multipleRecords }
             guard let MO = MOs.first else { throw PError.noRecordExists }
             
-            print("CLIENT \(Date.now) -- DataPC.fetchMO: SUCCESS (entity: \(entityName))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: SUCCESS (entity: \(entityName))")
             
             return MO
         } catch {
-            print("CLIENT \(Date.now) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
             throw PError.failed
         }
     }
@@ -88,13 +88,13 @@ extension DataPC {
             if MOs.count > 1 { throw PError.multipleRecords }
             guard let MO = MOs.first else { throw PError.noRecordExists }
             
-            print("CLIENT \(Date.now) -- DataPC.fetchSMOAsync: SUCCESS (entity: \(entityName))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: SUCCESS (entity: \(entityName))")
             
             let sMO = try MO.safeObject()
             
             return sMO
         } catch {
-            print("CLIENT \(Date.now) -- DataPC.fetchSMOAsync: FAILED (entity: \(entityName)) (\(error))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: FAILED (entity: \(entityName)) (\(error))")
             throw PError.failed
         }
     }
@@ -143,7 +143,7 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            print("CLIENT \(Date.now) -- DataPC.fetchSMOsAsync: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
             
             let sMOs = try MOs.map {
                 return try $0.safeObject()
@@ -151,7 +151,7 @@ extension DataPC {
             
             return sMOs
         } catch {
-            print("CLIENT \(Date.now) -- DataPC.fetchSMOsAsync: FAILED (entity: \(entityName)) (\(error))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: FAILED (entity: \(entityName)) (\(error))")
             throw PError.failed
         }
     }
@@ -190,7 +190,7 @@ extension DataPC {
                 if MOs.count > 1 { throw PError.multipleRecords }
                 guard let MO = MOs.first else { throw PError.noRecordExists }
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchSMO: SUCCESS (entity: \(entityName))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMO: SUCCESS (entity: \(entityName))")
                 
                 let sMO = try MO.safeObject()
                 
@@ -198,7 +198,7 @@ extension DataPC {
                     completion(.success(sMO))
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchSMO: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMO: FAILED (entity: \(entityName)) (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))
@@ -248,7 +248,7 @@ extension DataPC {
             do {
                 let MOs = try contextQueue.fetch(fetchRequest)
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchSMOs: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOs: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
                 
                 let sMOs = try MOs.map {
                     return try $0.safeObject()
@@ -258,7 +258,7 @@ extension DataPC {
                     completion(.success(sMOs))
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchSMOs: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOs: FAILED (entity: \(entityName)) (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))

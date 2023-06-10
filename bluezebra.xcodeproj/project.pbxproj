@@ -91,6 +91,7 @@
 		F065C61C2A3267D8007E1D9F /* DateUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61B2A3267D8007E1D9F /* DateUtilities.swift */; };
 		F065C61E2A3384E4007E1D9F /* DateLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateLabel.swift */; };
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
+		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -178,6 +179,7 @@
 		F065C61B2A3267D8007E1D9F /* DateUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtilities.swift; sourceTree = "<group>"; };
 		F065C61D2A3384E4007E1D9F /* DateLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateLabel.swift; sourceTree = "<group>"; };
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
+		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,6 +376,7 @@
 				346C303029EAD0BD0075107E /* DataPersistenceController+Fetch.swift */,
 				346C303229EAD10A0075107E /* DataPersistenceController+Delete.swift */,
 				346C303429EAD13A0075107E /* DataPersistenceController+Reset.swift */,
+				F065C6212A338D9B007E1D9F /* PEError.swift */,
 			);
 			path = PersistenceControllers;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 				3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */,
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
 				34938E132967C7FD00EA95CF /* HomePage.swift in Sources */,
+				F065C6222A338D9B007E1D9F /* PEError.swift in Sources */,
 				3475AE9629EFB884001882D4 /* ChannelDataController+Local.swift in Sources */,
 				3475AE9A29EFB9B0001882D4 /* ChannelDataController+Events.swift in Sources */,
 				341A0DA52A219F2B00C5B00C /* ChildSizeReader.swift in Sources */,

@@ -44,7 +44,7 @@ extension ChannelDeletion: ToSafeObject {
               let name = self.name,
               let icon = self.icon,
               let toDeleteUserIDs = self.toDeleteUserIDs else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SChannelDeletion(deletionID: deletionID,

@@ -26,48 +26,6 @@ class UserDC: ObservableObject {
         }
     }
     
-    enum DCError: Error {
-        case failed
-        case timeOut
-        case serverFailure
-        case disconnected
-        case typecastError
-    }
-    
-    var date: Date {
-        return Date.now
-    }
-    
-    var dateString: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: Date.now)
-    }
-    
-    let stringFromDate = { (date: Date) -> String? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: date)
-    }
-    
-    let dateFromString =  { (dateString: String) -> Date? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.date(from: dateString)
-    }
-    
-    let jsonEncode = { (data: Codable) -> Data? in
-        let jsonEncoder = JSONEncoder()
-        //jsonEncoder.outputFormatting = .prettyPrinted
-        return try? jsonEncoder.encode(data)
-    }
-    
-    let jsonDecode = { (data: Codable) -> Data? in
-        let jsonEncoder = JSONEncoder()
-        //jsonEncoder.outputFormatting = .prettyPrinted
-        return try? jsonEncoder.encode(data)
-    }
-    
     init() {
         self.addSocketHandlers()
     }
@@ -79,7 +37,7 @@ class UserDC: ObservableObject {
         DispatchQueue.main.async {
             do {
                 if (data.first as? Bool)==true {
-                    print("SERVER \(Date.now) -- UserDC.\(functionName): SUCCESS")
+                    print("SERVER \(DateU.shared.logTS) -- UserDC.\(functionName): SUCCESS")
                     
                     if data.count > 1 {
                         completion(data[1])
@@ -94,7 +52,7 @@ class UserDC: ObservableObject {
                     throw DCError.failed
                 }
             } catch {
-                print("SERVER \(Date.now) -- UserDC.\(functionName): FAILED (\(error))")
+                print("SERVER \(DateU.shared.logTS) -- UserDC.\(functionName): FAILED (\(error))")
                 failureCompletion(.failure(error as? DCError ?? .failed))
             }
         }

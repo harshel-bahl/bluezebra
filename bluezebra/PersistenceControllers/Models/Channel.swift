@@ -37,7 +37,7 @@ extension Channel: ToSafeObject {
               let channelType = self.channelType,
               let creationUserID = self.creationUserID,
               let creationDate =  self.creationDate else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SChannel(channelID: channelID,

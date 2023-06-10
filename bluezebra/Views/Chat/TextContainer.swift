@@ -47,7 +47,7 @@ struct TextContainer: View {
                 
                 Spacer(minLength: 15)
                 
-                Text(DU.shared.timeHM(date: message.date))
+                Text(DateU.shared.timeHm(date: message.date))
                     .font(.system(size: 12.5))
                     .frame(height: 12.5)
                     .foregroundColor(.white)

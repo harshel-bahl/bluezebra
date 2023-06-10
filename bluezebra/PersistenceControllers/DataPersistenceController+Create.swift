@@ -37,7 +37,7 @@ extension DataPC {
                     MO.lastOnline = lastOnline
 
                     try self.backgroundSave()
-                    print("CLIENT \(Date.now) -- DataPC.createUser: SUCCESS")
+                    print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: SUCCESS")
                     
                     let sMO = try MO.safeObject()
                     
@@ -48,7 +48,7 @@ extension DataPC {
                     throw PError.recordExists
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createUser: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: FAILED (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))
@@ -65,7 +65,7 @@ extension DataPC {
                 MO.biometricSetup = biometricSetup
                 
                 try self.backgroundSave()
-                print("CLIENT \(Date.now) -- DataPC.createSettings: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
@@ -73,7 +73,7 @@ extension DataPC {
                     completion(.success(sMO))
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createSettings: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: FAILED (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))
@@ -107,13 +107,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createRemoteUser: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRemoteUser: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createRemoteUser: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRemoteUser: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -153,13 +153,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createTeam: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createTeam: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -200,13 +200,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createChannelRequest: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelRequest: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createChannelRequest: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelRequest: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -251,13 +251,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createChannel: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannel: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createChannel: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannel: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -289,13 +289,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createChannelDeletion: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDeletion: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createChannelDeletion: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDeletion: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -337,13 +337,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(Date.now) -- DataPC.createMessage: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createMessage: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.createMessage: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createMessage: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }

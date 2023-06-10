@@ -83,41 +83,6 @@ class ChannelDC: ObservableObject {
     /// - uses an array since it is fetched in order of deletionDate
     @Published var channelDeletions = [SChannelDeletion]()
     
-    enum DCError: Error {
-        case failed
-        case timeOut
-        case serverFailure
-        case disconnected
-        case typecastError
-    }
-    
-    var date: Date {
-        return Date.now
-    }
-    
-    var dateString: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: Date.now)
-    }
-    
-    let stringFromDate = { (date: Date) -> String? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.string(from: date)
-    }
-    
-    let dateFromString =  { (dateString: String) -> Date? in
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd- HH:mm:ss"
-        return dateFormatter.date(from: dateString)
-    }
-    
-    let jsonEncode = { (data: Codable) -> Data? in
-        let jsonEncoder = JSONEncoder()
-        return try? jsonEncoder.encode(data)
-    }
-    
     init() {
         self.addSocketHandlers()
     }
@@ -128,7 +93,7 @@ class ChannelDC: ObservableObject {
                            completion: @escaping (Any?) ->()) {
         do {
             if (data.first as? Bool)==true {
-                print("SERVER \(Date.now) -- ChannelDC.\(functionName): SUCCESS")
+                print("SERVER \(DateU.shared.logTS) -- ChannelDC.\(functionName): SUCCESS")
                 
                 if data.count > 1 {
                     completion(data[1])
@@ -143,7 +108,7 @@ class ChannelDC: ObservableObject {
                 throw DCError.failed
             }
         } catch {
-            print("SERVER \(Date.now) -- ChannelDC.\(functionName): FAILED (\(error))")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.\(functionName): FAILED (\(error))")
             
             if let failureCompletion = failureCompletion {
                 failureCompletion(.failure(error as? DCError ?? .failed))

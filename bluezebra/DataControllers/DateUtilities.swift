@@ -13,7 +13,7 @@ class DateU {
     
     /// logTS
     /// log timestamp for debugging
-    func logTS() -> String {
+    var logTS: String {
         let d = Date()
         let df = DateFormatter()
         df.timeZone = TimeZone.current
@@ -28,28 +28,29 @@ class DateU {
     }
     
     /// currDateTimeUTC
-    /// datetime with current timezone offset from UTC
-    var currSDateTime: String {
+    /// datetime with current timezone as UTC
+    var currSDT: String {
         let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-        df.timeZone = TimeZone.current
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        df.timeZone = TimeZone(identifier: "UTC")
         return df.string(from: self.currDT)
     }
     
     /// dateFromString
-    /// current datetime in UTC converted from the relevant timezone offset
-    func dateFromString(dateString: String) -> Date? {
+    /// current datetime with timezone as UTC
+    func dateFromString(_ dateString: String) -> Date? {
         let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        df.timeZone = TimeZone(identifier: "UTC")
         return df.date(from: dateString)
     }
     
     /// stringFromDate
-    /// converts date to dateString in relevant timezone offset from UTC
-    func stringFromDate(date: Date,
-                        timezone: TimeZone) -> String {
+    /// converts date to dateString in the relevant timezone from UTC datetime
+    func stringFromDate(_ date: Date,
+                        _ timezone: TimeZone) -> String {
         let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = timezone
         return df.string(from: date)
     }

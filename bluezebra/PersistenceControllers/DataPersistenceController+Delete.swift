@@ -46,9 +46,9 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOAsync: SUCCESS (entity: \(entityName))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOAsync: SUCCESS (entity: \(entityName))")
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOAsync: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOAsync: FAILED (entity: \(entityName)) (\(error))")
                 throw PError.failed
             }
         }
@@ -87,9 +87,9 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
                 throw PError.failed
             }
         }
@@ -130,13 +130,13 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMO: SUCCESS (entity: \(entityName))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMO: SUCCESS (entity: \(entityName))")
                 
                 DispatchQueue.main.async {
                     completion(.success(()))
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMO: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMO: FAILED (entity: \(entityName)) (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))
@@ -179,13 +179,13 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
                 
                 DispatchQueue.main.async {
                     completion(.success(()))
                 }
             } catch {
-                print("CLIENT \(Date.now) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
                 
                 DispatchQueue.main.async {
                     completion(.failure(error as? PError ?? .failed))

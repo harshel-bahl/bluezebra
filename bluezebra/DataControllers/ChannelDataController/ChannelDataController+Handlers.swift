@@ -24,7 +24,7 @@ extension ChannelDC {
     
     func userOnline() {
         SocketController.shared.clientSocket.on("userOnline") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.userOnline: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.userOnline: triggered")
             
             guard let self = self,
                   let userID = data.first as? String else { return }
@@ -37,7 +37,7 @@ extension ChannelDC {
     
     func userDisconnected() {
         SocketController.shared.clientSocket.on("userDisconnected") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.userDisconnected: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.userDisconnected: triggered")
             
             guard let self = self,
                   let data = data.first as? NSDictionary,
@@ -48,7 +48,7 @@ extension ChannelDC {
                 self.onlineUsers[userID] = false
             }
             
-            guard let lastOnline = self.dateFromString(lastOnline) else { return }
+            guard let lastOnline = DateU.shared.dateFromString(lastOnline) else { return }
             
             Task {
                 guard let _ = try? await DataPC.shared.updateMO(entity: RemoteUser.self,
@@ -61,7 +61,7 @@ extension ChannelDC {
     
     func receivedChannelRequest() {
         SocketController.shared.clientSocket.on("receivedChannelRequest") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.receivedChannelRequest: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedChannelRequest: triggered")
             
             guard let self = self,
                   let data = data.first,
@@ -71,7 +71,7 @@ extension ChannelDC {
                 do {
                     if packet.channel.channelType == "user" {
                         guard let RUPacket = packet.remoteUser,
-                              let date = self.dateFromString(packet.date) else { return }
+                              let date = DateU.shared.dateFromString(packet.date) else { return }
                         let channel = packet.channel
                         
                         let _ = try await DataPC.shared.createChannelRequest(channelID: channel.channelID,
@@ -95,7 +95,7 @@ extension ChannelDC {
                         
                     } else if packet.channel.channelType == "team" {
                         guard let teamPacket = packet.teamPacket,
-                              let date = self.dateFromString(packet.date),
+                              let date = DateU.shared.dateFromString(packet.date),
                               let requestingUserID = packet.requestingUserID else { return }
                         let channel = packet.channel
                         
@@ -133,7 +133,7 @@ extension ChannelDC {
     
     func receivedChannelRequestResult() {
         SocketController.shared.clientSocket.on("receivedChannelRequestResult") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.receivedChannelRequestResult: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedChannelRequestResult: triggered")
             
             guard let self = self,
                   let data = data.first as? NSDictionary,
@@ -193,7 +193,7 @@ extension ChannelDC {
                                                                    predicateValue: channelID)
                     }
                 } catch {
-                    print("CLIENT \(Date.now) -- ChannelDC.receivedChannelRequestResult: FAILED")
+                    print("CLIENT \(DateU.shared.logTS) -- ChannelDC.receivedChannelRequestResult: FAILED")
                 }
             }
         }
@@ -201,13 +201,13 @@ extension ChannelDC {
     
     func receivedChannelDeletion() {
         SocketController.shared.clientSocket.on("receivedChannelDeletion") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.receivedChannelDeletion: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedChannelDeletion: triggered")
             
             guard let self = self,
                   let data = data.first,
                   let CDPacket = try? self.jsonDecodeFromData(packet: ChannelDeletionPacket.self,
                                                               data: data),
-                  let deletionDate = self.dateFromString(CDPacket.deletionDate) else { return }
+                  let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
             
             Task {
                 do {
@@ -251,7 +251,7 @@ extension ChannelDC {
                         await self.fetchRemoteUsers()
                     }
                 } catch {
-                    print("CLIENT \(Date.now) -- ChannelDC.receivedChannelDeletion: FAILED")
+                    print("CLIENT \(DateU.shared.logTS) -- ChannelDC.receivedChannelDeletion: FAILED")
                 }
             }
         }
@@ -259,13 +259,13 @@ extension ChannelDC {
     
     func receivedChannelDeletionResult() {
         SocketController.shared.clientSocket.on("receivedChannelDeletionResult") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.receivedChannelDeletionResult: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedChannelDeletionResult: triggered")
             
             guard let self = self,
                   let data = data.first as? NSDictionary,
                   let deletionID = data["deletionID"] as? String,
                   let dateString = data["remoteDeletedDate"] as? String,
-                  let remoteDeletedDate = self.dateFromString(dateString) else { return }
+                  let remoteDeletedDate = DateU.shared.dateFromString(dateString) else { return }
             
             Task {
                 let _ = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
@@ -280,7 +280,7 @@ extension ChannelDC {
 
     func deleteUserTrace() {
         SocketController.shared.clientSocket.on("deleteUserTrace") { [weak self] (data, ack) in
-            print("SERVER \(Date.now) -- ChannelDC.deleteUserTrace: triggered")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteUserTrace: triggered")
 
             guard let self = self,
                   let data = data.first as? NSDictionary,

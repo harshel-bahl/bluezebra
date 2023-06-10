@@ -18,7 +18,7 @@ extension MessageDC {
                      completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.sendMessage: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendMessage: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -28,11 +28,11 @@ extension MessageDC {
         let messagePacket = MessagePacket(channelID: channel.channelID,
                                           userID: userID,
                                           type: type,
-                                          date: DU.shared.dateString,
+                                          date: DateU.shared.currSDT,
                                           message: message)
         
-        guard let jsonPacket = try? DU.shared.jsonEncode(messagePacket),
-              let date = DU.shared.dateFromString(messagePacket.date) else { return }
+        guard let jsonPacket = try? DataU.shared.jsonEncode(messagePacket),
+              let date = DateU.shared.dateFromString(messagePacket.date) else { return }
         
         SocketController.shared.clientSocket.emitWithAck("sendMessage", ["userID": remoteUserID,
                                                                          "packet": jsonPacket])
@@ -74,7 +74,7 @@ extension MessageDC {
                               completion: ((Result<Void, DCError>)->())? = nil) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDataController.sendDeliveredMessage: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDataController.sendDeliveredMessage: FAILED (disconnected)")
             return
         }
         
@@ -97,7 +97,7 @@ extension MessageDC {
                          completion: ((Result<Void, DCError>)->())? = nil) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDataController.sendReadMessage: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDataController.sendReadMessage: FAILED (disconnected)")
             return
         }
         

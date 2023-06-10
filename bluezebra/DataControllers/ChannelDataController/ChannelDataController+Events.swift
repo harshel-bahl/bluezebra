@@ -18,7 +18,7 @@ extension ChannelDC {
                          completion: @escaping (Result<[RemoteUserPacket], DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.fetchRemoteUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.fetchRemoteUser: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -48,7 +48,7 @@ extension ChannelDC {
     func checkOnlineUsers(completion: @escaping (Result<Void, DCError>)->()) async {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.checkOnlineUsers: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.checkOnlineUsers: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -77,7 +77,7 @@ extension ChannelDC {
                         } else if let lastOnline = data[userID] as? String {
                             self.onlineUsers[userID] = false
                             
-                            guard let lastOnlineDate = self.dateFromString(lastOnline) else { return }
+                            guard let lastOnlineDate = DateU.shared.dateFromString(lastOnline) else { return }
                             
                             Task {
                                 guard let remoteUser = try? await DataPC.shared.updateMO(entity: RemoteUser.self,
@@ -99,7 +99,7 @@ extension ChannelDC {
                             completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.sendChannelRequest: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendChannelRequest: FAILED (disconnected)")
             return
         }
         
@@ -115,10 +115,10 @@ extension ChannelDC {
                                             remoteUser: RemoteUserPacket(userID: originUser.userID,
                                                                          username: originUser.username,
                                                                          avatar: originUser.avatar),
-                                            date: self.dateString)
+                                            date: DateU.shared.currSDT)
         
-        guard let jsonPacket = self.jsonEncode(CRPacket),
-              let date = self.dateFromString(CRPacket.date) else { return }
+        guard let jsonPacket = try? DataU.shared.jsonEncode(CRPacket),
+              let date = DateU.shared.dateFromString(CRPacket.date) else { return }
         
         SocketController.shared.clientSocket.emitWithAck("sendChannelRequest", ["userID": RUPacket.userID,
                                                                                 "packet": jsonPacket])
@@ -164,13 +164,13 @@ extension ChannelDC {
                                   completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.sendUserCRResult: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendUserCRResult: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
         
         guard let userID = channelRequest.userID else { return }
-        let date = self.date
+        let date = DateU.shared.currDT
         
         SocketController.shared.clientSocket.emitWithAck("sendChannelRequestResult", ["userID": userID,
                                                                                       "packet": ["channelID": channelRequest.channelID,
@@ -230,19 +230,19 @@ extension ChannelDC {
                        completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.deleteChannel: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteChannel: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
         
         let CDPacket = ChannelDeletionPacket(channelID: channel.channelID,
                                              channelType: channel.channelType,
-                                             deletionDate: self.dateString,
+                                             deletionDate: DateU.shared.currSDT,
                                              type: type)
         
-        guard let jsonPacket = self.jsonEncode(CDPacket),
+        guard let jsonPacket = try? DataU.shared.jsonEncode(CDPacket),
               let userID = channel.userID,
-              let deletionDate = self.dateFromString(CDPacket.deletionDate) else { return }
+              let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
         
         SocketController.shared.clientSocket.emitWithAck("sendChannelDeletion", ["userID": userID,
                                                                                  "packet": jsonPacket])

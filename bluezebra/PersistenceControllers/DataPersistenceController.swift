@@ -16,15 +16,6 @@ class DataPC: ObservableObject {
     var mainContext: NSManagedObjectContext
     var backgroundContext: NSManagedObjectContext
     
-    enum PError: Error {
-        case failed
-        case recordExists
-        case noRecordExists
-        case multipleRecords
-        case typecastError
-        case safeMapError
-    }
-    
     init() {
         self.container = NSPersistentContainer(name: "Data")
         self.container.loadPersistentStores { description, error in

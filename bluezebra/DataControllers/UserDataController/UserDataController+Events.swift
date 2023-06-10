@@ -15,7 +15,7 @@ extension UserDC {
     func checkUsername(username: String,
                        completion: @escaping (Result<Bool, DCError>)->()) {
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- ChannelDC.checkUsername: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.checkUsername: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -43,19 +43,23 @@ extension UserDC {
                     completion: @escaping (Result<SUser, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- UserDC.createUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
         
-        let date = self.date
-        guard let dateString = self.stringFromDate(date) else { return }
+        let date = DateU.shared.currDT
+        let dateString = DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)
         
         let userPacket = UserPacket(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
                                     avatar: avatar,
                                     creationDate: dateString)
         
-        guard let packet = self.jsonEncode(userPacket) else { return }
+        guard let packet = try? DataU.shared.jsonEncode(userPacket) else {
+            print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: FAILED (jsonError)")
+            completion(.failure(.jsonError))
+            return
+        }
         
         SocketController.shared.clientSocket.emitWithAck("createUser", ["packet": packet])
             .timingOut(after: 1, callback: { [weak self] data in
@@ -107,7 +111,7 @@ extension UserDC {
     func deleteUser(completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- UserDC.deleteUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- UserDC.deleteUser: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -144,7 +148,7 @@ extension UserDC {
     func connectUser(completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- UserDC.connectUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -161,7 +165,7 @@ extension UserDC {
             DispatchQueue.main.async {
                 do {
                     if (data.first as? Bool)==true {
-                        print("SERVER \(Date.now) -- UserDC.connectUser: SUCCESS")
+                        print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: SUCCESS")
                         self?.userOnline = true
                         completion(.success(()))
                     } else if (data.first as? Bool)==false {
@@ -172,7 +176,7 @@ extension UserDC {
                         throw DCError.failed
                     }
                 } catch {
-                    print("SERVER \(Date.now) -- UserDC.connectUser: FAILED (\(error))")
+                    print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED (\(error))")
                     completion(.failure(error as? DCError ?? .failed))
                 }
             }
@@ -181,8 +185,8 @@ extension UserDC {
     
     func disconnectUser() async {
         
-        let date = self.date
-        let dateString = self.dateString
+        let date = DateU.shared.currDT
+        let dateString = DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)
         
         guard let userData = self.userData else { return }
         let userID = userData.userID
@@ -195,7 +199,7 @@ extension UserDC {
         }
         
         guard SocketController.shared.connected else {
-            print("SERVER \(Date.now) -- UserDC.disconnectUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- UserDC.disconnectUser: FAILED (disconnected)")
             return
         }
         

@@ -87,13 +87,13 @@ struct ChannelView: View {
            online == true {
             return Text("Online").foregroundColor(.green).fontWeight(.bold)
         } else {
-            guard let lastOnline = remoteUser.lastOnline,
-                  let lastOnlineString = channelDC.stringFromDate(lastOnline) else {
+//            guard let lastOnline = remoteUser.lastOnline,
+//                  let lastOnlineString = DateU.shared.stringFromDate(lastOnline) else {
                 return Text("-").foregroundColor(.white).fontWeight(.bold)
-            }
+//            }
             
-            let badge = Text(lastOnlineString).foregroundColor(.white).fontWeight(.bold)
-            return badge
+//            let badge = Text(lastOnlineString).foregroundColor(.white).fontWeight(.bold)
+//            return badge
         }
     }
 }

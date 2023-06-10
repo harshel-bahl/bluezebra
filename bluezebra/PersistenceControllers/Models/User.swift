@@ -34,7 +34,7 @@ extension User: ToSafeObject {
               let pin = self.pin,
               let creationDate = self.creationDate,
               let avatar = self.avatar else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SUser(userID: userID,

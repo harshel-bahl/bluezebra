@@ -134,7 +134,8 @@ struct InputContainer: View {
                 Task() {
                     if !message.isEmpty {
                         let sMessage = try? await messageDC.createMessage(message: message,
-                                                                          type: "text")
+                                                                          type: "text",
+                                                                          date: DateU.shared.currDT)
                         if let sMessage = sMessage { messageDC.personalMessages.insert(sMessage, at: 0) }
                         
                         self.message.removeAll()

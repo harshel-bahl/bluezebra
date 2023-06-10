@@ -45,7 +45,7 @@ extension Message: ToSafeObject {
               let type = self.type,
               let date = self.date,
               let message = self.message else {
-            throw DataPC.PError.safeMapError
+            throw PError.safeMapError
         }
         
         return SMessage(messageID: messageID,

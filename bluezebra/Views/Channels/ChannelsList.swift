@@ -146,41 +146,13 @@ struct ChannelsList: View {
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
-                                    let time = DU.shared.timeHM(date: latestDate)
                                     
-                                    if Calendar.current.isDateInToday(latestDate) {
-                                        Text("Today,")
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                        
-                                        Text(time)
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                            .padding(.trailing, 10)
-                                            .padding(.leading, 2.5)
-                                    } else if Calendar.current.isDateInYesterday(latestDate) {
-                                        Text("Yesterday,")
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                        
-                                        Text(time)
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                            .padding(.trailing, 10)
-                                            .padding(.leading, 2.5)
-                                    } else {
-                                        let date = DU.shared.dateDMY(date: latestDate)
-                                        
-                                        Text(date)
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                        
-                                        Text(time)
-                                            .font(.caption)
-                                            .foregroundColor(Color("text1"))
-                                            .padding(.trailing, 10)
-                                            .padding(.leading, 2.5)
-                                    }
+                                    DateTimeLabel(date: latestDate,
+                                                  font: .caption,
+                                                  colour: Color("text1"),
+                                                  mode: 3)
+                                    .padding(.trailing, 10)
+                                    
                                 } else {
                                     Text("-")
                                         .font(.caption)
@@ -230,7 +202,8 @@ struct ChannelsList: View {
                 }
                 .contextMenu() {
                     Button("Clear media", action: {
-                        print(dateU.shared.datetimeMedShor(date: dateU.shared.currDateTimeUTC))
+                        print(DateU.shared.currSDT)
+                        print(DateU.shared.dateFromString(DateU.shared.currSDT))
                     })
                     
                     Button("Clear channel", action: {
