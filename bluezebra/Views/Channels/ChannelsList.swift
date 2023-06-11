@@ -43,13 +43,11 @@ struct ChannelsList: View {
                         
                         meChannel
                         
-                        //                        ForEach(channelDC.userChannels, id: \.channelID) { channel in
-                        //
-                        //                            ChannelView(channel: channel)
-                        //                                .listRowBackground(Color.black)
-                        //                        }
+                        ForEach(channelDC.userChannels, id: \.channelID) { channel in
+                            
+                            ChannelView(channel: channel)
+                        }
                     }
-                    .listStyle(.plain)
                     
                 }
                 .sheet(isPresented: $showUserRequestsView, content: {
@@ -146,12 +144,11 @@ struct ChannelsList: View {
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
-                                    
                                     DateTimeLabel(date: latestDate,
-                                                  font: .caption,
-                                                  colour: Color("text1"),
-                                                  mode: 3)
-                                    .padding(.trailing, 10)
+                                                  font: .subheadline,
+                                                  colour: Color("text2"),
+                                                  mode: 2)
+                                    .padding(.trailing, 7.5)
                                     
                                 } else {
                                     Text("-")
@@ -202,8 +199,7 @@ struct ChannelsList: View {
                 }
                 .contextMenu() {
                     Button("Clear media", action: {
-                        print(DateU.shared.currSDT)
-                        print(DateU.shared.dateFromString(DateU.shared.currSDT))
+                        
                     })
                     
                     Button("Clear channel", action: {

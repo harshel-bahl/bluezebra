@@ -26,12 +26,13 @@ struct DateTimeLabel: View {
     
     var body: some View {
         HStack(spacing: 0 ) {
+            if mode==1 {
                 if Calendar.current.isDateInToday(date) {
                     Text("Today,")
                         .font(font)
                         .foregroundColor(colour)
                     
-                    Text(DateU.shared.timehma(date: date))
+                    Text(DateU.shared.timeHm(date: date))
                         .font(font)
                         .foregroundColor(colour)
                         .padding(.leading, 2.5)
@@ -40,7 +41,7 @@ struct DateTimeLabel: View {
                         .font(font)
                         .foregroundColor(colour)
                     
-                    Text(DateU.shared.timehma(date: date))
+                    Text(DateU.shared.timeHm(date: date))
                         .font(font)
                         .foregroundColor(colour)
                         .padding(.leading, 2.5)
@@ -49,20 +50,47 @@ struct DateTimeLabel: View {
                         .font(font)
                         .foregroundColor(colour)
                 } else {
-                    if mode==1 {
-                        Text(DateU.shared.datetimeDMYhma(date: date))
-                            .font(font)
-                            .foregroundColor(colour)
-                    } else if mode==2 {
-                        Text(DateU.shared.datetimeMedShor(date: date))
-                            .font(font)
-                            .foregroundColor(colour)
-                    } else if mode==3 {
-                        Text(DateU.shared.dateDMY(date: date))
-                            .font(font)
-                            .foregroundColor(colour)
-                    }
+                    Text(DateU.shared.datetimeMedShor(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
                 }
+            } else if mode==2 {
+                if Calendar.current.isDateInToday(date) {
+                    Text(DateU.shared.timeHm(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                } else if Calendar.current.isDateInYesterday(date) {
+                    Text("Yesterday")
+                        .font(font)
+                        .foregroundColor(colour)
+                } else if date.isInThisWeek {
+                    Text(DateU.shared.dateDay(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                } else {
+                    Text(DateU.shared.dateDMY(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                }
+            } else if mode==3 {
+                if Calendar.current.isDateInToday(date) {
+                    Text(DateU.shared.timeHm(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                } else if Calendar.current.isDateInYesterday(date) {
+                    Text("Yesterday")
+                        .font(font)
+                        .foregroundColor(colour)
+                } else if date.isInThisWeek {
+                    Text(DateU.shared.dateDay(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                } else {
+                    Text(DateU.shared.datetimeDMYhma(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                }
+            }
         }
     }
 }

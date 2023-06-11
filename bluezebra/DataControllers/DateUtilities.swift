@@ -69,7 +69,7 @@ class DateU {
     /// returns (01-01-23, 11:45 PM)
     func datetimeDMYhma(date: Date) -> String {
         let df = DateFormatter()
-        df.dateFormat = "dd-MM-yy, h:mma"
+        df.dateFormat = "dd-MM-yy, HH:mm"
         df.timeZone = TimeZone.current
         df.locale = Locale.current
         return df.string(from: date)
@@ -110,7 +110,7 @@ class DateU {
     /// returns (Wednesday, 1:13PM)
     func datetimeDayha(date: Date) -> String {
         let df = DateFormatter()
-        df.dateFormat = "EEEE, h:mma"
+        df.dateFormat = "EEEE, HH:mm"
         df.timeZone = TimeZone.current
         df.locale = Locale.current
         return df.string(from: date)
@@ -130,7 +130,7 @@ class DateU {
     /// returns the timestamp as 12 hour clock with AM/PM
     func timehma(date: Date) -> String {
         let df = DateFormatter()
-        df.dateFormat = "h:mma"
+        df.dateFormat = "h:ma"
         df.timeZone = TimeZone.current
         df.locale = Locale.current
         return df.string(from: date)

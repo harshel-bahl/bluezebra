@@ -69,7 +69,7 @@ struct ProfileHome: View {
                                     DateTimeLabel(date: lastOnline,
                                                   font: .subheadline,
                                                   colour: Color("text2"),
-                                                  mode: 2)
+                                                  mode: 1)
                                 } else {
                                     Text("-")
                                         .font(.subheadline)
