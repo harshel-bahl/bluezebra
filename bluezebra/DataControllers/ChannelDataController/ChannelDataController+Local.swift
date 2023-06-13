@@ -25,8 +25,6 @@ extension ChannelDC {
                           completion: (([SRemoteUser])->())? = nil) async {
         
         let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: RemoteUser.self,
-                                                           predicateProperty: "active",
-                                                           predicateValue: true,
                                                            fetchLimit: fetchLimit)
         
         guard let SMOs = SMOs else { return }

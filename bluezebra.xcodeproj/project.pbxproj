@@ -92,6 +92,7 @@
 		F065C61E2A3384E4007E1D9F /* DateLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateLabel.swift */; };
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
 		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
+		F0E311792A36CA5C00CF74B9 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* Avatar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -180,6 +181,7 @@
 		F065C61D2A3384E4007E1D9F /* DateLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateLabel.swift; sourceTree = "<group>"; };
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
 		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
+		F0E311782A36CA5C00CF74B9 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -450,6 +452,7 @@
 				F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */,
 				F065C61D2A3384E4007E1D9F /* DateLabel.swift */,
 				F065C61F2A3384EB007E1D9F /* TimeLabel.swift */,
+				F0E311782A36CA5C00CF74B9 /* Avatar.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				3475AE9629EFB884001882D4 /* ChannelDataController+Local.swift in Sources */,
 				3475AE9A29EFB9B0001882D4 /* ChannelDataController+Events.swift in Sources */,
 				341A0DA52A219F2B00C5B00C /* ChildSizeReader.swift in Sources */,
+				F0E311792A36CA5C00CF74B9 /* Avatar.swift in Sources */,
 				346C303329EAD10A0075107E /* DataPersistenceController+Delete.swift in Sources */,
 				346879CD2988596B002F3B5E /* SocketController.swift in Sources */,
 				346C303529EAD13A0075107E /* DataPersistenceController+Reset.swift in Sources */,

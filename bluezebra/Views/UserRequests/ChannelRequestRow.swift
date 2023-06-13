@@ -12,25 +12,49 @@ struct ChannelRequestRow: View {
     @ObservedObject var channelDC = ChannelDC.shared
     
     var channelRequest: SChannelRequest
+    
     @State var remoteUser: SRemoteUser?
+    
+    @State var requestFailure = false
     
     init(channelRequest: SChannelRequest) {
         self.channelRequest = channelRequest
-
     }
     
     var body: some View {
-        
-        if let remoteUser = remoteUser {
-            HStack {
+        HStack(spacing: 0) {
+            
+            if let remoteUser = remoteUser {
                 
-                Text(remoteUser.username)
-                
-                Spacer()
-                
-                channelRequestButton(result: true, sfSymbol: "person")
-                
-                channelRequestButton(result: false, sfSymbol: "square.and.pencil")
+                HStack(spacing: 0) {
+                    
+                    Avatar(avatar: remoteUser.avatar, size: .init(width: 40,
+                                                                  height: 40))
+                    .padding(.trailing, 20)
+                    
+                    Text("@" + remoteUser.username)
+                        .font(.headline)
+                        .foregroundColor(Color("blueAccent1"))
+                    
+                    Spacer()
+                    
+                    if !channelRequest.isSender {
+                        channelRequestButton(result: false, sfSymbol: "xmark.circle")
+                            .padding(.trailing, 22.5)
+                        
+                        channelRequestButton(result: true, sfSymbol: "checkmark.circle")
+                    } else {
+                        DateTimeLabel(date: channelRequest.date,
+                                      font: .subheadline,
+                                      colour: Color("text1"),
+                                      mode: 2)
+                    }
+                }
+            }
+        }
+        .onAppear() { fetchRemoteUser() }
+        .alert("Failed to send channel request", isPresented: $requestFailure) {
+            Button("Try again later", role: .cancel) {
             }
         }
     }
@@ -60,9 +84,8 @@ struct ChannelRequestRow: View {
             Image(systemName: sfSymbol)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 15, height: 15)
-                .foregroundColor(.black)
-                .padding()
+                .frame(width: 27.5, height: 27.5)
+                .foregroundColor(Color("blueAccent1"))
         })
         
         return button

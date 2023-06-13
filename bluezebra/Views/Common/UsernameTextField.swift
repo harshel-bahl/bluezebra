@@ -9,27 +9,23 @@ import SwiftUI
 
 struct UsernameTextField: View {
     
-    @ObservedObject var usernameTextManager: TextBindingManager
+    @ObservedObject var textManager: UsernameTextManager
     
     var commitAction: (String)->()
     
-    init(limit: Int,
-         text: String,
+    init(textManager: UsernameTextManager,
          commitAction: @escaping (String)->()) {
-        self._usernameTextManager = ObservedObject(wrappedValue: TextBindingManager(limit: limit,
-                                                                                    text: text))
+        self._textManager = ObservedObject(wrappedValue: textManager)
         self.commitAction = commitAction
     }
     
     var body: some View {
         TextField("Username",
-                  text: $usernameTextManager.username,
-                  onEditingChanged: { isEditing in
-            if isEditing {
-            }
-        },
+                  text: $textManager.username,
                   onCommit: {
-            let username = usernameTextManager.username.replacingOccurrences(of: "@", with: "")
+            var username = textManager.username
+                .replacingOccurrences(of: "@", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             
             commitAction(username)
         })
@@ -44,7 +40,7 @@ struct UsernameTextField: View {
     }
 }
 
-class TextBindingManager: ObservableObject {
+class UsernameTextManager: ObservableObject {
     
     let characterLimit: Int
     

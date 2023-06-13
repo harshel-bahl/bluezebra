@@ -14,7 +14,7 @@ struct SignUp: View {
     @ObservedObject var channelDC = ChannelDC.shared
     @EnvironmentObject var SP: ScreenProperties
     
-    @ObservedObject var usernameTextManager = TextBindingManager(limit: 13, text: "@")
+    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
     
     @State var selectedEmoji: Emoji?
     @State var displayEmojiPicker = false
@@ -291,7 +291,7 @@ struct SignUp: View {
     
     var usernameTextfield: some View {
         let textfield = TextField("Username",
-                                  text: $usernameTextManager.username,
+                                  text: $usernameTM.username,
                                   onEditingChanged: { isEditing in
             if isEditing {
                 if self.checkedUsername != nil {
@@ -300,7 +300,7 @@ struct SignUp: View {
             }
         },
                                   onCommit: {
-            let username = usernameTextManager.username.replacingOccurrences(of: "@", with: "")
+            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
             
             userDC.checkUsername(username: username) { result in
                 switch result {
@@ -321,11 +321,11 @@ struct SignUp: View {
             .fontWeight(.regular)
             .focused($focusedField, equals: .username)
             .submitLabel(.go)
-            .onChange(of: usernameTextManager.username) { username in
+            .onChange(of: usernameTM.username) { username in
                 if username.isEmpty {
-                    usernameTextManager.username = username + "@"
+                    usernameTM.username = username + "@"
                 } else if username.first != "@" {
-                    usernameTextManager.username.insert("@", at: usernameTextManager.username.startIndex)
+                    usernameTM.username.insert("@", at: usernameTM.username.startIndex)
                 }
             }
         
@@ -456,7 +456,7 @@ struct SignUp: View {
     var createUserButton: some View {
         let button = Button(action: {
             
-            let username = usernameTextManager.username.replacingOccurrences(of: "@", with: "")
+            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
             
             userDC.createUser(username: username,
                               pin: pin,

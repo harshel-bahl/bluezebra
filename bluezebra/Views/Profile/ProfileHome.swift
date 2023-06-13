@@ -46,20 +46,21 @@ struct ProfileHome: View {
                             HStack(spacing: 0) {
                                 
                                 avatarButton
-                                    .padding(.trailing, SP.width*0.08)
+                                    .padding(.trailing, 22.5)
                                 
                                 if let username = userDC.userData?.username {
-                                    UsernameTextField(limit: 13,
-                                                      text: username) { username in
-                                        
-                                    }
+                                    Text("@" + username)
+                                        .font(.title2)
+                                        .foregroundColor(Color("blueAccent1"))
                                 }
                                 
                                 Spacer()
                             }
-                            .padding(.bottom, SP.safeAreaHeight*0.025)
+                            .padding(.bottom, SP.safeAreaHeight*0.033)
                             
                             HStack(spacing: 0) {
+                                
+                                
                                 Text("Last Online: ")
                                     .font(.subheadline)
                                     .fontWeight(.regular)
@@ -101,6 +102,7 @@ struct ProfileHome: View {
                                                 .aspectRatio(contentMode: .fit)
                                                 .frame(width: 10, height: 10)
                                         }
+                                        
                                         .padding()
                                         
                                         Divider()
@@ -108,7 +110,7 @@ struct ProfileHome: View {
                                 })
                             }
                         }
-                        .padding(.horizontal, SP.width*0.05)
+                        .padding(.horizontal, SP.width*0.075)
                         .padding(.vertical, SP.safeAreaHeight*0.025)
                         .background(Color("background3"))
                         .cornerRadius(10)
