@@ -468,6 +468,7 @@ struct SignUp: View {
                     switch result {
                     case .success(let userData):
                         userDC.userData = userData
+                        userDC.loggedIn = true
                     case .failure(_):
                         self.failure = true
                     }

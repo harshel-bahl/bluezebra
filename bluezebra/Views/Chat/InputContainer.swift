@@ -130,7 +130,7 @@ struct InputContainer: View {
     
     var sendButton: some View {
         Button(action: {
-            if channel.channelType == "personal" {
+            if channel.channelID == "personal" {
                 Task() {
                     if !message.isEmpty {
                         let sMessage = try? await messageDC.createMessage(message: message,

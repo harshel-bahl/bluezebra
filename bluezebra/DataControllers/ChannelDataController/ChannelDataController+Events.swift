@@ -12,13 +12,41 @@ extension ChannelDC {
     
     /// Server Fetch Functions
     ///
-    func fetchRemoteUser(userID: String?,
-                         username: String?,
-                         checkUsername: Bool = true,
-                         completion: @escaping (Result<[RemoteUserPacket], DCError>)->()) {
+    func fetchRU(userID: String?,
+                 checkUserID: Bool = true,
+                 completion: @escaping (Result<[RUPacket], DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.fetchRemoteUser: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.fetchRU: FAILED (disconnected)")
+            completion(.failure(.disconnected))
+            return
+        }
+        
+        if checkUserID {
+            guard userID != UserDC.shared.userData?.userID else { return }
+        }
+        
+        SocketController.shared.clientSocket.emitWithAck("fetchRU", ["userID": userID])
+            .timingOut(after: 1, callback: { [weak self] data in
+                guard let self = self else { return }
+                
+                self.socketCallback(data: data,
+                                    functionName: "fetchRU",
+                                    failureCompletion: completion) { data in
+                    guard let data = data,
+                          let RUPackets = try? self.jsonDecodeFromObject(packet: [RUPacket].self,
+                                                                         data: data) else { return }
+                    completion(.success(RUPackets))
+                }
+            })
+    }
+    
+    func fetchRUs(username: String?,
+                  checkUsername: Bool = true,
+                  completion: @escaping (Result<[RUPacket], DCError>)->()) {
+        
+        guard SocketController.shared.connected else {
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.fetchRUs: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -27,21 +55,20 @@ extension ChannelDC {
             guard username != UserDC.shared.userData?.username else { return }
         }
         
-        SocketController.shared.clientSocket.emitWithAck("fetchUser", ["username": username])
+        SocketController.shared.clientSocket.emitWithAck("fetchRUs", ["username": username])
             .timingOut(after: 1, callback: { [weak self] data in
                 guard let self = self else { return }
                 
                 self.socketCallback(data: data,
-                                    functionName: "fetchRemoteUser",
+                                    functionName: "fetchRUs",
                                     failureCompletion: completion) { data in
                     guard let data = data,
-                          let remoteUserPackets = try? self.jsonDecodeFromObject(packet: [RemoteUserPacket].self,
-                                                                                 data: data) else { return }
-                    completion(.success(remoteUserPackets))
+                          let RUPackets = try? self.jsonDecodeFromObject(packet: [RUPacket].self,
+                                                                         data: data) else { return }
+                    completion(.success(RUPackets))
                 }
             })
     }
-
     
     /// Server-Local Channel Functions
     ///
@@ -92,61 +119,60 @@ extension ChannelDC {
             })
     }
     
-    /// sendUserChannelRequest:
-    /// handles creation of user channels and creates channel and remote user in inactive state
-    func sendChannelRequest(RUPacket: RemoteUserPacket,
-                            checkUserID: Bool = true,
-                            completion: @escaping (Result<Void, DCError>)->()) {
+    /// sendChannelRequest:
+    /// sends a channel request to user on platform
+    func sendCR(remoteUser: RUPacket,
+                checkUserID: Bool = true,
+                completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendChannelRequest: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendCR: FAILED (disconnected)")
             return
         }
         
         guard let originUser = UserDC.shared.userData else { return }
+        let creationDate = DateU.shared.stringFromDate(originUser.creationDate, TimeZone(identifier: "UTC")!)
         
         if checkUserID {
-            guard RUPacket.userID != UserDC.shared.userData?.userID else { return }
+            guard remoteUser.userID != UserDC.shared.userData?.userID else { return }
         }
         
-        let CRPacket = ChannelRequestPacket(channel: ChannelPacket(channelType: "user",
-                                                                   userID: originUser.userID,
-                                                                   creationUserID: originUser.userID),
-                                            remoteUser: RemoteUserPacket(userID: originUser.userID,
-                                                                         username: originUser.username,
-                                                                         avatar: originUser.avatar),
-                                            date: DateU.shared.currSDT)
+        let CRPacket = CRPacket(channel: ChannelPacket(userID: originUser.userID),
+                                remoteUser: RUPacket(userID: originUser.userID,
+                                                     username: originUser.username,
+                                                     avatar: originUser.avatar,
+                                                     creationDate: creationDate),
+                                date: DateU.shared.currSDT)
         
         guard let jsonPacket = try? DataU.shared.jsonEncode(CRPacket),
-              let date = DateU.shared.dateFromString(CRPacket.date) else { return }
+              let date = DateU.shared.dateFromString(CRPacket.date),
+              let RUcreationDate = DateU.shared.dateFromStringZ(remoteUser.creationDate) else { return }
         
-        SocketController.shared.clientSocket.emitWithAck("sendChannelRequest", ["userID": RUPacket.userID,
-                                                                                "packet": jsonPacket])
+        SocketController.shared.clientSocket.emitWithAck("sendCR", ["userID": remoteUser.userID,
+                                                                    "packet": jsonPacket])
         .timingOut(after: 1) { [weak self] data in
             guard let self = self else { return }
             
             self.socketCallback(data: data,
-                                functionName: "sendChannelRequest",
+                                functionName: "sendCR",
                                 failureCompletion: completion) { _ in
                 Task {
                     do {
                         let channelRequest = try await DataPC.shared.createChannelRequest(channelID: CRPacket.channel.channelID,
-                                                                                          userID: RUPacket.userID,
+                                                                                          userID: remoteUser.userID,
                                                                                           date: date,
                                                                                           isSender: true)
-                        await self.fetchChannelRequests()
+                        await self.fetchCRs()
                         
-                        let remoteUser = try? await DataPC.shared.createRemoteUser(userID: RUPacket.userID,
-                                                                                   username: RUPacket.username,
-                                                                                   avatar: RUPacket.avatar)
-                        if remoteUser != nil { await self.fetchRemoteUsers() }
+                        let sRU = try? await DataPC.shared.createRemoteUser(userID: remoteUser.userID,
+                                                                            username: remoteUser.username,
+                                                                            avatar: remoteUser.avatar,
+                                                                            creationDate: RUcreationDate)
+                        if sRU != nil { await self.fetchRemoteUsers() }
                         
                         let channel = try await DataPC.shared.createChannel(channelID: CRPacket.channel.channelID,
-                                                                            channelType: CRPacket.channel.channelType,
-                                                                            userID: RUPacket.userID,
-                                                                            creationUserID: CRPacket.channel.creationUserID,
-                                                                            creationDate: date,
-                                                                            lastMessageDate: date)
+                                                                            userID: remoteUser.userID,
+                                                                            creationDate: date)
                         await self.fetchUserChannels()
                     } catch {
                         completion(.failure(DCError.failed))
@@ -159,12 +185,12 @@ extension ChannelDC {
     
     /// sendChannelRequestResult:
     /// handles sending a user channel result
-    func sendUserCRResult(channelRequest: SChannelRequest,
-                                  result: Bool,
-                                  completion: @escaping (Result<Void, DCError>)->()) {
+    func sendCRResult(channelRequest: SChannelRequest,
+                      result: Bool,
+                      completion: @escaping (Result<Void, DCError>)->()) {
         
         guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendUserCRResult: FAILED (disconnected)")
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.sendCRResult: FAILED (disconnected)")
             completion(.failure(.disconnected))
             return
         }
@@ -172,14 +198,15 @@ extension ChannelDC {
         guard let userID = channelRequest.userID else { return }
         let date = DateU.shared.currDT
         
-        SocketController.shared.clientSocket.emitWithAck("sendChannelRequestResult", ["userID": userID,
-                                                                                      "packet": ["channelID": channelRequest.channelID,
-                                                                                                 "result": result]])
+        SocketController.shared.clientSocket.emitWithAck("sendCRResult", ["userID": userID,
+                                                                          "packet": ["channelID": channelRequest.channelID,
+                                                                                     "date": DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!),
+                                                                                     "result": result]])
         .timingOut(after: 1) { [weak self] data in
             guard let self = self else { return }
             
             self.socketCallback(data: data,
-                                functionName: "sendUserCRResult",
+                                functionName: "sendCRResult",
                                 failureCompletion: completion) { _ in
                 Task {
                     if (result==true) {
@@ -187,11 +214,13 @@ extension ChannelDC {
                             try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
                                                                        predicateProperty: "channelID",
                                                                        predicateValue: channelRequest.channelID)
-                            await self.fetchChannelRequests()
+                            await self.fetchCRs()
                             
                             let _ = try await DataPC.shared.updateMO(entity: Channel.self,
-                                                                     property: ["active", "creationDate", "lastMessageDate"],
-                                                                     value: [true, date, date])
+                                                                     predicateProperty: "channelID",
+                                                                     predicateValue: channelRequest.channelID,
+                                                                     property: ["active", "creationDate"],
+                                                                     value: [true, date])
                             await self.fetchUserChannels()
                         } catch {
                             completion(.failure(.failed))
@@ -201,20 +230,16 @@ extension ChannelDC {
                             try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
                                                                        predicateProperty: "channelID",
                                                                        predicateValue: channelRequest.channelID)
-                            await self.fetchChannelRequests()
+                            await self.fetchCRs()
                             
                             try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
                                                                        predicateProperty: "channelID",
                                                                        predicateValue: channelRequest.channelID)
                             
-                            let RUCheck = try await self.checkRUInTeams(userID: userID)
-                            
-                            if !RUCheck {
-                                try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
-                                                                           predicateProperty: "userID",
-                                                                           predicateValue: channelRequest.userID)
-                                await self.fetchRemoteUsers()
-                            }
+                            try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
+                                                                       predicateProperty: "userID",
+                                                                       predicateValue: channelRequest.userID)
+                            await self.fetchRemoteUsers()
                         } catch {
                             completion(.failure(.failed))
                         }
@@ -228,67 +253,73 @@ extension ChannelDC {
                        remoteUser: SRemoteUser,
                        type: String = "clear",
                        completion: @escaping (Result<Void, DCError>)->()) {
-        
-        guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteChannel: FAILED (disconnected)")
-            completion(.failure(.disconnected))
-            return
+        Task {
+            try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
+                                                       predicateProperty: "channelID",
+                                                       predicateValue: channel.channelID)
+            
+            try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
+                                                       predicateProperty: "userID",
+                                                       predicateValue: remoteUser.userID)
+            
+            completion(.success(()))
         }
         
-        let CDPacket = ChannelDeletionPacket(channelID: channel.channelID,
-                                             channelType: channel.channelType,
-                                             deletionDate: DateU.shared.currSDT,
-                                             type: type)
-        
-        guard let jsonPacket = try? DataU.shared.jsonEncode(CDPacket),
-              let userID = channel.userID,
-              let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
-        
-        SocketController.shared.clientSocket.emitWithAck("sendChannelDeletion", ["userID": userID,
-                                                                                 "packet": jsonPacket])
-        .timingOut(after: 1, callback: { [weak self] data in
-            guard let self = self else { return }
-            
-            self.socketCallback(data: data,
-                                functionName: "deleteChannel",
-                                failureCompletion: completion) { data in
-                
-                Task {
-                    do {
-                        let _ = try await DataPC.shared.createChannelDeletion(channelType: channel.channelType,
-                                                                              deletionDate: deletionDate,
-                                                                              type: type,
-                                                                              name: remoteUser.username,
-                                                                              icon: remoteUser.avatar,
-                                                                              nUsers: 1,
-                                                                              toDeleteUserIDs: [userID],
-                                                                              isOrigin: true)
-                        await self.fetchChannelDeletions()
-                        
-                        if type=="clear" {
-                            // delete channel messages
-                        } else if type=="delete" {
-                            // delete channel messages
-                            
-                            try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
-                                                                       predicateProperty: "channelID",
-                                                                       predicateValue: channel.channelID)
-                            await self.fetchUserChannels()
-                            
-                            let RUCheck = try await self.checkRUInTeams(userID: userID)
-                            
-                            if !RUCheck {
-                                try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
-                                                                           predicateProperty: "userID",
-                                                                           predicateValue: channel.userID)
-                                await self.fetchRemoteUsers()
-                            }
-                        }
-                    } catch {
-                        completion(.failure(.failed))
-                    }
-                }
-            }
-        })
+        //        guard SocketController.shared.connected else {
+        //            print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteChannel: FAILED (disconnected)")
+        //            completion(.failure(.disconnected))
+//            return
+//        }
+//
+//        let CDPacket = CDPacket(channelID: channel.channelID,
+//                                deletionDate: DateU.shared.currSDT,
+//                                type: type)
+//
+//        guard let jsonPacket = try? DataU.shared.jsonEncode(CDPacket),
+//              let userID = channel.userID,
+//              let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
+//
+//        SocketController.shared.clientSocket.emitWithAck("sendCD", ["userID": userID,
+//                                                                    "packet": jsonPacket])
+//        .timingOut(after: 1, callback: { [weak self] data in
+//            guard let self = self else { return }
+//
+//            self.socketCallback(data: data,
+//                                functionName: "deleteChannel",
+//                                failureCompletion: completion) { data in
+//
+//                Task {
+//                    do {
+//                        let _ = try await DataPC.shared.createChannelDeletion(channelType: "user",
+//                                                                              deletionDate: deletionDate,
+//                                                                              type: type,
+//                                                                              name: remoteUser.username,
+//                                                                              icon: remoteUser.avatar,
+//                                                                              nUsers: 1,
+//                                                                              toDeleteUserIDs: [userID],
+//                                                                              isOrigin: true)
+//                        await self.fetchCDs()
+//
+//                        if type=="clear" {
+//                            // delete channel messages
+//                        } else if type=="delete" {
+//                            // delete channel messages
+//
+//                            try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
+//                                                                       predicateProperty: "channelID",
+//                                                                       predicateValue: channel.channelID)
+//                            await self.fetchUserChannels()
+//
+//                            try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
+//                                                                       predicateProperty: "userID",
+//                                                                       predicateValue: channel.userID)
+//                            await self.fetchRemoteUsers()
+//                        }
+//                    } catch {
+//                        completion(.failure(.failed))
+//                    }
+//                }
+//            }
+//        })
     }
 }

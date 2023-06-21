@@ -13,12 +13,12 @@ extension ChannelDC {
     ///
     func fetchAllData() async {
         await self.fetchRemoteUsers()
-        await self.fetchTeams()
+//        await self.fetchTeams()
         await self.fetchPersonalChannel()
         await self.fetchUserChannels()
-        await self.fetchTeamChannels()
-        await self.fetchChannelRequests()
-        await self.fetchChannelDeletions()
+//        await self.fetchTeamChannels()
+        await self.fetchCRs()
+        await self.fetchCDs()
     }
     
     func fetchRemoteUsers(fetchLimit: Int? = nil,
@@ -39,27 +39,27 @@ extension ChannelDC {
     }
     
     
-    func fetchTeams(fetchLimit: Int? = nil,
-                    completion: (([STeam])->())? = nil) async {
-        
-        let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: Team.self,
-                                                           predicateProperty: "active",
-                                                           predicateValue: true,
-                                                           fetchLimit: fetchLimit)
-        guard let SMOs = SMOs else { return }
-        
-        DispatchQueue.main.async {
-            for SMO in SMOs {
-                self.teams[SMO.teamID] = SMO
-            }
-            
-            if let completion = completion { completion(SMOs) }
-        }
-    }
+//    func fetchTeams(fetchLimit: Int? = nil,
+//                    completion: (([STeam])->())? = nil) async {
+//
+//        let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: Team.self,
+//                                                           predicateProperty: "active",
+//                                                           predicateValue: true,
+//                                                           fetchLimit: fetchLimit)
+//        guard let SMOs = SMOs else { return }
+//
+//        DispatchQueue.main.async {
+//            for SMO in SMOs {
+//                self.teams[SMO.teamID] = SMO
+//            }
+//
+//            if let completion = completion { completion(SMOs) }
+//        }
+//    }
     
     func fetchPersonalChannel(completion: ((SChannel)->())? = nil) async {
         let SMO = try? await DataPC.shared.fetchSMOAsync(entity: Channel.self,
-                                                         predicateProperty: "channelType",
+                                                         predicateProperty: "channelID",
                                                          predicateValue: "personal")
         
         guard let SMO = SMO else { return }
@@ -73,8 +73,8 @@ extension ChannelDC {
     
     func fetchUserChannels(fetchLimit: Int? = nil,
                            completion: (([SChannel])->())? = nil) async {
-        let predicate = NSPredicate(format: "active == %@ AND channelType == %@",
-                                    argumentArray: [true, "User"])
+        let predicate = NSPredicate(format: "active == %@ AND channelID != %@",
+                                    argumentArray: [true, "personal"])
         
         let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: Channel.self,
                                                            customPredicate: predicate,
@@ -90,26 +90,26 @@ extension ChannelDC {
     }
     
     
-    func fetchTeamChannels(fetchLimit: Int? = nil,
-                           completion: (([SChannel])->())? = nil) async {
-        let predicate = NSPredicate(format: "active == %@ AND channelType == %@",
-                                    argumentArray: [true, "Team"])
-        
-        let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: Channel.self,
-                                                           customPredicate: predicate,
-                                                           fetchLimit: fetchLimit,
-                                                           sortKey: "lastMessageDate")
-        guard let SMOs = SMOs else { return }
-        
-        DispatchQueue.main.async {
-            self.teamChannels = SMOs
-            
-            if let completion = completion { completion(SMOs) }
-        }
-    }
+//    func fetchTeamChannels(fetchLimit: Int? = nil,
+//                           completion: (([SChannel])->())? = nil) async {
+//        let predicate = NSPredicate(format: "active == %@ AND channelType == %@",
+//                                    argumentArray: [true, "Team"])
+//
+//        let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: Channel.self,
+//                                                           customPredicate: predicate,
+//                                                           fetchLimit: fetchLimit,
+//                                                           sortKey: "lastMessageDate")
+//        guard let SMOs = SMOs else { return }
+//
+//        DispatchQueue.main.async {
+//            self.teamChannels = SMOs
+//
+//            if let completion = completion { completion(SMOs) }
+//        }
+//    }
     
     
-    func fetchChannelRequests(fetchLimit: Int? = nil,
+    func fetchCRs(fetchLimit: Int? = nil,
                               completion: (([SChannelRequest])->())? = nil) async {
         
         let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: ChannelRequest.self,
@@ -125,7 +125,7 @@ extension ChannelDC {
     }
     
     
-    func fetchChannelDeletions(fetchLimit: Int? = nil,
+    func fetchCDs(fetchLimit: Int? = nil,
                                completion: (([SChannelDeletion])->())? = nil) async {
         
         let SMOs = try? await DataPC.shared.fetchSMOsAsync(entity: ChannelDeletion.self,
@@ -141,19 +141,19 @@ extension ChannelDC {
         }
     }
     
-    func checkRUInTeams(userID: String) async throws -> Bool {
-        
-        let predicate = NSPredicate(format: "userIDs CONTAINS %@", userID)
-        
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Team.self,
-                                                          customPredicate: predicate)
-        
-        if SMOs.isEmpty {
-            return true
-        } else {
-            return false
-        }
-    }
+//    func checkRUInTeams(userID: String) async throws -> Bool {
+//
+//        let predicate = NSPredicate(format: "userIDs CONTAINS %@", userID)
+//
+//        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Team.self,
+//                                                          customPredicate: predicate)
+//
+//        if SMOs.isEmpty {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
     
     func fetchRemoteUserLocally(userID: String) async throws -> SRemoteUser {
         
@@ -163,11 +163,11 @@ extension ChannelDC {
         return SMO
     }
     
-    func fetchTeamLocally(teamID: String) async throws -> STeam {
-        
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: Team.self,
-                                                        predicateProperty: "teamID",
-                                                        predicateValue: teamID)
-        return SMO
-    }
+//    func fetchTeamLocally(teamID: String) async throws -> STeam {
+//
+//        let SMO = try await DataPC.shared.fetchSMOAsync(entity: Team.self,
+//                                                        predicateProperty: "teamID",
+//                                                        predicateValue: teamID)
+//        return SMO
+//    }
 }

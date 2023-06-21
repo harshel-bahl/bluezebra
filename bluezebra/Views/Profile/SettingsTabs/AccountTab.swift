@@ -30,10 +30,18 @@ struct AccountTab: View {
             }
             
             Button(action: {
+                userDC.resetUserData() {_ in}
+            }, label: {
+                Text("Clean All Data")
+            })
+            
+            Button(action: {
                 userDC.deleteUser() { result in }
             }, label: {
                 Text("Delete User")
-        })
+            })
+            
+            
         }
     }
 }

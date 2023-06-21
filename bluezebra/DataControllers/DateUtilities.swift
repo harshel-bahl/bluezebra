@@ -21,6 +21,8 @@ class DateU {
         return df.string(from: d)
     }
     
+    /// Storage and Networking DateTime Functions
+    
     /// currDateTime
     /// current datetime as Date object, given as a time interval relative to UTC reference point (given in UTC timezone)
     var currDT: Date {
@@ -33,6 +35,7 @@ class DateU {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(identifier: "UTC")
+        df.locale = Locale(identifier: "en_US_POSIX")
         return df.string(from: self.currDT)
     }
     
@@ -42,9 +45,20 @@ class DateU {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(identifier: "UTC")
+        df.locale = Locale(identifier: "en_US_POSIX")
         return df.date(from: dateString)
     }
     
+    /// dateFromStringZ
+    /// current datetime with timezone as UTC
+    func dateFromStringZ(_ dateString: String) -> Date? {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        df.timeZone = TimeZone(identifier: "UTC")
+        df.locale = Locale(identifier: "en_US_POSIX")
+        return df.date(from: dateString)
+    }
+
     /// stringFromDate
     /// converts date to dateString in the relevant timezone from UTC datetime
     func stringFromDate(_ date: Date,
@@ -52,14 +66,17 @@ class DateU {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = timezone
+        df.locale = Locale(identifier: "en_US_POSIX")
         return df.string(from: date)
     }
+    
+    /// UI DateTime Functions
     
     /// dateDMY
     /// returns DMY date in current timezone from UTC timezone date
     func dateDMY(date: Date) -> String {
         let df = DateFormatter()
-        df.dateFormat = "d-M-yy"
+        df.dateFormat = "dd-MM-yy"
         df.timeZone = TimeZone.current
         df.locale = Locale.current
         return df.string(from: date)

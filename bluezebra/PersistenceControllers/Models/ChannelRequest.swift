@@ -11,19 +11,15 @@ import CoreData
 struct SChannelRequest {
     var channelID: String
     var userID: String?
-    var teamID: String?
     var date: Date
     var isSender: Bool
-    var requestingUserID: String?
 }
 
 class ChannelRequest: NSManagedObject {
     @NSManaged var channelID: String?
     @NSManaged var userID: String?
-    @NSManaged var teamID: String?
     @NSManaged var date: Date?
     @NSManaged var isSender: Bool
-    @NSManaged var requestingUserID: String?
 }
 
 extension ChannelRequest: ToSafeObject {
@@ -36,9 +32,7 @@ extension ChannelRequest: ToSafeObject {
         
         return SChannelRequest(channelID: channelID,
                                userID: self.userID,
-                               teamID: self.teamID,
                                date: date,
-                               isSender: self.isSender,
-                               requestingUserID: self.requestingUserID)
+                               isSender: self.isSender)
     }
 }

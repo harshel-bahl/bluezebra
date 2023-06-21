@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct TeamPacket: Codable {
-    var teamID: String = UUID().uuidString
-    var userIDs: String
-    var nUsers: Int
-    var leads: String
-    var name: String
-    var icon: String
-    var creationUserID: String
-    var creationDate: Date
-    var teamDescription: String?
-}
+//struct TeamPacket: Codable {
+//    var teamID: String = UUID().uuidString
+//    var userIDs: String
+//    var nUsers: Int
+//    var leads: String
+//    var name: String
+//    var icon: String
+//    var creationUserID: String
+//    var creationDate: Date
+//    var teamDescription: String?
+//}

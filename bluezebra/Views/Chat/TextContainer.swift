@@ -84,7 +84,7 @@ struct TextContainer: View {
     }
     
     func getReceiptColour() {
-        if channel.channelType == "personal" {
+        if channel.channelID == "personal" {
             receiptColour = Color("darkAccent1")
         } else {
             if let messageStatus = message.sent {

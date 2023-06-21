@@ -19,7 +19,7 @@ class SocketController: NSObject, ObservableObject {
     
     @Published var connected = false {
         didSet {
-            print("CLIENT \(Date.now) -- SocketController.connected: \(connected)")
+            print("CLIENT \(DateU.shared.logTS) -- SocketController.connected: \(connected)")
             if connected == true {
                 self.userConnection()
             } else {
@@ -40,14 +40,14 @@ class SocketController: NSObject, ObservableObject {
     
     func createConnectionHandlers() {
         clientSocket.on(clientEvent: .connect) { [weak self] data, ack in
-            print("CLIENT \(Date.now) -- clientSocket.on(clientEvent): connected")
+            print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): connected")
             
             guard let self = self else { return }
             self.connected = true
         }
         
         clientSocket.on(clientEvent: .disconnect) { [weak self] data, ack in
-            print("CLIENT \(Date.now) -- clientSocket.on(clientEvent): disconnected")
+            print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): disconnected")
             
             guard let self = self else { return }
             self.connected = false

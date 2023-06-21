@@ -13,7 +13,7 @@ struct AddUserRow: View {
     
     @ObservedObject var channelDC = ChannelDC.shared
     
-    let remoteUser: RemoteUserPacket
+    let remoteUser: RUPacket
     
     @State var requestSent = false
     @State var requestFailure = false
@@ -45,7 +45,7 @@ struct AddUserRow: View {
     
     var requestButton: some View {
         Button(action:{
-            channelDC.sendChannelRequest(RUPacket: remoteUser) { result in
+            channelDC.sendCR(remoteUser: remoteUser) { result in
                 switch result {
                 case .success():
                     self.requestSent = true

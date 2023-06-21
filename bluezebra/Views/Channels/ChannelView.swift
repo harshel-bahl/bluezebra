@@ -27,13 +27,13 @@ struct ChannelView: View {
         
         if let remoteUserID = channel.userID,
            let remoteUser = channelDC.remoteUsers[remoteUserID] {
-            self.remoteUser = remoteUser
+            self._remoteUser = State(wrappedValue: remoteUser)
         } else {
             // check for user otherwise retrieve info from server
         }
         
         if let latestMessage = messageDC.userMessages[channel.channelID]?.first {
-            self.latestMessage = latestMessage
+            self._latestMessage = State(wrappedValue: latestMessage)
         }
     }
     
@@ -151,7 +151,11 @@ struct ChannelView: View {
                     })
                     
                     Button("Delete channel", action: {
-                        
+                        channelDC.deleteChannel(channel: channel, remoteUser: remoteUser!) {_ in
+                            Task {
+                                await channelDC.fetchUserChannels()
+                            }
+                        }
                     })
                 }
                 .swipeActions() {

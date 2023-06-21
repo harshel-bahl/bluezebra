@@ -14,11 +14,10 @@ class ChannelDC: ObservableObject {
     static let shared = ChannelDC()
     
     /// remoteUsers: [userID: RemoteUser]
-    /// - only contains active=true objects
+    ///
     @Published var remoteUsers = [String: SRemoteUser]() {
         didSet {
             for user in remoteUsers.values {
-                
                 if !self.onlineUsers.keys.contains(user.userID) {
                     self.onlineUsers[user.userID] = false
                 }
@@ -30,7 +29,7 @@ class ChannelDC: ObservableObject {
     
     /// teams:
     /// - only contains active=true objects
-    @Published var teams = [String: STeam]()
+//    @Published var teams = [String: STeam]()
     
     @Published var personalChannel: SChannel?
     
@@ -57,22 +56,22 @@ class ChannelDC: ObservableObject {
     /// teamChannels: channels with multiple remote users
     /// - uses an array since it is fetched in order of lastMessageDate
     /// - only contains active=true objects
-    @Published var teamChannels = [SChannel]() {
-        didSet {
-            for team in teamChannels {
-                let channelID = team.channelID
-                
-                if !self.typingTeams.keys.contains(channelID) {
-                    self.typingTeams[channelID] = nil
-                }
-                
-                if !MessageDC.shared.teamMessages.keys.contains(channelID) {
-                    MessageDC.shared.teamMessages[channelID] = [SMessage]()
-                }
-            }
-        }
-    }
-    @Published var typingTeams = [String: String?]()
+//    @Published var teamChannels = [SChannel]() {
+//        didSet {
+//            for team in teamChannels {
+//                let channelID = team.channelID
+//
+//                if !self.typingTeams.keys.contains(channelID) {
+//                    self.typingTeams[channelID] = nil
+//                }
+//
+//                if !MessageDC.shared.teamMessages.keys.contains(channelID) {
+//                    MessageDC.shared.teamMessages[channelID] = [SMessage]()
+//                }
+//            }
+//        }
+//    }
+//    @Published var typingTeams = [String: String?]()
     
     
     /// channelRequests:
@@ -137,13 +136,13 @@ class ChannelDC: ObservableObject {
         self.remoteUsers = [String: SRemoteUser]()
         self.onlineUsers = [String: Bool]()
         
-        self.teams = [String: STeam]()
+//        self.teams = [String: STeam]()
         
         self.userChannels = [SChannel]()
         self.typingUsers = [String: Bool]()
         
-        self.teamChannels = [SChannel]()
-        self.typingTeams = [String: String]()
+//        self.teamChannels = [SChannel]()
+//        self.typingTeams = [String: String]()
         
         self.channelRequests = [SChannelRequest]()
         self.channelDeletions = [SChannelDeletion]()

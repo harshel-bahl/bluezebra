@@ -9,8 +9,5 @@ import Foundation
 
 struct ChannelPacket: Codable {
     var channelID: String = UUID().uuidString
-    var channelType: String
-    var userID: String?
-    var teamID: String?
-    var creationUserID: String
+    var userID: String
 }

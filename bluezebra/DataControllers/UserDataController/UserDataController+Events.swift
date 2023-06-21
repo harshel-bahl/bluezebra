@@ -90,9 +90,7 @@ extension UserDC {
                             Task {
                                 let personalChannel = try? await DataPC.shared.createChannel(channelID: "personal",
                                                                                              active: true,
-                                                                                             channelType: "personal",
                                                                                              userID: userPacket.userID,
-                                                                                             creationUserID: userPacket.userID,
                                                                                              creationDate: date)
                                 DispatchQueue.main.async {
                                     ChannelDC.shared.personalChannel = personalChannel

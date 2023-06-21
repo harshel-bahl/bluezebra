@@ -20,7 +20,8 @@ extension DataPC {
                                           queue: String = "background",
                                           predicateProperty: String? = nil,
                                           predicateValue: T2? = "",
-                                          customPredicate: NSPredicate? = nil) async throws -> T1 {
+                                          customPredicate: NSPredicate? = nil,
+                                          silentFail: Bool = false) async throws -> T1 {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -50,7 +51,64 @@ extension DataPC {
             
             return MO
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+            if !silentFail {
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+            }
+            throw PError.failed
+        }
+    }
+    
+    public func fetchMOsAsync<T1: NSManagedObject,
+                              T2: CVarArg>(entity: T1.Type,
+                                           queue: String = "background",
+                                           predicateProperty: String? = nil,
+                                           predicateValue: T2? = "",
+                                           customPredicate: NSPredicate? = nil,
+                                           fetchLimit: Int? = nil,
+                                           sortKey: String? = nil,
+                                           sortAscending: Bool = false,
+                                           silentFail: Bool = false) async throws -> [T1] {
+        var contextQueue = self.backgroundContext
+        
+        if queue=="main" {
+            contextQueue = self.mainContext
+        }
+        
+        let entityName = String(describing: entity)
+        
+        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
+        
+        if let predicateProperty=predicateProperty,
+           let predicateValue=predicateValue {
+            if let predicateValue = predicateValue as? Bool {
+                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", NSNumber(value: predicateValue))
+            } else {
+                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
+            }
+        } else if let customPredicate = customPredicate {
+            fetchRequest.predicate = customPredicate
+        }
+        
+        if let fetchLimit = fetchLimit {
+            fetchRequest.fetchLimit=fetchLimit
+        }
+        
+        if let sortKey = sortKey {
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+        }
+        
+        do {
+            let MOs = try await contextQueue.perform {
+                return try contextQueue.fetch(fetchRequest)
+            }
+            
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: SUCCESS (entity: \(entityName))")
+            
+            return MOs
+        } catch {
+            if !silentFail {
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+            }
             throw PError.failed
         }
     }

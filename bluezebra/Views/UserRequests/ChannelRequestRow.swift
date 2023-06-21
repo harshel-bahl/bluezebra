@@ -77,7 +77,7 @@ struct ChannelRequestRow: View {
     
     func channelRequestButton(result: Bool, sfSymbol: String) -> some View {
         let button = Button(action: {
-            channelDC.sendUserCRResult(channelRequest: self.channelRequest, result: result) { result in
+            channelDC.sendCRResult(channelRequest: self.channelRequest, result: result) { result in
                 
             }
         }, label: {

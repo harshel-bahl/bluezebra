@@ -83,15 +83,16 @@ extension DataPC {
     }
     
     public func createRemoteUser(userID: String,
-                                 active: Bool = false,
                                  username: String,
                                  avatar: String,
+                                 creationDate: Date,
                                  lastOnline: Date? = nil,
                                  blocked: Bool = false) async throws -> SRemoteUser {
         
         let fetchedMO = try? await fetchMOAsync(entity: RemoteUser.self,
                                                 predicateProperty: "userID",
-                                                predicateValue: userID)
+                                                predicateValue: userID,
+                                                silentFail: true)
         
         if fetchedMO != nil { throw PError.recordExists}
         
@@ -99,9 +100,9 @@ extension DataPC {
             do {
                 let MO = RemoteUser(context: self.backgroundContext)
                 MO.userID = userID
-                MO.active = active
                 MO.username = username
                 MO.avatar = avatar
+                MO.creationDate = creationDate
                 MO.lastOnline = lastOnline
                 MO.blocked = blocked
                 
@@ -120,71 +121,63 @@ extension DataPC {
         return sMO
     }
     
-    public func createTeam(teamID: String = UUID().uuidString,
-                           active: Bool = false,
-                           userIDs: [String],
-                           nUsers: Int,
-                           leads: String,
-                           name: String,
-                           icon: String,
-                           creationUserID: String,
-                           creationDate: Date,
-                           teamDescription: String? = nil) async throws -> STeam {
-        
-        let fetchedMO = try? await fetchMOAsync(entity: Team.self,
-                                                predicateProperty: "teamID",
-                                                predicateValue: teamID)
-        
-        if fetchedMO != nil { throw PError.recordExists}
-        
-        let sMO = try await self.backgroundContext.perform {
-            do {
-                let MO = Team(context: self.backgroundContext)
-                MO.teamID = teamID
-                MO.active = active
-                MO.userIDs = userIDs.joined(separator: ",")
-                MO.nUsers = nUsers
-                MO.leads = leads
-                MO.name = name
-                MO.icon = icon
-                MO.creationUserID = creationUserID
-                MO.creationDate = creationDate
-                MO.teamDescription = teamDescription
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: SUCCESS")
-                
-                let sMO = try MO.safeObject()
-                
-                return sMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: FAILED (\(error))")
-                throw error as? PError ?? .failed
-            }
-        }
-        return sMO
-    }
+//    public func createTeam(teamID: String = UUID().uuidString,
+//                           active: Bool = false,
+//                           userIDs: [String],
+//                           nUsers: Int,
+//                           leads: String,
+//                           name: String,
+//                           icon: String,
+//                           creationUserID: String,
+//                           creationDate: Date,
+//                           teamDescription: String? = nil) async throws -> STeam {
+//
+//        let fetchedMO = try? await fetchMOAsync(entity: Team.self,
+//                                                predicateProperty: "teamID",
+//                                                predicateValue: teamID,
+//                                                silentFail: true)
+//
+//        if fetchedMO != nil { throw PError.recordExists}
+//
+//        let sMO = try await self.backgroundContext.perform {
+//            do {
+//                let MO = Team(context: self.backgroundContext)
+//                MO.teamID = teamID
+//                MO.active = active
+//                MO.userIDs = userIDs.joined(separator: ",")
+//                MO.nUsers = nUsers
+//                MO.leads = leads
+//                MO.name = name
+//                MO.icon = icon
+//                MO.creationUserID = creationUserID
+//                MO.creationDate = creationDate
+//                MO.teamDescription = teamDescription
+//
+//                try self.backgroundSave()
+//
+//                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: SUCCESS")
+//
+//                let sMO = try MO.safeObject()
+//
+//                return sMO
+//            } catch {
+//                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: FAILED (\(error))")
+//                throw error as? PError ?? .failed
+//            }
+//        }
+//        return sMO
+//    }
     
     public func createChannelRequest(channelID: String = UUID().uuidString,
-                                     userID: String? = nil,
-                                     teamID: String? = nil,
+                                     userID: String,
                                      date: Date,
-                                     isSender: Bool,
-                                     requestingUserID: String? = nil) async throws -> SChannelRequest {
+                                     isSender: Bool) async throws -> SChannelRequest {
         
-        var customPredicate: NSPredicate? = nil
-        
-        if let userID = userID {
-            customPredicate = NSPredicate(format: "userID == %@", userID)
-        } else if let teamID = teamID {
-            customPredicate = NSPredicate(format: "teamID == %@", teamID)
-        }
-        
-        guard let customPredicate = customPredicate else { throw PError.failed }
+        let customPredicate = NSPredicate(format: "userID == %@", userID)
         
         let fetchedMO = try? await fetchMOAsync(entity: ChannelRequest.self,
-                                                customPredicate: customPredicate)
+                                                customPredicate: customPredicate,
+                                                silentFail: true)
         
         if fetchedMO != nil { throw PError.recordExists }
         
@@ -193,10 +186,8 @@ extension DataPC {
                 let MO = ChannelRequest(context: self.backgroundContext)
                 MO.channelID = channelID
                 MO.userID = userID
-                MO.teamID = teamID
                 MO.date = date
                 MO.isSender = isSender
-                MO.requestingUserID = requestingUserID
                 
                 try self.backgroundSave()
                 
@@ -215,25 +206,15 @@ extension DataPC {
     
     public func createChannel(channelID: String = UUID().uuidString,
                               active: Bool = false,
-                              channelType: String,
-                              userID: String? = nil,
-                              teamID: String? = nil,
-                              creationUserID: String,
-                              creationDate: Date? = nil,
+                              userID: String,
+                              creationDate: Date,
                               lastMessageDate: Date? = nil) async throws -> SChannel {
         
-        var customPredicate: NSPredicate? = nil
-        
-        if let userID = userID {
-            customPredicate = NSPredicate(format: "userID == %@", userID)
-        } else if let teamID = teamID {
-            customPredicate = NSPredicate(format: "teamID == %@", teamID)
-        }
-        
-        guard let customPredicate = customPredicate else { throw PError.failed }
+        let customPredicate = NSPredicate(format: "userID == %@", userID)
         
         let fetchedMO = try? await fetchMOAsync(entity: Channel.self,
-                                                customPredicate: customPredicate)
+                                                customPredicate: customPredicate,
+                                                silentFail: true)
         
         if fetchedMO != nil { throw PError.recordExists }
         
@@ -242,10 +223,7 @@ extension DataPC {
                 let MO = Channel(context: self.backgroundContext)
                 MO.channelID = channelID
                 MO.active = active
-                MO.channelType = channelType
                 MO.userID = userID
-                MO.teamID = teamID
-                MO.creationUserID = creationUserID
                 MO.creationDate = creationDate
                 MO.lastMessageDate = lastMessageDate
                 
@@ -316,7 +294,8 @@ extension DataPC {
         
         let fetchedMO = try? await fetchMOAsync(entity: Message.self,
                                                 predicateProperty: "messageID",
-                                                predicateValue: messageID)
+                                                predicateValue: messageID,
+                                                silentFail: true)
         
         if fetchedMO != nil { throw PError.recordExists}
         

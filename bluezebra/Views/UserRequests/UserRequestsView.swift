@@ -21,7 +21,7 @@ struct UserRequestsView: View {
     
     @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
     
-    @State var fetchedUsers = [RemoteUserPacket]()
+    @State var fetchedUsers = [RUPacket]()
     
     @State var searchFailure = false
     
@@ -69,7 +69,7 @@ struct UserRequestsView: View {
         VStack(spacing: 0) {
             
             UsernameTextField(textManager: usernameTM) { username in
-                channelDC.fetchRemoteUser(userID: nil, username: username) { (userDataList) in
+                channelDC.fetchRUs(username: username) { (userDataList) in
                     switch userDataList {
                     case .success(let users):
                         fetchedUsers = users
@@ -98,7 +98,7 @@ struct UserRequestsView: View {
         }
         .onDisappear() {
             self.usernameTM.username = ""
-            self.fetchedUsers = [RemoteUserPacket]()
+            self.fetchedUsers = [RUPacket]()
         }
         .alert("Unable to search for users", isPresented: $searchFailure) {
             Button("Try again later", role: .cancel) {

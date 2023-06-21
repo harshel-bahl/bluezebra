@@ -67,7 +67,7 @@ struct ChatView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     
-                    if let icon = getIcon(channelType: channel.channelType),
+                    if let icon = getIcon(channelID: channel.channelID),
                        let image = BZEmojiProvider1.shared.getEmojiByName(name: icon) {
                         Text(image.value)
                             .font(.system(size: geometry.size.height*0.66))
@@ -83,14 +83,14 @@ struct ChatView: View {
                             .foregroundColor(Color("blueAccent1"))
                     }
                     
-                    if let name = getName(channelType: channel.channelType) {
+                    if let name = getName(channelID: channel.channelID) {
                         Text(name)
                             .font(.headline)
                             .foregroundColor(Color("text1"))
                             .fontWeight(.bold)
                             .padding(.leading, geometry.size.width*0.033)
                         
-                        if channel.channelType == "personal" {
+                        if channel.channelID == "personal" {
                             Text("(Me)")
                                 .font(.subheadline)
                                 .foregroundColor(Color("orangeAccent1"))
@@ -109,17 +109,17 @@ struct ChatView: View {
         }
     }
     
-    func getIcon(channelType: String,
+    func getIcon(channelID: String,
                  userID: String? = nil) -> String? {
-        if channelType == "personal" {
+        if channelID == "personal" {
             return userDC.userData?.avatar
         } else {
             return "" // handle user and team channels here
         }
     }
     
-    func getName(channelType: String) -> String? {
-        if channelType == "personal" {
+    func getName(channelID: String) -> String? {
+        if channelID == "personal" {
             return userDC.userData?.username
         } else {
             return "" // handle user and team channels here
@@ -131,11 +131,9 @@ struct ChatView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 ScrollViewReader { proxy in
                     LazyVStack(spacing: 0) {
-                        if self.channel.channelType == "personal" {
+                        if self.channel.channelID == "personal" {
                             
                             personalMessages
-                            
-                        } else if self.channel.channelType == "user" {
                             
                         }
                     }

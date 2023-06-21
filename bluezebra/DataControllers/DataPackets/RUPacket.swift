@@ -1,15 +1,16 @@
 //
-//  RemoteUserPacket.swift
+//  RUPacket.swift
 //  bluezebra
 //
-//  Created by Harshel Bahl on 18/04/2023.
+//  Created by Harshel Bahl on 20/06/2023.
 //
 
 import Foundation
 
-struct RemoteUserPacket: Codable {
+struct RUPacket: Codable {
     var userID: String
     var username: String
     var avatar: String
+    var creationDate: String
     var lastOnline: String?
 }

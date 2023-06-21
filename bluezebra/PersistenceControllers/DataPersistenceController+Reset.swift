@@ -13,11 +13,27 @@ extension DataPC {
     /// Reset DataPC Functions
     ///
     
+    public func resetUserData(completion: ()->()) {
+        self.fetchDeleteMOs(entity: RemoteUser.self) {_ in}
+        //        self.fetchDeleteMOs(entity: Team.self) {_ in}
+        
+        let predicate = NSPredicate(format: "channelID != %@",
+                                    argumentArray: ["personal"])
+        
+        self.fetchDeleteMOs(entity: Channel.self,
+                            customPredicate: predicate) {_ in}
+        
+        self.fetchDeleteMOs(entity: ChannelRequest.self) {_ in}
+        self.fetchDeleteMOs(entity: ChannelDeletion.self) {_ in}
+        self.fetchDeleteMOs(entity: Message.self) {_ in}
+        completion()
+    }
+    
     public func hardResetDataPC(completion:()->()) {
         self.fetchDeleteMOs(entity: User.self) {_ in}
         self.fetchDeleteMOs(entity: Settings.self) {_ in}
         self.fetchDeleteMOs(entity: RemoteUser.self) {_ in}
-        self.fetchDeleteMOs(entity: Team.self) {_ in}
+        //        self.fetchDeleteMOs(entity: Team.self) {_ in}
         self.fetchDeleteMOs(entity: Channel.self) {_ in}
         self.fetchDeleteMOs(entity: ChannelRequest.self) {_ in}
         self.fetchDeleteMOs(entity: ChannelDeletion.self) {_ in}

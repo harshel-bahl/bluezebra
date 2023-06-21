@@ -11,6 +11,7 @@ extension UserDC {
     
     /// Local Read/Write Functions
     ///
+    
     func fetchUserData(completion: ((Result<SUser, DCError>)->())? = nil) {
         DataPC.shared.fetchSMO(entity: User.self) { result in
             switch result {
@@ -30,6 +31,13 @@ extension UserDC {
             case .failure(_):
                 if let completion = completion { completion(.failure(.failed)) }
             }
+        }
+    }
+    
+    func resetUserData(completion: (Result<Void, DCError>)->()) {
+        DataPC.shared.resetUserData {
+            ChannelDC.shared.resetState()
+            MessageDC.shared.resetState()
         }
     }
     
