@@ -22,11 +22,13 @@ struct ChannelView: View {
     
     @State var showChat = false
     
+    @State var scale: CGFloat = 1
+    
     init(channel: SChannel) {
         self.channel = channel
         
         if let remoteUserID = channel.userID,
-           let remoteUser = channelDC.remoteUsers[remoteUserID] {
+           let remoteUser = channelDC.RUs[remoteUserID] {
             self._remoteUser = State(wrappedValue: remoteUser)
         } else {
             // check for user otherwise retrieve info from server
@@ -51,39 +53,61 @@ struct ChannelView: View {
                                 Image(systemName: "circle.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: SP.width*0.03)
+                                    .frame(width: 7.5)
                                     .foregroundColor(Color("blueAccent1"))
                             }
                         }
-                        .frame(maxWidth: SP.width*0.03,
-                               maxHeight: .infinity)
-                        .padding(.trailing, SP.width*0.0175)
+                        .frame(width: 15)
+                        .padding(.trailing, 2.5)
                         
-                        if let avatar = remoteUser?.avatar,
-                           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-                            Text(emoji.value)
-                                .font(.system(size: SP.safeAreaHeight*0.06))
-                                .frame(width: SP.safeAreaHeight*0.06,
-                                       height: SP.safeAreaHeight*0.06)
-                                .onTapGesture {
-                                    // navigate to user profile
+                        ZStack {
+                            if let avatar = remoteUser?.avatar,
+                               let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
+                                Text(emoji.value)
+                                    .font(.system(size: 45))
+                                    .frame(width: 45,
+                                           height: 45)
+                                    .onTapGesture {
+                                        // navigate to user profile
+                                    }
+                            } else {
+                                Image(systemName: "person.crop.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 45,
+                                           height: 45)
+                                    .foregroundColor(Color("blueAccent1"))
+                            }
+                            
+                            if let remoteUser = remoteUser,
+                               let online = channelDC.onlineUsers[remoteUser.userID],
+                               online == true {
+                                HStack(spacing: 0) {
+                                    Circle()
+                                        .fill(Color.green)
+                                        .scaleEffect(scale)
+                                        .animation(Animation.easeInOut(duration: 1.5).repeatForever(), value: scale)
+                                        .onAppear {
+                                            self.scale = 0.75
+                                        }
+                                        .frame(width: 8, height: 8)
+                                        .offset(y: 1)
+                                    
+                                    Text("online")
+                                        .font(.caption)
+                                        .foregroundColor(Color("text2"))
+                                        .padding(.leading, 3)
                                 }
-                        } else {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: SP.safeAreaHeight*0.06,
-                                       height: SP.safeAreaHeight*0.06)
-                                .foregroundColor(Color("blueAccent1"))
+                                .offset(y: 35)
+                            }
                         }
                         
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
                                 if let remoteUser = remoteUser {
-                                    Text(remoteUser.username)
+                                    Text("@" + remoteUser.username)
                                         .font(.headline)
-                                        .foregroundColor(Color("text1"))
-                                        .fontWeight(.bold)
+                                        .foregroundColor(Color("blueAccent1"))
                                 } else {
                                     Text("-")
                                         .font(.headline)
@@ -110,10 +134,10 @@ struct ChannelView: View {
                                 Image(systemName: "chevron.right")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: SP.safeAreaHeight*0.015)
+                                    .frame(height: 12)
                                     .foregroundColor(Color("blueAccent1"))
                             }
-                            .padding(.bottom, SP.safeAreaHeight*0.005)
+                            .padding(.bottom, 5)
                             
                             HStack(spacing: 0) {
                                 Text(latestMessage?.message ?? "Tap to chat!")
@@ -125,19 +149,19 @@ struct ChannelView: View {
                                 Spacer()
                             }
                         }
-                        .padding(.leading, SP.width*0.033)
+                        .padding(.leading, 12.5)
                     }
-                    .padding(.top, SP.safeAreaHeight*0.0225)
-                    .padding(.bottom, SP.safeAreaHeight*0.0225)
-                    .padding(.trailing, SP.width*0.05)
-                    .padding(.leading, SP.width*0.02)
+                    .padding(.top, 15)
+                    .padding(.bottom, 13.5)
+                    .padding(.trailing, 15)
+                    .padding(.leading, 7.5)
                     
-                    HStack {
+                    HStack(spacing: 0) {
                         Spacer()
                         
-                        VStack {
+                        VStack(spacing: 0) {
                             Divider()
-                                .frame(width: SP.width - SP.width*0.03 - SP.width*0.02 - SP.width*0.02 - SP.safeAreaHeight*0.06 - SP.width*0.033)
+                                .frame(width: SP.width - 7.5 - 15 - 2.5 - 45 - 12.5)
                         }
                     }
                 }
@@ -147,28 +171,27 @@ struct ChannelView: View {
                     })
                     
                     Button("Clear channel", action: {
-                        
-                    })
-                    
-                    Button("Delete channel", action: {
-                        channelDC.deleteChannel(channel: channel, remoteUser: remoteUser!) {_ in
-                            Task {
-                                await channelDC.fetchUserChannels()
+                        if let remoteUser = remoteUser {
+                            channelDC.deleteChannel(channel: channel,
+                                                    remoteUser: remoteUser) {_ in
+                                Task {
+                                    try await channelDC.syncChannels()
+                                }
                             }
                         }
                     })
-                }
-                .swipeActions() {
-                    Button("Clear") {
-                        //                    channelDC.deleteChannel(channel: channel) {_ in}
-                    }
-                    .tint(Color.orange)
                     
-                    Button("Delete") {
-                        //                    channelDC.deleteChannel(channel: channel,
-                        //                                                        type: "delete") {_ in}
-                    }
-                    .tint(Color.red)
+                    Button("Delete channel", action: {
+                        if let remoteUser = remoteUser {
+                            channelDC.deleteChannel(channel: channel,
+                                                    remoteUser: remoteUser,
+                                                    type: "delete") {_ in
+                                Task {
+                                    try await channelDC.syncChannels()
+                                }
+                            }
+                        }
+                    })
                     
                 }
             }

@@ -29,19 +29,21 @@ struct AccountTab: View {
                 Spacer()
             }
             
-            Button(action: {
-                userDC.resetUserData() {_ in}
-            }, label: {
-                Text("Clean All Data")
-            })
+            ButtonTemp(label: "Reset Accout",
+                       backgroundColour: Color.orange,
+                       foregroundColour: Color("text1")) {
+                Task {
+                    try? await userDC.resetUserData()
+                }
+            }
             
-            Button(action: {
-                userDC.deleteUser() { result in }
-            }, label: {
-                Text("Delete User")
-            })
-            
-            
+            ButtonTemp(label: "Delete Account",
+                       backgroundColour: Color.red,
+                       foregroundColour: Color("text1")) {
+                Task {
+                    try? await userDC.hardReset()
+                }
+            }
         }
     }
 }

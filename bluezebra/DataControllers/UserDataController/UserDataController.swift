@@ -22,7 +22,7 @@ class UserDC: ObservableObject {
     /// userOnline: state of user connection to server
     @Published var userOnline: Bool = false {
         didSet {
-            print("CLIENT \(Date.now) -- UserDC.userOnline: \(userOnline)")
+            print("CLIENT \(DateU.shared.logTS) -- UserDC.userOnline: \(userOnline)")
         }
     }
     

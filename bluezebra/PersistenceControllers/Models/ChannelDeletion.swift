@@ -15,7 +15,7 @@ struct SChannelDeletion {
     var type: String
     var name: String
     var icon: String
-    var nUsers: Int
+    var nUsers: Int16
     var toDeleteUserIDs: String
     var isOrigin: Bool
     var remoteDeletedDate: Date?
@@ -28,7 +28,7 @@ class ChannelDeletion: NSManagedObject {
     @NSManaged var type: String?
     @NSManaged var name: String?
     @NSManaged var icon: String?
-    @NSManaged var nUsers: Int
+    @NSManaged var nUsers: Int16
     @NSManaged var toDeleteUserIDs: String?
     @NSManaged var isOrigin: Bool
     @NSManaged var remoteDeletedDate: Date?

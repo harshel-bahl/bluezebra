@@ -115,13 +115,13 @@ extension UserDC {
         }
         
         // send deleteUserTrace notifications to all remote users connected to user
-        let remoteUserIDs = ChannelDC.shared.remoteUsers.values.map {
+        let RUIDs = ChannelDC.shared.RUs.values.map {
             return $0.userID
         }
         
         guard let userID = self.userData?.userID else { return }
         
-        SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userIDs": remoteUserIDs,
+        SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userIDs": RUIDs,
                                                                         "userID": userID])
         .timingOut(after: 1) { [weak self] data in
             guard let self = self else { return }
@@ -130,11 +130,11 @@ extension UserDC {
                                 functionName: "deleteUser",
                                 failureCompletion: completion) { _ in
                 
-                self.hardReset() { result in
-                    switch result {
-                    case .success():
+                Task {
+                    do {
+                        try await self.hardReset()
                         completion(.success(()))
-                    case .failure(_):
+                    } catch {
                         completion(.failure(.failed))
                     }
                 }
@@ -153,7 +153,7 @@ extension UserDC {
         
         guard let userID = self.userData?.userID else { return }
         
-        let userIDs = ChannelDC.shared.userChannels.map {
+        let userIDs = ChannelDC.shared.channels.map {
             return $0.userID
         }
         
@@ -201,7 +201,7 @@ extension UserDC {
             return
         }
         
-        let userIDs = ChannelDC.shared.userChannels.map {
+        let userIDs = ChannelDC.shared.channels.map {
             return $0.userID
         }
         

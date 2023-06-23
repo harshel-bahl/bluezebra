@@ -61,8 +61,10 @@ class MessageDC: ObservableObject {
     /// MessageDC reset function
     ///
     func resetState() {
-        self.personalMessages = [SMessage]()
-        self.userMessages = [String: [SMessage]]()
-        self.teamMessages = [String: [SMessage]]()
+        DispatchQueue.main.async {
+            self.personalMessages = [SMessage]()
+            self.userMessages = [String: [SMessage]]()
+            self.teamMessages = [String: [SMessage]]()
+        }
     }
 }

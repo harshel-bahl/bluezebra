@@ -20,10 +20,8 @@ class SocketController: NSObject, ObservableObject {
     @Published var connected = false {
         didSet {
             print("CLIENT \(DateU.shared.logTS) -- SocketController.connected: \(connected)")
-            if connected == true {
+            if connected {
                 self.userConnection()
-            } else {
-                
             }
         }
     }
@@ -32,9 +30,7 @@ class SocketController: NSObject, ObservableObject {
         super.init()
 //        self.ipAddress = "24.199.84.35"
         self.socketManager = SocketManager(socketURL: URL(string: "http://\(ipAddress ?? "localhost"):3000")!, config: [.log(false), .compress])
-        
         self.clientSocket = socketManager.defaultSocket
-        
         self.createConnectionHandlers()
     }
     
@@ -43,6 +39,7 @@ class SocketController: NSObject, ObservableObject {
             print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): connected")
             
             guard let self = self else { return }
+            
             self.connected = true
         }
         
@@ -50,13 +47,14 @@ class SocketController: NSObject, ObservableObject {
             print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): disconnected")
             
             guard let self = self else { return }
+            
             self.connected = false
             UserDC.shared.userOnline = false
         }
         
         clientSocket.on(clientEvent: .error) { data, ack in
             let errorString = (data[0] as? String)
-            //print("socket error: \(errorString ?? "N/A")")
+            print("socket error: \(errorString ?? "N/A")")
         }
     }
     
@@ -77,7 +75,6 @@ class SocketController: NSObject, ObservableObject {
     }
     
     func startupNetworking() {
-        /// Startup Networking Activities
         Task {
             await ChannelDC.shared.checkOnlineUsers() {_ in}
         }

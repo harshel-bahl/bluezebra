@@ -13,31 +13,26 @@ extension DataPC {
     /// Reset DataPC Functions
     ///
     
-    public func resetUserData(completion: ()->()) {
-        self.fetchDeleteMOs(entity: RemoteUser.self) {_ in}
-        //        self.fetchDeleteMOs(entity: Team.self) {_ in}
+    public func resetUserData() async throws {
+        try await self.fetchDeleteMOsAsync(entity: RemoteUser.self)
         
-        let predicate = NSPredicate(format: "channelID != %@",
-                                    argumentArray: ["personal"])
+        let RUpredicate = NSPredicate(format: "channelID != %@",
+                                      argumentArray: ["personal"])
+        try await self.fetchDeleteMOsAsync(entity: Channel.self,
+                                       customPredicate: RUpredicate)
         
-        self.fetchDeleteMOs(entity: Channel.self,
-                            customPredicate: predicate) {_ in}
-        
-        self.fetchDeleteMOs(entity: ChannelRequest.self) {_ in}
-        self.fetchDeleteMOs(entity: ChannelDeletion.self) {_ in}
-        self.fetchDeleteMOs(entity: Message.self) {_ in}
-        completion()
+        try await self.fetchDeleteMOsAsync(entity: ChannelRequest.self)
+        try await self.fetchDeleteMOsAsync(entity: ChannelDeletion.self)
+        try await self.fetchDeleteMOsAsync(entity: Message.self)
     }
     
-    public func hardResetDataPC(completion:()->()) {
-        self.fetchDeleteMOs(entity: User.self) {_ in}
-        self.fetchDeleteMOs(entity: Settings.self) {_ in}
-        self.fetchDeleteMOs(entity: RemoteUser.self) {_ in}
-        //        self.fetchDeleteMOs(entity: Team.self) {_ in}
-        self.fetchDeleteMOs(entity: Channel.self) {_ in}
-        self.fetchDeleteMOs(entity: ChannelRequest.self) {_ in}
-        self.fetchDeleteMOs(entity: ChannelDeletion.self) {_ in}
-        self.fetchDeleteMOs(entity: Message.self) {_ in}
-        completion()
+    public func hardResetDataPC() async throws {
+        try await self.fetchDeleteMOsAsync(entity: User.self)
+        try await self.fetchDeleteMOsAsync(entity: Settings.self)
+        try await self.fetchDeleteMOsAsync(entity: RemoteUser.self)
+        try await self.fetchDeleteMOsAsync(entity: Channel.self)
+        try await self.fetchDeleteMOsAsync(entity: ChannelRequest.self)
+        try await self.fetchDeleteMOsAsync(entity: ChannelDeletion.self)
+        try await self.fetchDeleteMOsAsync(entity: Message.self)
     }
 }

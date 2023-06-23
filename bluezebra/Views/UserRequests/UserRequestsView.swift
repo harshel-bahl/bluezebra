@@ -129,7 +129,7 @@ struct UserRequestsView: View {
             
             ScrollView {
                 if segment2==0 {
-                    ForEach(channelDC.channelRequests.filter({ $0.isSender==false }), id: \.channelID) { channelRequest in
+                    ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.channelID) { channelRequest in
                         
                         VStack(spacing: 0) {
                             ChannelRequestRow(channelRequest: channelRequest)
@@ -140,7 +140,7 @@ struct UserRequestsView: View {
                         }
                     }
                 } else if segment2==1 {
-                    ForEach(channelDC.channelRequests.filter({ $0.isSender==true }), id: \.channelID) { channelRequest in
+                    ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.channelID) { channelRequest in
                         
                         VStack(spacing: 0) {
                             ChannelRequestRow(channelRequest: channelRequest)

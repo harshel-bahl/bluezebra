@@ -248,7 +248,7 @@ extension DataPC {
                                       type: String,
                                       name: String,
                                       icon: String,
-                                      nUsers: Int,
+                                      nUsers: Int16,
                                       toDeleteUserIDs: [String] = [String](),
                                       isOrigin: Bool) async throws -> SChannelDeletion {
         

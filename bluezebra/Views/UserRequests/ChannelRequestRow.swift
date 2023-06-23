@@ -63,7 +63,7 @@ struct ChannelRequestRow: View {
         Task {
             guard let remoteUserID = channelRequest.userID else { return }
             
-            if let remoteUser = try? await channelDC.fetchRemoteUserLocally(userID: remoteUserID) {
+            if let remoteUser = try? await channelDC.fetchRULocally(userID: remoteUserID) {
                 self.remoteUser = remoteUser
             } else {
                 //                channelDC.fetchRemoteUser(userID: remoteUserID, username: nil) { result in

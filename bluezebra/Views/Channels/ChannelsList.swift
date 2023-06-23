@@ -31,21 +31,21 @@ struct ChannelsList: View {
                 VStack(spacing: 0) {
                     
                     banner
-                        .padding(.leading, SP.width*0.05)
-                        .padding(.trailing, SP.width*0.05)
+                        .padding(.leading, 20)
+                        .padding(.trailing, 20)
                         .padding(.bottom, 10)
                         .padding(.top, 12.5)
                     
                     Divider()
                     
                     
-                    ScrollView {
-                        
-                        meChannel
-                        
-                        ForEach(channelDC.userChannels, id: \.channelID) { channel in
+                    ScrollView() {
+                        LazyVStack(spacing: 0) {
+                            meChannel
                             
-                            ChannelView(channel: channel)
+                            ForEach(channelDC.channels, id: \.channelID) { channel in
+                                ChannelView(channel: channel)
+                            }
                         }
                     }
                     
@@ -54,7 +54,7 @@ struct ChannelsList: View {
                     UserRequestsView(showUserRequestsView: $showUserRequestsView)
                 })
                 .sheet(isPresented: $showDeletionLog, content: {
-                    DeletionLog()
+                    DeletionLog(channelType: "user")
                 })
                 
             }
@@ -99,47 +99,38 @@ struct ChannelsList: View {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
                         VStack(spacing: 0) {
-                            //                    Image(systemName: "circle.fill")
-                            //                        .resizable()
-                            //                        .aspectRatio(contentMode: .fit)
-                            //                        .frame(maxWidth: SP.width*0.03)
-                            //                        .foregroundColor(Color("blueAccent1"))
+                            
                         }
-                        .frame(maxWidth: SP.width*0.03,
-                               maxHeight: .infinity)
-                        .padding(.trailing, SP.width*0.0175)
+                        .frame(width: 15)
+                        .padding(.trailing, 2.5)
                         
                         if let avatar = userDC.userData?.avatar,
                            let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
                             Text(emoji.value)
-                                .font(.system(size: SP.safeAreaHeight*0.06))
-                                .frame(width: SP.safeAreaHeight*0.06,
-                                       height: SP.safeAreaHeight*0.06)
-                                .onTapGesture {
-                                    // navigate to user profile
-                                }
+                                .font(.system(size: 45))
+                                .frame(width: 45,
+                                       height: 45)
                         } else {
                             Image(systemName: "person.crop.circle.fill")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: SP.safeAreaHeight*0.06,
-                                       height: SP.safeAreaHeight*0.06)
+                                .frame(width: 45,
+                                       height: 45)
                                 .foregroundColor(Color("blueAccent1"))
                         }
                         
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
-                                Text(userDC.userData!.username)
+                                Text("@" + userDC.userData!.username)
                                     .font(.headline)
-                                    .foregroundColor(Color("text1"))
-                                    .fontWeight(.bold)
+                                    .foregroundColor(Color("blueAccent1"))
                                 
                                 Text("(Me)")
                                     .font(.subheadline)
                                     .foregroundColor(Color("orangeAccent1"))
                                     .fontWeight(.regular)
                                     .offset(y: -1)
-                                    .padding(.leading, SP.width*0.015)
+                                    .padding(.leading, 5)
                                 
                                 Spacer()
                                 
@@ -160,10 +151,10 @@ struct ChannelsList: View {
                                 Image(systemName: "chevron.right")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: SP.safeAreaHeight*0.015)
+                                    .frame(height: 12)
                                     .foregroundColor(Color("blueAccent1"))
                             }
-                            .padding(.bottom, SP.safeAreaHeight*0.005)
+                            .padding(.bottom, 5)
                             
                             //                        Text("Subject: ")
                             //                            .font(.caption2)
@@ -173,7 +164,6 @@ struct ChannelsList: View {
                             HStack(spacing: 0) {
                                 Text(messageDC.personalMessages.first?.message ?? "Tap to chat!")
                                     .font(.subheadline)
-                                //                            .fontWeight(.regular) make bold for unread
                                     .foregroundColor(Color("text2"))
                                     .multilineTextAlignment(.leading)
                                     .lineLimit(2...2)
@@ -181,36 +171,34 @@ struct ChannelsList: View {
                                 Spacer()
                             }
                         }
-                        .padding(.leading, SP.width*0.033)
+                        .padding(.leading, 12.5)
                     }
-                    .padding(.top, SP.safeAreaHeight*0.0225)
-                    .padding(.bottom, SP.safeAreaHeight*0.0225)
-                    .padding(.trailing, SP.width*0.05)
-                    .padding(.leading, SP.width*0.02)
+                    .padding(.top, 15)
+                    .padding(.bottom, 13.5)
+                    .padding(.trailing, 15)
+                    .padding(.leading, 7.5)
                     
-                    HStack {
+                    HStack(spacing: 0) {
                         Spacer()
                         
-                        VStack {
+                        VStack(spacing: 0) {
                             Divider()
-                                .frame(width: SP.width - SP.width*0.03 - SP.width*0.02 - SP.width*0.02 - SP.safeAreaHeight*0.06 - SP.width*0.033)
+                                .frame(width: SP.width - 7.5 - 15 - 2.5 - 45 - 12.5)
                         }
                     }
                 }
                 .contextMenu() {
-                    Button("Clear media", action: {
+                    Button("Clear Media", action: {
                         
                     })
                     
-                    Button("Clear channel", action: {
+                    Button("Clear Channel", action: {
                         
                     })
-                    
-                    Button("Delete channel", action: {
-                        
-                    })
+
                 }
             }
+            
         }
     }
 }

@@ -16,7 +16,7 @@ extension DataPC {
                                        predicateValue: T2? = "",
                                        customPredicate: NSPredicate? = nil, 
                                        property: [String],
-                                       value: [Any]) async throws -> T1.SafeType {
+                                       value: [Any?]) async throws -> T1.SafeType {
         var MO: T1?
         
         do {
@@ -64,7 +64,7 @@ extension DataPC {
                                         predicateValue: T2? = "",
                                         customPredicate: NSPredicate? = nil,
                                         property: [String],
-                                        value: [Any],
+                                        value: [Any?],
                                         fetchLimit: Int? = nil,
                                         sortKey: String? = nil,
                                         sortAscending: Bool = false) async throws -> [T1.SafeType] {

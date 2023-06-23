@@ -15,9 +15,9 @@ class ChannelDC: ObservableObject {
     
     /// remoteUsers: [userID: RemoteUser]
     ///
-    @Published var remoteUsers = [String: SRemoteUser]() {
+    @Published var RUs = [String: SRemoteUser]() {
         didSet {
-            for user in remoteUsers.values {
+            for user in RUs.values {
                 if !self.onlineUsers.keys.contains(user.userID) {
                     self.onlineUsers[user.userID] = false
                 }
@@ -27,18 +27,15 @@ class ChannelDC: ObservableObject {
     /// onlineUsers: [userID: online true/false]
     @Published var onlineUsers = [String: Bool]()
     
-    /// teams:
-    /// - only contains active=true objects
-//    @Published var teams = [String: STeam]()
     
     @Published var personalChannel: SChannel?
     
     /// userChannels: channels with a single remote user
     /// - uses an array since it is fetched in order of lastMessageDate
     /// - only contains active=true objects
-    @Published var userChannels = [SChannel]() {
+    @Published var channels = [SChannel]() {
         didSet {
-            for channel in userChannels {
+            for channel in channels {
                 let channelID = channel.channelID
                 
                 if !self.typingUsers.keys.contains(channelID) {
@@ -52,35 +49,14 @@ class ChannelDC: ObservableObject {
         }
     }
     @Published var typingUsers = [String: Bool]()
-    
-    /// teamChannels: channels with multiple remote users
-    /// - uses an array since it is fetched in order of lastMessageDate
-    /// - only contains active=true objects
-//    @Published var teamChannels = [SChannel]() {
-//        didSet {
-//            for team in teamChannels {
-//                let channelID = team.channelID
-//
-//                if !self.typingTeams.keys.contains(channelID) {
-//                    self.typingTeams[channelID] = nil
-//                }
-//
-//                if !MessageDC.shared.teamMessages.keys.contains(channelID) {
-//                    MessageDC.shared.teamMessages[channelID] = [SMessage]()
-//                }
-//            }
-//        }
-//    }
-//    @Published var typingTeams = [String: String?]()
-    
-    
+
     /// channelRequests:
     /// - uses an array since it is fetched in order of date
-    @Published var channelRequests = [SChannelRequest]()
+    @Published var CRs = [SChannelRequest]()
     
     /// channelDeletions:
     /// - uses an array since it is fetched in order of deletionDate
-    @Published var channelDeletions = [SChannelDeletion]()
+    @Published var CDs = [SChannelDeletion]()
     
     init() {
         self.addSocketHandlers()
@@ -133,18 +109,15 @@ class ChannelDC: ObservableObject {
     /// ChannelDC reset function
     ///
     func resetState() {
-        self.remoteUsers = [String: SRemoteUser]()
-        self.onlineUsers = [String: Bool]()
-        
-//        self.teams = [String: STeam]()
-        
-        self.userChannels = [SChannel]()
-        self.typingUsers = [String: Bool]()
-        
-//        self.teamChannels = [SChannel]()
-//        self.typingTeams = [String: String]()
-        
-        self.channelRequests = [SChannelRequest]()
-        self.channelDeletions = [SChannelDeletion]()
+        DispatchQueue.main.async {
+            self.RUs = [String: SRemoteUser]()
+            self.onlineUsers = [String: Bool]()
+            
+            self.channels = [SChannel]()
+            self.typingUsers = [String: Bool]()
+            
+            self.CRs = [SChannelRequest]()
+            self.CDs = [SChannelDeletion]()
+        }
     }
 }

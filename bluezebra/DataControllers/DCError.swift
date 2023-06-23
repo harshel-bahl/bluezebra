@@ -14,4 +14,5 @@ enum DCError: Error {
     case disconnected
     case typecastError
     case jsonError
+    case persistenceError
 }

@@ -45,8 +45,7 @@ struct TopLevelView: View {
         .onChange(of: scene) { phase in
             switch phase {
             case "active":
-                localStartup()
-                remoteConnection()
+                startup()
             case "inactive":
                 prepareShutdown()
             case "background":
@@ -56,49 +55,24 @@ struct TopLevelView: View {
         }
     }
     
-    func localStartup() {
-        if userDC.userData == nil {
-            userDC.fetchUserData() { result in
+    func startup() {
+        Task {
+            do {
+                if userDC.userData == nil {
+                    try await userDC.syncUserData()
+                    try await userDC.syncUserSettings()
+                }
+                
                 fetchedUser = true
                 
-                switch result {
-                case .success(let userData):
-                    userDC.userData = userData
-                    
-                    userDC.fetchUserSettings() { result in
-                        switch result {
-                        case .success(let userSettings):
-                            userDC.userSettings = userSettings
-                        case .failure(_):
-                            // call function that generates settings if not present when userdata is present
-                            break
-                        }
-                    }
-                    
-                    
-                    Task {
-                        await channelDC.fetchAllData()
-                        try? await messageDC.syncPersonalChannel()
-                    }
-                case .failure(_): break
-                }
+                try await channelDC.syncAllData()
+                
+                remoteConnection()
+            } catch {
+                fetchedUser = true
+                
+                remoteConnection()
             }
-        } else {
-            fetchedUser = true
-            
-            if userDC.userSettings == nil {
-                userDC.fetchUserSettings() { result in
-                    switch result {
-                    case .success(let userSettings):
-                        userDC.userSettings = userSettings
-                    case .failure(_):
-                        // call function that generates settings if not present when userdata is present
-                        break
-                    }
-                }
-            }
-            
-            // fetch channel DC data not present
         }
     }
     

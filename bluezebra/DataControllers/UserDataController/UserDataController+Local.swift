@@ -12,40 +12,44 @@ extension UserDC {
     /// Local Read/Write Functions
     ///
     
-    func fetchUserData(completion: ((Result<SUser, DCError>)->())? = nil) {
-        DataPC.shared.fetchSMO(entity: User.self) { result in
-            switch result {
-            case .success(let userData):
-                if let completion = completion { completion(.success(userData)) }
-            case .failure(_):
-                if let completion = completion { completion(.failure(.failed)) }
-            }
+    func syncUserData() async throws {
+        let sMO = try await DataPC.shared.fetchSMOAsync(entity: User.self)
+        
+        DispatchQueue.main.async {
+            self.userData = sMO
         }
     }
     
-    func fetchUserSettings(completion: ((Result<SSettings, DCError>)->())? = nil) {
-        DataPC.shared.fetchSMO(entity: Settings.self) { result in
-            switch result {
-            case .success(let userSettings):
-                if let completion = completion { completion(.success(userSettings)) }
-            case .failure(_):
-                if let completion = completion { completion(.failure(.failed)) }
-            }
+    func syncUserSettings() async throws {
+        let sMO = try await DataPC.shared.fetchSMOAsync(entity: Settings.self)
+        
+        DispatchQueue.main.async {
+            self.userSettings = sMO
         }
     }
     
-    func resetUserData(completion: (Result<Void, DCError>)->()) {
-        DataPC.shared.resetUserData {
+    func resetUserData() async throws {
+        do {
+            try await DataPC.shared.resetUserData()
             ChannelDC.shared.resetState()
             MessageDC.shared.resetState()
+            print("CLIENT \(DateU.shared.logTS) -- userDC.resetUserData: SUCCESS")
+        } catch {
+            print("CLIENT \(DateU.shared.logTS) -- userDC.resetUserData: FAILED")
+            throw DCError.failed
         }
     }
     
-    func hardReset(completion: (Result<Void, DCError>)->()) {
-        DataPC.shared.hardResetDataPC {
+    func hardReset() async throws {
+        do {
+            try await DataPC.shared.hardResetDataPC()
             self.resetState()
             ChannelDC.shared.resetState()
             MessageDC.shared.resetState()
+            print("CLIENT \(DateU.shared.logTS) -- userDC.hardReset: SUCCESS")
+        } catch {
+            print("CLIENT \(DateU.shared.logTS) -- userDC.hardReset: FAILED")
+            throw DCError.failed
         }
     }
 }
