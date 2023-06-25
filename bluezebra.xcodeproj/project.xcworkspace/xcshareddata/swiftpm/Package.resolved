@@ -10,6 +10,24 @@
       }
     },
     {
+      "identity" : "exytemediapicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/exyte/ExyteMediaPicker.git",
+      "state" : {
+        "revision" : "2b81eccb5e30367a116f86c2a4ffc18ee0bbd72f",
+        "version" : "1.2.3"
+      }
+    },
+    {
+      "identity" : "filepicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/markrenaud/FilePicker.git",
+      "state" : {
+        "revision" : "720f8cb5ca0c0efc982ed381afc84ba3e8b3214e",
+        "version" : "1.0.1"
+      }
+    },
+    {
       "identity" : "smile",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onmyway133/Smile",

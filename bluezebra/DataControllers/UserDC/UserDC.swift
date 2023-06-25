@@ -61,9 +61,11 @@ class UserDC: ObservableObject {
     /// Reset User Data Controller Functions
     ///
     func resetState() {
-        if self.userData != nil { self.userData = nil }
-        if self.loggedIn != false { self.loggedIn = false }
-        if self.userOnline != false { self.userOnline = false }
+        DispatchQueue.main.async {
+            if self.userData != nil { self.userData = nil }
+            if self.loggedIn != false { self.loggedIn = false }
+            if self.userOnline != false { self.userOnline = false }
+        }
     }
 }
 

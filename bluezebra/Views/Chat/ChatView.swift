@@ -32,7 +32,7 @@ struct ChatView: View {
     }
     
     init(channel: SChannel,
-         remoteUser: SRemoteUser?  = nil) {
+         remoteUser: SRemoteUser? = nil) {
         self.channel = channel
         self.remoteUser = remoteUser
     }
@@ -113,17 +113,19 @@ struct ChatView: View {
                  userID: String? = nil) -> String? {
         if channelID == "personal" {
             return userDC.userData?.avatar
-        } else {
-            return "" // handle user and team channels here
+        } else if let remoteUser = remoteUser {
+            return remoteUser.avatar
         }
+        return nil
     }
     
     func getName(channelID: String) -> String? {
         if channelID == "personal" {
             return userDC.userData?.username
-        } else {
-            return "" // handle user and team channels here
+        } else if let remoteUser = remoteUser {
+            return remoteUser.username
         }
+        return nil
     }
     
     func chatView() -> some View {

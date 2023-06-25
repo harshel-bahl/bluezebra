@@ -41,6 +41,7 @@ struct ChannelsList: View {
                     
                     ScrollView() {
                         LazyVStack(spacing: 0) {
+                            
                             meChannel
                             
                             ForEach(channelDC.channels, id: \.channelID) { channel in

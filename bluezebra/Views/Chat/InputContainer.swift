@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import ExyteMediaPicker
+import FilePicker
 
 struct InputContainer: View {
     
@@ -14,6 +16,7 @@ struct InputContainer: View {
     @EnvironmentObject var SP: ScreenProperties
     
     @State var message = ""
+    @State var selectedImages = [Media]()
     
     @State var TFSize: CGSize = .zero
     
@@ -22,6 +25,8 @@ struct InputContainer: View {
     @State var visibleLineCount = 1
     
     @FocusState var focusedField: Field?
+    
+    @State var showMediaPicker = false
     
     enum Field {
         case message
@@ -82,24 +87,28 @@ struct InputContainer: View {
             .background { Color("background1") }
             .onAppear { self.initialTFSize = TFSize }
         }
+        .sheet(isPresented: $showMediaPicker) {
+            MediaPicker(isPresented: $showMediaPicker,
+                        onChange: { selectedImages = $0 })
+        }
     }
     
     var fileButton: some View {
-        Button(action: {
+        FilePicker(types: [.plainText], allowMultiple: false) { urls in
             
-        }, label: {
+        } label: {
             Image(systemName: "folder.circle.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(Color("blueAccent1"))
                 .frame(width: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025,
                        height: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)
-        })
+        }
     }
     
     var cameraButton: some View {
         Button(action: {
-            
+            showMediaPicker = true
         }, label: {
             Image(systemName: "camera.circle.fill")
                 .resizable()

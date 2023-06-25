@@ -111,61 +111,104 @@ extension ChannelDC {
     /// SMO Sync Functions
     ///
     func syncRU(RU: SRemoteUser) {
-        self.RUs[RU.userID] = RU
+        DispatchQueue.main.async {
+            self.RUs[RU.userID] = RU
+        }
     }
     
     func syncChannel(channel: SChannel) {
+        DispatchQueue.main.async {
+            
         if self.channels.isEmpty {
             self.channels.append(channel)
         }
         
-        for (index, currChannel) in self.channels.enumerated() {
-            
-            if let date1 = channel.lastMessageDate {
-                if let date2 = currChannel.lastMessageDate,
-                date1 > date2 {
-                    self.channels.insert(channel, at: index)
-                    return
-                } else if date1 > currChannel.creationDate {
-                    self.channels.insert(channel, at: index)
-                    return
-                }
-            } else {
-                if let date2 = currChannel.lastMessageDate,
-                   channel.creationDate > date2 {
-                    self.channels.insert(channel, at: index)
-                    return
-                } else if channel.creationDate > currChannel.creationDate {
-                    self.channels.insert(channel, at: index)
-                    return
+            for (index, currChannel) in self.channels.enumerated() {
+                
+                if let date1 = channel.lastMessageDate {
+                    if let date2 = currChannel.lastMessageDate,
+                       date1 > date2 {
+                        self.channels.insert(channel, at: index)
+                        return
+                    } else if date1 > currChannel.creationDate {
+                        self.channels.insert(channel, at: index)
+                        return
+                    }
+                } else {
+                    if let date2 = currChannel.lastMessageDate,
+                       channel.creationDate > date2 {
+                        self.channels.insert(channel, at: index)
+                        return
+                    } else if channel.creationDate > currChannel.creationDate {
+                        self.channels.insert(channel, at: index)
+                        return
+                    }
                 }
             }
         }
-        
     }
     
     func syncCR(CR: SChannelRequest) {
-        if self.CRs.isEmpty {
-            self.CRs.append(CR)
-        }
-        
-        for (index, currCR) in self.CRs.enumerated() {
-            if CR.date > currCR.date {
-                self.CRs.insert(CR, at: index)
-                return
+        DispatchQueue.main.async {
+            if self.CRs.isEmpty {
+                self.CRs.append(CR)
+            }
+            
+            for (index, currCR) in self.CRs.enumerated() {
+                if CR.date > currCR.date {
+                    self.CRs.insert(CR, at: index)
+                    return
+                }
             }
         }
     }
     
     func syncCD(CD: SChannelDeletion) {
+        DispatchQueue.main.async {
         if self.CDs.isEmpty {
             self.CDs.append(CD)
         }
         
-        for (index, currCD) in self.CDs.enumerated() {
-            if CD.deletionDate > currCD.deletionDate {
-                self.CDs.insert(CD, at: index)
-                return
+            for (index, currCD) in self.CDs.enumerated() {
+                if CD.deletionDate > currCD.deletionDate {
+                    self.CDs.insert(CD, at: index)
+                    return
+                }
+            }
+        }
+    }
+    
+    /// Local Delete Functions
+    ///
+    func deleteRU(userID: String) {
+        DispatchQueue.main.async {
+            self.RUs.removeValue(forKey: userID)
+        }
+    }
+    
+    func deleteChannel(channelID: String) {
+        DispatchQueue.main.async {
+            let channelIndex = self.channels.firstIndex(where: { $0.channelID == channelID })
+            if let channelIndex = channelIndex {
+                self.channels.remove(at: channelIndex)
+            }
+        }
+    }
+    
+    func deleteCR(channelID: String) {
+        DispatchQueue.main.async {
+            let CRIndex = self.CRs.firstIndex(where: { $0.channelID == channelID })
+            if let CRIndex = CRIndex {
+                self.CRs.remove(at: CRIndex)
+            }
+        }
+    }
+    
+    func deleteCD(deletionID: String) {
+        DispatchQueue.main.async {
+            let CDIndex = self.CDs.firstIndex(where: { $0.deletionID == deletionID })
+            if let CDIndex = CDIndex {
+                self.CDs.remove(at: CDIndex)
             }
         }
     }

@@ -47,9 +47,5 @@ struct VisualEffectView: UIViewRepresentable {
     func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
 }
 
-struct SuccessView1_Previews: PreviewProvider {
-    static var previews: some View {
-        SuccessView1()
-    }
-}
+
 

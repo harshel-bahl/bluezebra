@@ -1,5 +1,5 @@
 //
-//  ChannelDataControllerEventQueue.swift
+//  ChannelDCEventQueue.swift
 //  BlueZebra
 //
 //  Created by Harshel Bahl on 15/03/2023.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ChannelDataControllerEventQueue {
+class ChannelDCEventQueue {
     
     var eventQueue = [String:(Any?)->()]()
 

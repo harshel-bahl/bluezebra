@@ -58,14 +58,16 @@ struct TopLevelView: View {
     func startup() {
         Task {
             do {
-                if userDC.userData == nil {
+                if userDC.userData == nil || userDC.userSettings == nil {
                     try await userDC.syncUserData()
                     try await userDC.syncUserSettings()
                 }
                 
                 fetchedUser = true
                 
-                try await channelDC.syncAllData()
+                if userDC.userData != nil && userDC.userSettings != nil {
+                    try await channelDC.syncAllData()
+                }
                 
                 remoteConnection()
             } catch {

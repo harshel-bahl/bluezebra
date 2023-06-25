@@ -78,13 +78,23 @@ struct DateTimeLabel: View {
                         .font(font)
                         .foregroundColor(colour)
                 } else if Calendar.current.isDateInYesterday(date) {
-                    Text("Yesterday")
+                    Text("Yesterday,")
                         .font(font)
                         .foregroundColor(colour)
+                    
+                    Text(DateU.shared.timeHm(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                        .padding(.leading, 2.5)
                 } else if date.isInThisWeek {
-                    Text(DateU.shared.dateDay(date: date))
+                    Text(DateU.shared.dateDay(date: date) + ",")
                         .font(font)
                         .foregroundColor(colour)
+                    
+                    Text(DateU.shared.timeHm(date: date))
+                        .font(font)
+                        .foregroundColor(colour)
+                        .padding(.leading, 2.5)
                 } else {
                     Text(DateU.shared.datetimeDMYhma(date: date))
                         .font(font)

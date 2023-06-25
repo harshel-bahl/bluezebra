@@ -51,10 +51,10 @@ extension ChannelDC {
             guard let lastOnline = DateU.shared.dateFromString(lastOnline) else { return }
             
             Task {
-                guard let _ = try? await DataPC.shared.updateMO(entity: RemoteUser.self,
+                guard let SRU = try? await DataPC.shared.updateMO(entity: RemoteUser.self,
                                                                 property: ["lastOnline"],
                                                                 value: [lastOnline]) else { return }
-                try await self.syncRUs()
+                self.syncRU(RU: SRU)
             }
         }
     }
@@ -64,28 +64,31 @@ extension ChannelDC {
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCR: triggered")
             
             guard let self = self,
-                  let data = data.first,
-                  let packet = try? self.jsonDecodeFromData(packet: CRPacket.self,
-                                                            data: data) else { return }
+                  let data = data.first else { return }
+            
             Task {
                 do {
+                    
+                    guard let packet = try? self.jsonDecodeFromData(packet: CRPacket.self,
+                                                                    data: data) else { throw DCError.jsonError }
+                    
                     let channelPacket = packet.channel
                     let RUPacket = packet.remoteUser
                     
                     guard let date = DateU.shared.dateFromString(packet.date),
                           let creationDate = DateU.shared.dateFromString(RUPacket.creationDate) else { return }
                     
-                    let _ = try await DataPC.shared.createChannelRequest(channelID: channelPacket.channelID,
+                    let SCR = try await DataPC.shared.createChannelRequest(channelID: channelPacket.channelID,
                                                                          userID: RUPacket.userID,
                                                                          date: date,
                                                                          isSender: false)
-                    try await self.syncCRs()
+                    self.syncCR(CR: SCR)
                     
-                    let sRU = try? await DataPC.shared.createRemoteUser(userID: RUPacket.userID,
+                    let SRU = try? await DataPC.shared.createRemoteUser(userID: RUPacket.userID,
                                                                         username: RUPacket.username,
                                                                         avatar: RUPacket.avatar,
                                                                         creationDate: creationDate)
-                    if sRU != nil { try await self.syncRUs() }
+                    if let SRU = SRU { self.syncRU(RU: SRU) }
                     
                     let sChannel = try await DataPC.shared.createChannel(channelID: channelPacket.channelID,
                                                                          userID: RUPacket.userID,
@@ -240,6 +243,7 @@ extension ChannelDC {
     }
 
     func deleteUserTrace() {
+        
         SocketController.shared.clientSocket.on("deleteUserTrace") { [weak self] (data, ack) in
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteUserTrace: triggered")
 

@@ -17,7 +17,7 @@ struct ChannelView: View {
     @ObservedObject var messageDC = MessageDC.shared
     
     let channel: SChannel
-    @State var remoteUser: SRemoteUser?
+    @State var RU: SRemoteUser?
     @State var latestMessage: SMessage?
     
     @State var showChat = false
@@ -29,7 +29,7 @@ struct ChannelView: View {
         
         if let remoteUserID = channel.userID,
            let remoteUser = channelDC.RUs[remoteUserID] {
-            self._remoteUser = State(wrappedValue: remoteUser)
+            self._RU = State(wrappedValue: remoteUser)
         } else {
             // check for user otherwise retrieve info from server
         }
@@ -42,7 +42,9 @@ struct ChannelView: View {
     var body: some View {
         ZStack {
             NavigationLink {
-                ChatView(channel: channel)
+                if let RU = RU {
+                    ChatView(channel: channel, remoteUser: RU)
+                }
             } label: {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
@@ -61,7 +63,7 @@ struct ChannelView: View {
                         .padding(.trailing, 2.5)
                         
                         ZStack {
-                            if let avatar = remoteUser?.avatar,
+                            if let avatar = RU?.avatar,
                                let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
                                 Text(emoji.value)
                                     .font(.system(size: 45))
@@ -79,8 +81,8 @@ struct ChannelView: View {
                                     .foregroundColor(Color("blueAccent1"))
                             }
                             
-                            if let remoteUser = remoteUser,
-                               let online = channelDC.onlineUsers[remoteUser.userID],
+                            if let RU = RU,
+                               let online = channelDC.onlineUsers[RU.userID],
                                online == true {
                                 HStack(spacing: 0) {
                                     Circle()
@@ -104,8 +106,8 @@ struct ChannelView: View {
                         
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
-                                if let remoteUser = remoteUser {
-                                    Text("@" + remoteUser.username)
+                                if let RU = RU {
+                                    Text("@" + RU.username)
                                         .font(.headline)
                                         .foregroundColor(Color("blueAccent1"))
                                 } else {
@@ -171,9 +173,9 @@ struct ChannelView: View {
                     })
                     
                     Button("Clear channel", action: {
-                        if let remoteUser = remoteUser {
+                        if let RU = RU {
                             channelDC.deleteChannel(channel: channel,
-                                                    remoteUser: remoteUser) {_ in
+                                                    remoteUser: RU) {_ in
                                 Task {
                                     try await channelDC.syncChannels()
                                 }
@@ -182,9 +184,9 @@ struct ChannelView: View {
                     })
                     
                     Button("Delete channel", action: {
-                        if let remoteUser = remoteUser {
+                        if let RU = RU {
                             channelDC.deleteChannel(channel: channel,
-                                                    remoteUser: remoteUser,
+                                                    remoteUser: RU,
                                                     type: "delete") {_ in
                                 Task {
                                     try await channelDC.syncChannels()
@@ -199,17 +201,17 @@ struct ChannelView: View {
     }
     
     var username: some View {
-        let usernameView = Text(remoteUser?.username ?? "")
+        let usernameView = Text(RU?.username ?? "")
             .padding(.leading)
             .foregroundColor(Color.white)
         return usernameView
     }
     
     var onlineBadge: some View {
-        guard let remoteUser = remoteUser else {
+        guard let RU = RU else {
             return Text("-").foregroundColor(.white).fontWeight(.bold) }
         
-        if let online = channelDC.onlineUsers[remoteUser.userID],
+        if let online = channelDC.onlineUsers[RU.userID],
            online == true {
             return Text("Online").foregroundColor(.green).fontWeight(.bold)
         } else {

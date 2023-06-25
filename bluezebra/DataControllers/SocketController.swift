@@ -59,7 +59,7 @@ class SocketController: NSObject, ObservableObject {
     }
     
     func establishConnection() {
-        clientSocket.connect()
+        clientSocket.connect() // manager.socket.connect(withPayload: ["auth": "xxx"])
     }
 
     func closeConnection() {
