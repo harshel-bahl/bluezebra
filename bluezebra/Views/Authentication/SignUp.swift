@@ -280,30 +280,27 @@ struct SignUp: View {
     }
     
     var usernameTextField: some View {
-        BZTextField(placeholder: "Username",
-                    startingText: "@",
-                    text: $username,
-                    foregroundColour: Color("text3"),
-                    font: .headline,
-                    fontWeight: .bold,
-                    submitLabel: .go,
-                    characterLimit: 12,
-                    autocapitalisation: false,
-                    autocorrection: false,
-                    trimOnCommit: true,
-                    replaceStartingOnCommit: true,
-                    commitAction: { username in
+        DebounceTextField(text: $username,
+                          startingText: "@",
+                          placeholder: "Username",
+                          foregroundColour: Color("text3"),
+                          font: .headline,
+                          characterLimit: 13,
+                          trimOnCommit: true,
+                          replaceStartingOnCommit: true,
+                          debouncedAction: { username in
             
             userDC.checkUsername(username: username) { result in
                 switch result {
                 case .success(let result):
-                    withAnimation(.easeInOut(duration: 0.15)) {
+                    withAnimation(.easeInOut(duration: 0.33)) {
                         self.checkedUsername = result
                     }
                 case .failure(_): break
                 }
             }
-        })
+        },
+                          debounceFor: 0.75)
         .focused($focusedField, equals: .username)
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {

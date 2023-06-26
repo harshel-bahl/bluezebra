@@ -83,7 +83,9 @@
 		F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425D2A487B9B00CFCD32 /* FixedText.swift */; };
 		F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425F2A48A66000CFCD32 /* SceneModifier.swift */; };
 		F00E42622A48C31100CFCD32 /* ConditionalModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */; };
-		F04AEC3D2A2CBE7500276FF4 /* BZTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */; };
+		F00E42652A4962EA00CFCD32 /* SubmitTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E42642A4962EA00CFCD32 /* SubmitTextField.swift */; };
+		F00E42672A49630200CFCD32 /* DebounceTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E42662A49630200CFCD32 /* DebounceTextField.swift */; };
+		F04AEC3D2A2CBE7500276FF4 /* TextFieldObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04AEC3C2A2CBE7500276FF4 /* TextFieldObserver.swift */; };
 		F065C6112A2E8894007E1D9F /* PinBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6102A2E8894007E1D9F /* PinBoxes.swift */; };
 		F065C6132A2E8D84007E1D9F /* AuthenticationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */; };
 		F065C6152A2E8D9A007E1D9F /* EncryptionTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */; };
@@ -177,7 +179,9 @@
 		F00E425D2A487B9B00CFCD32 /* FixedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedText.swift; sourceTree = "<group>"; };
 		F00E425F2A48A66000CFCD32 /* SceneModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModifier.swift; sourceTree = "<group>"; };
 		F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalModifier.swift; sourceTree = "<group>"; };
-		F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BZTextField.swift; sourceTree = "<group>"; };
+		F00E42642A4962EA00CFCD32 /* SubmitTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitTextField.swift; sourceTree = "<group>"; };
+		F00E42662A49630200CFCD32 /* DebounceTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebounceTextField.swift; sourceTree = "<group>"; };
+		F04AEC3C2A2CBE7500276FF4 /* TextFieldObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldObserver.swift; sourceTree = "<group>"; };
 		F065C6102A2E8894007E1D9F /* PinBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinBoxes.swift; sourceTree = "<group>"; };
 		F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTab.swift; sourceTree = "<group>"; };
 		F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTab.swift; sourceTree = "<group>"; };
@@ -441,12 +445,26 @@
 			path = UIUtilities;
 			sourceTree = "<group>";
 		};
+		F00E42632A490F9C00CFCD32 /* Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+				F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */,
+				F00E425F2A48A66000CFCD32 /* SceneModifier.swift */,
+				F00E425B2A48764700CFCD32 /* BorderOverlay.swift */,
+				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
+				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
+			);
+			path = Modifiers;
+			sourceTree = "<group>";
+		};
 		F04AEC3B2A2C10AD00276FF4 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				F00E42632A490F9C00CFCD32 /* Modifiers */,
 				34403EBC29924DAC00181C94 /* ScreenProperties.swift */,
-				F00E425F2A48A66000CFCD32 /* SceneModifier.swift */,
-				F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */,
+				F04AEC3C2A2CBE7500276FF4 /* TextFieldObserver.swift */,
+				F00E42642A4962EA00CFCD32 /* SubmitTextField.swift */,
+				F00E42662A49630200CFCD32 /* DebounceTextField.swift */,
 				F065C6102A2E8894007E1D9F /* PinBoxes.swift */,
 				F0E311782A36CA5C00CF74B9 /* Avatar.swift */,
 				F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */,
@@ -454,12 +472,8 @@
 				F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */,
 				F065C61D2A3384E4007E1D9F /* DateLabel.swift */,
 				F065C61F2A3384EB007E1D9F /* TimeLabel.swift */,
-				F00E425B2A48764700CFCD32 /* BorderOverlay.swift */,
 				F00E425D2A487B9B00CFCD32 /* FixedText.swift */,
-				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
-				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
 				341A0DA42A219F2B00C5B00C /* ChildSizeReader.swift */,
-				F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -569,6 +583,7 @@
 				341065E12962E1DA001644B0 /* AuthenticationHome.swift in Sources */,
 				F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */,
 				34790A34299ACA8F00D51854 /* AccountTab.swift in Sources */,
+				F00E42652A4962EA00CFCD32 /* SubmitTextField.swift in Sources */,
 				34E1E08729E2222D007319C3 /* Styles.swift in Sources */,
 				34938E162967CE6900EA95CF /* Data.xcdatamodeld in Sources */,
 				F09DFA812A438CBB008D4DB1 /* ButtonTemp.swift in Sources */,
@@ -600,6 +615,7 @@
 				34403EBD29924DAC00181C94 /* ScreenProperties.swift in Sources */,
 				349CE1FA296CA7DF00F8E4F9 /* SignUp.swift in Sources */,
 				34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */,
+				F00E42672A49630200CFCD32 /* DebounceTextField.swift in Sources */,
 				F065C6192A2FBEAA007E1D9F /* DateTimeLabel.swift in Sources */,
 				341065ED2962E857001644B0 /* ChatView.swift in Sources */,
 				3489D5D929F850AF0074EF5E /* Channel.swift in Sources */,
@@ -617,7 +633,7 @@
 				34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */,
 				F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */,
 				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
-				F04AEC3D2A2CBE7500276FF4 /* BZTextField.swift in Sources */,
+				F04AEC3D2A2CBE7500276FF4 /* TextFieldObserver.swift in Sources */,
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,
 				F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */,
 				349CE22C296FB15500F8E4F9 /* MessageDC.swift in Sources */,
