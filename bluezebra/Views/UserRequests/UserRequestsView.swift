@@ -19,7 +19,7 @@ struct UserRequestsView: View {
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     
-    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
+//    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
     
     @State var fetchedUsers = [RUPacket]()
     
@@ -37,11 +37,11 @@ struct UserRequestsView: View {
                 
                 Rectangle()
                     .fill(Color("darkAccent1").opacity(0.75))
-                    .frame(width: SP.width*0.08, height: 5)
+                    .frame(width: SP.screenWidth*0.08, height: 5)
                     .cornerRadius(7.5)
                     .padding(.top, SP.safeAreaHeight*0.01)
                     .padding(.bottom, SP.safeAreaHeight*0.025)
-                    .frame(width: SP.width)
+                    .frame(width: SP.screenWidth)
                     .background() { Color("background3") }
                     
                 Picker("", selection: $segment1) {
@@ -52,7 +52,7 @@ struct UserRequestsView: View {
                         .tag(1)
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, SP.width*0.25)
+                .padding(.horizontal, SP.screenWidth*0.25)
                 .padding(.bottom, SP.safeAreaHeight*0.025)
                 .background() { Color("background3")}
                 
@@ -68,27 +68,27 @@ struct UserRequestsView: View {
     var addUser: some View {
         VStack(spacing: 0) {
             
-            UsernameTextField(textManager: usernameTM) { username in
-                channelDC.fetchRUs(username: username) { (userDataList) in
-                    switch userDataList {
-                    case .success(let users):
-                        fetchedUsers = users
-                    case .failure(_): searchFailure = true
-                    }
-                }
-            }
-            .padding(.horizontal, SP.width*0.15)
-            .padding(.bottom, SP.safeAreaHeight*0.025)
-            .onAppear { usernameField.toggle() }
-            .focused($usernameField)
-            .background() { Color("background3") }
+//            UsernameTextField(textManager: usernameTM) { username in
+//                channelDC.fetchRUs(username: username) { (userDataList) in
+//                    switch userDataList {
+//                    case .success(let users):
+//                        fetchedUsers = users
+//                    case .failure(_): searchFailure = true
+//                    }
+//                }
+//            }
+//            .padding(.horizontal, SP.screenWidth*0.15)
+//            .padding(.bottom, SP.safeAreaHeight*0.025)
+//            .onAppear { usernameField.toggle() }
+//            .focused($usernameField)
+//            .background() { Color("background3") }
             
             ScrollView {
                 ForEach(fetchedUsers, id: \.userID) { user in
                     
                     VStack(spacing: 0) {
                         AddUserRow(remoteUser: user)
-                            .padding(.horizontal, SP.width*0.1)
+                            .padding(.horizontal, SP.screenWidth*0.1)
                             .padding(.vertical, SP.safeAreaHeight*0.0225)
                         
                         Divider()
@@ -97,12 +97,12 @@ struct UserRequestsView: View {
             }
         }
         .onDisappear() {
-            self.usernameTM.username = ""
+//            self.usernameTM.username = ""
             self.fetchedUsers = [RUPacket]()
         }
         .alert("Unable to search for users", isPresented: $searchFailure) {
             Button("Try again later", role: .cancel) {
-                self.usernameTM.username = ""
+//                self.usernameTM.username = ""
             }
         }
     }
@@ -133,7 +133,7 @@ struct UserRequestsView: View {
                         
                         VStack(spacing: 0) {
                             ChannelRequestRow(channelRequest: channelRequest)
-                                .padding(.horizontal, SP.width*0.1)
+                                .padding(.horizontal, SP.screenWidth*0.1)
                                 .padding(.vertical, SP.safeAreaHeight*0.0225)
                             
                             Divider()
@@ -144,7 +144,7 @@ struct UserRequestsView: View {
                         
                         VStack(spacing: 0) {
                             ChannelRequestRow(channelRequest: channelRequest)
-                                .padding(.horizontal, SP.width*0.1)
+                                .padding(.horizontal, SP.screenWidth*0.1)
                                 .padding(.vertical, SP.safeAreaHeight*0.0225)
                             
                             Divider()

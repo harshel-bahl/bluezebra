@@ -14,18 +14,19 @@ struct HomePage: View {
     @EnvironmentObject var SP: ScreenProperties
     
     @State var tab: String = "channels"
-    @Binding var scene: String
+    
+    @Environment(\.scenePhase) var scene
     
     var body: some View {
         
         VStack {
             
-            if (scene == "inactive" || scene == "background") {
+            if (scene == .inactive || scene == .background) {
                 
                 Color("background2")
                     .ignoresSafeArea()
                 
-            } else if (scene == "active") {
+            } else if (scene == .active) {
                 
                 if (tab == "teams") {
                     
@@ -35,15 +36,15 @@ struct HomePage: View {
                         VStack(spacing: 0) {
                             
                             Color("background1")
-                                .frame(width: SP.width,
-                                       height: SP.topSafeAreaInset)
+                                .frame(width: SP.screenWidth,
+                                       height: SP.topSAI)
                             
                             ChannelsList()
                             
                             CustomTabView(tab: $tab)
                             
                             Color("background3")
-                                .frame(height: SP.bottomSafeAreaInset)
+                                .frame(height: SP.bottomSAI)
                         }
                         .ignoresSafeArea()
                     }
@@ -55,15 +56,15 @@ struct HomePage: View {
                         VStack(spacing: 0) {
                             
                             Color("background1")
-                                .frame(width: SP.width,
-                                       height: SP.topSafeAreaInset)
+                                .frame(width: SP.screenWidth,
+                                       height: SP.topSAI)
                             
                             ProfileHome()
                             
                             CustomTabView(tab: $tab)
                             
                             Color("background3")
-                                .frame(height: SP.bottomSafeAreaInset)
+                                .frame(height: SP.bottomSAI)
                         }
                         .ignoresSafeArea()
                     }

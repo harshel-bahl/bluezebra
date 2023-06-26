@@ -34,8 +34,8 @@ struct ProfileHome: View {
                 VStack(spacing: 0) {
                     
                     banner
-                        .padding(.leading, SP.width*0.05)
-                        .padding(.trailing, SP.width*0.05)
+                        .padding(.leading, SP.screenWidth*0.05)
+                        .padding(.trailing, SP.screenWidth*0.05)
                         .padding(.bottom, 10)
                         .padding(.top, 12.5)
                     
@@ -110,11 +110,11 @@ struct ProfileHome: View {
                                 })
                             }
                         }
-                        .padding(.horizontal, SP.width*0.075)
+                        .padding(.horizontal, SP.screenWidth*0.075)
                         .padding(.vertical, SP.safeAreaHeight*0.025)
                         .background(Color("background3"))
                         .cornerRadius(10)
-                        .padding(.horizontal, SP.width*0.05)
+                        .padding(.horizontal, SP.screenWidth*0.05)
                         .padding(.top, SP.safeAreaHeight*0.025)
                     }
                 }

@@ -184,7 +184,7 @@ struct ChannelsList: View {
                         
                         VStack(spacing: 0) {
                             Divider()
-                                .frame(width: SP.width - 7.5 - 15 - 2.5 - 45 - 12.5)
+                                .frame(width: SP.screenWidth - 7.5 - 15 - 2.5 - 45 - 12.5)
                         }
                     }
                 }

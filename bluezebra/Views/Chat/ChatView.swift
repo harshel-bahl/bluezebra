@@ -27,7 +27,7 @@ struct ChatView: View {
                 .map { $0.cgRectValue.height },
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in CGFloat(SP.bottomSafeAreaInset) }
+                .map { _ in CGFloat(SP.bottomSAI) }
         ).eraseToAnyPublisher()
     }
     
@@ -96,7 +96,7 @@ struct ChatView: View {
                                 .foregroundColor(Color("orangeAccent1"))
                                 .fontWeight(.regular)
 //                                .offset(y: -1)
-                                .padding(.leading, SP.width*0.015)
+                                .padding(.leading, SP.screenWidth*0.015)
                         }
                     }
                     
@@ -143,11 +143,11 @@ struct ChatView: View {
                            minHeight: geometry.size.height,
                            alignment: .bottom)
                     .onReceive(keyboardHeightPublisher) { height in
-                        if height == SP.bottomSafeAreaInset {
+                        if height == SP.bottomSAI {
                             if let latestMessage = messageDC.personalMessages.first {
                                 proxy.scrollTo(latestMessage.messageID)
                             }
-                        } else if height > SP.bottomSafeAreaInset {
+                        } else if height > SP.bottomSAI {
                             if let latestMessage = messageDC.personalMessages.first {
                                 DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
                                     proxy.scrollTo(latestMessage.messageID)
@@ -189,8 +189,8 @@ struct ChatView: View {
         if let messageIndex = messages.firstIndex(where: { $0.messageID == thisMessage.messageID }) {
             if messageIndex == 0 { return true }
             
-            let prevMessageDate = DataU.shared.dateDMY(date: messages[messageIndex].date)
-            let currMessageDate = DataU.shared.dateDMY(date: messages[messageIndex - 1].date)
+            let prevMessageDate = DateU.shared.dateDMY(date: messages[messageIndex].date)
+            let currMessageDate = DateU.shared.dateDMY(date: messages[messageIndex - 1].date)
             
             if prevMessageDate == currMessageDate {
                 return false
@@ -210,7 +210,7 @@ struct ChatView: View {
         } else if Calendar.current.isDateInYesterday(date) {
             dateText = "Yesterday"
         } else {
-            dateText = DataU.shared.dateDMY(date: date)
+            dateText = DateU.shared.dateDMY(date: date)
         }
         
         return Text(dateText ?? "-")

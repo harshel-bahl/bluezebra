@@ -13,7 +13,6 @@ struct AuthenticationHome: View {
     @ObservedObject var userDC = UserDC.shared
     
     @Binding var fetchedUser: Bool
-    @Binding var scene: String
     
     var body: some View {
         VStack {
@@ -29,7 +28,7 @@ struct AuthenticationHome: View {
                 
             } else if (userDC.userData != nil && userDC.loggedIn == false) {
                 
-                Login(scene: $scene)
+                Login()
                 
             }
         }

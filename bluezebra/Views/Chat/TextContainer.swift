@@ -71,13 +71,13 @@ struct TextContainer: View {
             }())
             
         }
-        .padding(SP.width*0.0125)
+        .padding(SP.screenWidth*0.0125)
         .background(message.isSender ? Color("blueAccent1") : Color("greyAccent1"))
         .cornerRadius(7.5)
-        .frame(width: SP.width*0.666, alignment: message.isSender ? .trailing : .leading)
-        .padding(.horizontal, SP.width*0.033)
+        .frame(width: SP.screenWidth*0.666, alignment: message.isSender ? .trailing : .leading)
+        .padding(.horizontal, SP.screenWidth*0.033)
         .padding(.vertical, 1)
-        .frame(width: SP.width, alignment: message.isSender ? .trailing : .leading)
+        .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
         .onAppear() {
             getReceiptColour()
         }

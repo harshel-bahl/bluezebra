@@ -79,7 +79,11 @@
 		34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08E29E25092007319C3 /* EmojiModifier.swift */; };
 		34F886542A01E4C30096CBF1 /* TeamPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F886532A01E4C30096CBF1 /* TeamPacket.swift */; };
 		34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F886552A01E4CB0096CBF1 /* ChannelPacket.swift */; };
-		F04AEC3D2A2CBE7500276FF4 /* UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04AEC3C2A2CBE7500276FF4 /* UsernameTextField.swift */; };
+		F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425B2A48764700CFCD32 /* BorderOverlay.swift */; };
+		F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425D2A487B9B00CFCD32 /* FixedText.swift */; };
+		F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425F2A48A66000CFCD32 /* SceneModifier.swift */; };
+		F00E42622A48C31100CFCD32 /* ConditionalModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */; };
+		F04AEC3D2A2CBE7500276FF4 /* BZTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */; };
 		F065C6112A2E8894007E1D9F /* PinBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6102A2E8894007E1D9F /* PinBoxes.swift */; };
 		F065C6132A2E8D84007E1D9F /* AuthenticationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */; };
 		F065C6152A2E8D9A007E1D9F /* EncryptionTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */; };
@@ -91,7 +95,6 @@
 		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
 		F07059172A412BAC002571A4 /* RUPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUPacket.swift */; };
 		F09DFA812A438CBB008D4DB1 /* ButtonTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */; };
-		F09DFA852A470A84008D4DB1 /* MessageTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA842A470A84008D4DB1 /* MessageTextField.swift */; };
 		F09DFA882A4848F4008D4DB1 /* ExyteMediaPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */; };
 		F09DFA8B2A484BE6008D4DB1 /* FilePicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA8A2A484BE6008D4DB1 /* FilePicker */; };
 		F0E311792A36CA5C00CF74B9 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* Avatar.swift */; };
@@ -170,7 +173,11 @@
 		34E1E08E29E25092007319C3 /* EmojiModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiModifier.swift; sourceTree = "<group>"; };
 		34F886532A01E4C30096CBF1 /* TeamPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPacket.swift; sourceTree = "<group>"; };
 		34F886552A01E4CB0096CBF1 /* ChannelPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPacket.swift; sourceTree = "<group>"; };
-		F04AEC3C2A2CBE7500276FF4 /* UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameTextField.swift; sourceTree = "<group>"; };
+		F00E425B2A48764700CFCD32 /* BorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderOverlay.swift; sourceTree = "<group>"; };
+		F00E425D2A487B9B00CFCD32 /* FixedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedText.swift; sourceTree = "<group>"; };
+		F00E425F2A48A66000CFCD32 /* SceneModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModifier.swift; sourceTree = "<group>"; };
+		F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalModifier.swift; sourceTree = "<group>"; };
+		F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BZTextField.swift; sourceTree = "<group>"; };
 		F065C6102A2E8894007E1D9F /* PinBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinBoxes.swift; sourceTree = "<group>"; };
 		F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTab.swift; sourceTree = "<group>"; };
 		F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTab.swift; sourceTree = "<group>"; };
@@ -182,7 +189,6 @@
 		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
 		F07059162A412BAC002571A4 /* RUPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUPacket.swift; sourceTree = "<group>"; };
 		F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonTemp.swift; sourceTree = "<group>"; };
-		F09DFA842A470A84008D4DB1 /* MessageTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextField.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -430,11 +436,7 @@
 			children = (
 				34E1E08429E21541007319C3 /* TextCellStyle.swift */,
 				34E1E08629E2222D007319C3 /* Styles.swift */,
-				34403EBC29924DAC00181C94 /* ScreenProperties.swift */,
-				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
-				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
 				341D53D32A1CA41600DC28C5 /* BZEmojiProvider1.swift */,
-				341A0DA42A219F2B00C5B00C /* ChildSizeReader.swift */,
 			);
 			path = UIUtilities;
 			sourceTree = "<group>";
@@ -442,8 +444,9 @@
 		F04AEC3B2A2C10AD00276FF4 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				F04AEC3C2A2CBE7500276FF4 /* UsernameTextField.swift */,
-				F09DFA842A470A84008D4DB1 /* MessageTextField.swift */,
+				34403EBC29924DAC00181C94 /* ScreenProperties.swift */,
+				F00E425F2A48A66000CFCD32 /* SceneModifier.swift */,
+				F04AEC3C2A2CBE7500276FF4 /* BZTextField.swift */,
 				F065C6102A2E8894007E1D9F /* PinBoxes.swift */,
 				F0E311782A36CA5C00CF74B9 /* Avatar.swift */,
 				F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */,
@@ -451,6 +454,12 @@
 				F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */,
 				F065C61D2A3384E4007E1D9F /* DateLabel.swift */,
 				F065C61F2A3384EB007E1D9F /* TimeLabel.swift */,
+				F00E425B2A48764700CFCD32 /* BorderOverlay.swift */,
+				F00E425D2A487B9B00CFCD32 /* FixedText.swift */,
+				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
+				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
+				341A0DA42A219F2B00C5B00C /* ChildSizeReader.swift */,
+				F00E42612A48C31100CFCD32 /* ConditionalModifier.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -558,11 +567,11 @@
 				345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */,
 				34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */,
 				341065E12962E1DA001644B0 /* AuthenticationHome.swift in Sources */,
+				F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */,
 				34790A34299ACA8F00D51854 /* AccountTab.swift in Sources */,
 				34E1E08729E2222D007319C3 /* Styles.swift in Sources */,
 				34938E162967CE6900EA95CF /* Data.xcdatamodeld in Sources */,
 				F09DFA812A438CBB008D4DB1 /* ButtonTemp.swift in Sources */,
-				F09DFA852A470A84008D4DB1 /* MessageTextField.swift in Sources */,
 				F065C61C2A3267D8007E1D9F /* DateUtilities.swift in Sources */,
 				34C839F029CFD9C10093C48B /* DeletionLog.swift in Sources */,
 				34C839F329CFE23A0093C48B /* AddUserRow.swift in Sources */,
@@ -572,6 +581,7 @@
 				3475AEA229EFBD4A001882D4 /* UserDC+Events.swift in Sources */,
 				3489D5D329F84CC20074EF5E /* ChannelRequest.swift in Sources */,
 				3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */,
+				F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */,
 				34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */,
 				3475AE8F29EF9DB4001882D4 /* UserPacket.swift in Sources */,
 				F07059172A412BAC002571A4 /* RUPacket.swift in Sources */,
@@ -605,8 +615,9 @@
 				341A0DA72A21C03400C5B00C /* DataUtilities.swift in Sources */,
 				345EEF5729F4175B00861DB9 /* MessageDC+Events.swift in Sources */,
 				34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */,
+				F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */,
 				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
-				F04AEC3D2A2CBE7500276FF4 /* UsernameTextField.swift in Sources */,
+				F04AEC3D2A2CBE7500276FF4 /* BZTextField.swift in Sources */,
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,
 				F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */,
 				349CE22C296FB15500F8E4F9 /* MessageDC.swift in Sources */,
@@ -623,6 +634,7 @@
 				F065C6152A2E8D9A007E1D9F /* EncryptionTab.swift in Sources */,
 				3475AE9C29EFBC78001882D4 /* UserDC+Local.swift in Sources */,
 				34938E1029675D1800EA95CF /* UserDC.swift in Sources */,
+				F00E42622A48C31100CFCD32 /* ConditionalModifier.swift in Sources */,
 				349CE1F22969ECF800F8E4F9 /* ChannelsList.swift in Sources */,
 				3463275D29935C3D00FACB50 /* ChannelView.swift in Sources */,
 				349CE200296D353B00F8E4F9 /* Login.swift in Sources */,

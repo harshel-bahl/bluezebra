@@ -45,8 +45,8 @@ struct InputContainer: View {
                     messageEditor
                         .padding(.top, SP.safeAreaHeight*0.01)
                         .padding(.bottom, SP.safeAreaHeight*0.01)
-                        .padding(.leading, SP.width*0.033 + SP.width*0.025*2 + ((initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)*2)
-                        .padding(.trailing, SP.width*0.033 + SP.width*0.025 + (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)
+                        .padding(.leading, SP.screenWidth*0.033 + SP.screenWidth*0.025*2 + ((initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025)*2)
+                        .padding(.trailing, SP.screenWidth*0.033 + SP.screenWidth*0.025 + (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025)
                 }
                 
                 VStack(spacing: 0) {
@@ -61,20 +61,20 @@ struct InputContainer: View {
                     
                     HStack(spacing: 0) {
                         fileButton
-                            .padding(.trailing, SP.width*0.025)
+                            .padding(.trailing, SP.screenWidth*0.025)
                         
                         cameraButton
-                            .padding(.trailing, SP.width*0.025)
+                            .padding(.trailing, SP.screenWidth*0.025)
                         
                         Color.clear
                         
                         sendButton
-                            .padding(.leading, SP.width*0.025)
+                            .padding(.leading, SP.screenWidth*0.025)
                     }
                     .padding(.top, SP.safeAreaHeight*0.01)
                     .padding(.bottom, SP.safeAreaHeight*0.01)
-                    .padding(.leading, SP.width*0.033)
-                    .padding(.trailing, SP.width*0.033)
+                    .padding(.leading, SP.screenWidth*0.033)
+                    .padding(.trailing, SP.screenWidth*0.033)
                     .frame(height: {
                         if let initialSize = initialTFSize {
                             return initialSize.height
@@ -101,8 +101,8 @@ struct InputContainer: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(Color("blueAccent1"))
-                .frame(width: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025,
-                       height: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)
+                .frame(width: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025,
+                       height: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025)
         }
     }
     
@@ -114,8 +114,8 @@ struct InputContainer: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(Color("blueAccent1"))
-                .frame(width: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025,
-                       height: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)
+                .frame(width: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025,
+                       height: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025)
         })
     }
     
@@ -156,8 +156,8 @@ struct InputContainer: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(Color("blueAccent1"))
-                .frame(width: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025,
-                       height: (initialTFSize?.height ?? SP.width*0.1) - SP.safeAreaHeight*0.025)
+                .frame(width: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025,
+                       height: (initialTFSize?.height ?? SP.screenWidth*0.1) - SP.safeAreaHeight*0.025)
         })
         .disabled(message.isEmpty)
     }

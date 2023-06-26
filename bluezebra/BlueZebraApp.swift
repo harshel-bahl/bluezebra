@@ -13,48 +13,33 @@ struct BlueZebraApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
-    @Environment(\.self) var env
+//    @Environment(\.self) var env
     
-    @State var scene = "inactive"
-    
-    @StateObject var screenProperties: ScreenProperties = ScreenProperties()
+//    @State var scene = "inactive"
     
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                GeometryReader { geometry in
-                    Color("background1")
-                        .edgesIgnoringSafeArea(.bottom)
-                        .onAppear() {
-                            self.screenProperties.height = UIScreen.main.bounds.height
-                            self.screenProperties.width = UIScreen.main.bounds.width
-                            self.screenProperties.topSafeAreaInset = geometry.safeAreaInsets.top
-                            self.screenProperties.bottomSafeAreaInset = geometry.safeAreaInsets.bottom
-                            self.screenProperties.safeAreaHeight = UIScreen.main.bounds.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom
-                        }
-                }
-                
-                TopLevelView(scene: $scene)
-                    .environmentObject(screenProperties)
+            SPView(backgroundColour: Color("background1")) {
+                TopLevelView()
             }
         }
-        .onChange(of: env.scenePhase) { phase in
-            switch phase {
-            case .active:
-                print("CLIENT -- scenePhase: app active")
-                scene = "active"
-                
-            case .inactive:
-                print("CLIENT -- scenePhase: app inactive")
-                scene = "inactive"
-                
-            case .background:
-                print("CLIENT -- scenePhase: app entered background")
-                scene = "background"
-                
-            default: break
-            }
-        }
+//        .onChange(of: env.scenePhase) { phase in
+//            switch phase {
+//            case .active:
+//                print("CLIENT -- scenePhase: app active")
+//                scene = "active"
+//
+//            case .inactive:
+//                print("CLIENT -- scenePhase: app inactive")
+//                scene = "inactive"
+//
+//            case .background:
+//                print("CLIENT -- scenePhase: app entered background")
+//                scene = "background"
+//
+//            default: break
+//            }
+//        }
     }
 }
 

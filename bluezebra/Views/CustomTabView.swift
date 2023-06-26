@@ -34,7 +34,7 @@ struct CustomTabView: View {
                         .padding(.top, 7.5)
                 }
             })
-            .padding(.trailing, SP.width*0.1)
+            .padding(.trailing, SP.screenWidth*0.1)
             
             Button(action: {
                 tab = "profile"
@@ -52,7 +52,7 @@ struct CustomTabView: View {
                         .padding(.top, 7.5)
                 }
             })
-            .padding(.leading, SP.width*0.1)
+            .padding(.leading, SP.screenWidth*0.1)
             
             Spacer()
         }

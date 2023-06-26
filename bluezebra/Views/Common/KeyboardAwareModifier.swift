@@ -10,7 +10,7 @@ import Combine
 
 internal struct KeyboardAwareModifier: ViewModifier {
     
-    @EnvironmentObject var screenProperties: ScreenProperties
+    @EnvironmentObject var SP: ScreenProperties
     
     @State private var keyboardHeight: CGFloat = 0 
     
@@ -22,13 +22,13 @@ internal struct KeyboardAwareModifier: ViewModifier {
                 .map { $0.cgRectValue.height },
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in CGFloat(screenProperties.bottomSafeAreaInset) }
+                .map { _ in CGFloat(SP.bottomSAI) }
         ).eraseToAnyPublisher()
     }
     
     public func body(content: Content) -> some View {
         content
-            .padding(.bottom, (keyboardHeight==0 ? screenProperties.bottomSafeAreaInset : keyboardHeight))
+            .padding(.bottom, (keyboardHeight==0 ? SP.bottomSAI : keyboardHeight))
             .onReceive(keyboardHeightPublisher) { height in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     keyboardHeight = height

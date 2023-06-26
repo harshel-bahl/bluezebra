@@ -17,7 +17,9 @@ struct Login: View {
     @State var showRetryPinButton = false
     @State var faceIDFailed = false
     
-    @Binding var scene: String
+    @Environment(\.scenePhase) var scene
+    
+//    @Binding var scene: String
     
     @FocusState var focusedField: Field?
     
@@ -27,7 +29,7 @@ struct Login: View {
     
     var body: some View {
         
-        if scene == "active" {
+        if scene == .active {
             
             ZStack {
                 
@@ -58,7 +60,7 @@ struct Login: View {
                             
                             Spacer()
                         }
-                        .padding(.leading, SP.width*0.08)
+                        .padding(.leading, SP.screenWidth*0.08)
                         .padding(.top, SP.safeAreaHeight*0.08)
                         .padding(.bottom, SP.safeAreaHeight*0.08)
                         
@@ -67,7 +69,7 @@ struct Login: View {
                                 .onAppear() {
                                     focusedField = .logIn
                                 }
-                                .padding(SP.width*0.05)
+                                .padding(SP.screenWidth*0.05)
                         }
                         .frame(maxWidth: .infinity)
                         .background() { Color("background2") }
@@ -77,8 +79,8 @@ struct Login: View {
                                 .stroke(Color("blueAccent1"), lineWidth: 2)
                         )
                         .shadow(radius: 1)
-                        .padding(.leading, SP.width*0.08)
-                        .padding(.trailing, SP.width*0.08)
+                        .padding(.leading, SP.screenWidth*0.08)
+                        .padding(.trailing, SP.screenWidth*0.08)
                         
                         VStack(spacing: 0) {
                             if showRetryPinButton {
@@ -137,7 +139,7 @@ struct Login: View {
                 if index != 3 { Spacer() }
             }
         }
-        .frame(width: SP.width*0.75)
+        .frame(width: SP.screenWidth*0.75)
         .onChange(of: pin) { pin in
             if self.pin.count == 4 {
                 userDC.pinAuth(pin: self.pin) { result in
@@ -166,7 +168,7 @@ struct Login: View {
                 Text("")
             }
         }
-        .frame(width: SP.width*0.125, height: SP.width*0.125)
+        .frame(width: SP.screenWidth*0.125, height: SP.screenWidth*0.125)
         .background() { Color("background2") }
         .cornerRadius(5)
         .overlay {

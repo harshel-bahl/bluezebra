@@ -14,7 +14,9 @@ struct SignUp: View {
     @ObservedObject var channelDC = ChannelDC.shared
     @EnvironmentObject var SP: ScreenProperties
     
-    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
+//    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
+    
+    @State var username: String = ""
     
     @State var selectedEmoji: Emoji?
     @State var displayEmojiPicker = false
@@ -44,18 +46,18 @@ struct SignUp: View {
                     VStack(spacing: 0) {
                         VStack(spacing: 0) {
                             
-                            // BZ logo
-                            
                             HStack {
-                                simpleText(text: "Step 1",
-                                           colour: Color("text1"),
-                                           fontWeight: .bold,
-                                           font: .largeTitle)
+                                FixedText(text: "Step 1",
+                                          colour: Color("text1"),
+                                          size: 34,
+                                          fontWeight: .bold)
                                 
                                 Spacer()
                             }
                             .id(1)
-                            .padding(SP.width*0.08)
+                            .padding(.leading, 25)
+                            .padding(.top, 40)
+//                            .padding(SP.screenWidth*0.08)
                             
                             
                             VStack(spacing: 0) {
@@ -67,24 +69,22 @@ struct SignUp: View {
                                     
                                     Spacer()
                                 }
-                                .padding(.top, SP.width*0.04)
-                                .padding(.leading, SP.width*0.08 - SP.width*0.033)
-                                .padding(.bottom, SP.width*0.05)
+                                .padding(.top, SP.screenWidth*0.04)
+                                .padding(.leading, SP.screenWidth*0.08 - SP.screenWidth*0.033)
+                                .padding(.bottom, SP.screenWidth*0.05)
                                 
                                 avatarButton
-                                    .padding(.bottom, SP.width*0.05)
+                                    .padding(.bottom, SP.screenWidth*0.05)
                                 
                             }
                             .background() { Color("background2") }
-                            .cornerRadius(20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color("blueAccent1"), lineWidth: 2)
-                            )
-                            .shadow(radius: 1)
-                            .padding(.leading, SP.width*0.033)
-                            .padding(.trailing, SP.width*0.033)
-                            .padding(.bottom, SP.width*0.08)
+                            .borderModifier(lineWidth: 2,
+                                            lineColour: Color("blueAccent1"),
+                                            cornerRadius: 20,
+                                            shadowRadius: 1)
+                            .padding(.leading, SP.screenWidth*0.033)
+                            .padding(.trailing, SP.screenWidth*0.033)
+                            .padding(.bottom, SP.screenWidth*0.08)
                             
                             
                             VStack(spacing: 0) {
@@ -98,15 +98,15 @@ struct SignUp: View {
                                             
                                             Spacer()
                                         }
-                                        .padding(.top, SP.width*0.04)
-                                        .padding(.leading, SP.width*0.08 - SP.width*0.033)
-                                        .padding(.bottom, SP.width*0.05)
+                                        .padding(.top, SP.screenWidth*0.04)
+                                        .padding(.leading, SP.screenWidth*0.08 - SP.screenWidth*0.033)
+                                        .padding(.bottom, SP.screenWidth*0.05)
                                         
                                         VStack(spacing: 0) {
                                             GeometryReader { geometry in
                                                 HStack(spacing: 0) {
-                                                    usernameTextfield
-                                                        .frame(width: geometry.size.width*0.666)
+                                                    usernameTextField
+                                                                .frame(width: geometry.size.width*0.666)
                                                     
                                                     checkUsernameBadge
                                                         .frame(width: geometry.size.width*0.066)
@@ -122,28 +122,20 @@ struct SignUp: View {
                                                     .fontWeight(.regular)
                                             }
                                         }
-                                        .padding(.bottom, SP.width*0.05)
+                                        .padding(.bottom, SP.screenWidth*0.05)
                                     }
                                     .background() { Color("background2") }
-                                    .cornerRadius(20)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color("blueAccent1"), lineWidth: 2)
-                                    )
-                                    .shadow(radius: 1)
-                                    .padding(.leading, SP.width*0.033)
-                                    .padding(.trailing, SP.width*0.033)
-                                    .onAppear() {
-                                        DispatchQueue.main.asyncAfter(deadline: .now()+0.75) {
-                                            withAnimation() {
-                                                focusedField = .username
-                                            }
-                                        }
-                                    }
+                                    .borderModifier(lineWidth: 2,
+                                                    lineColour: Color("blueAccent1"),
+                                                    cornerRadius: 20,
+                                                    shadowRadius: 1)
+                                    .padding(.leading, SP.screenWidth*0.033)
+                                    .padding(.trailing, SP.screenWidth*0.033)
+                                    
                                     
                                     if let checkedUsername = checkedUsername, checkedUsername == true {
                                         continueButton1(proxy: proxy)
-                                            .padding(.top, SP.width*0.08)
+                                            .padding(.top, SP.screenWidth*0.08)
                                     }
                                 }
                             }
@@ -151,7 +143,7 @@ struct SignUp: View {
                             
                             Spacer()
                         }
-                        .frame(width: SP.width, height: SP.safeAreaHeight)
+                        .frame(width: SP.screenWidth, height: SP.safeAreaHeight)
                         
                         VStack(spacing: 0) {
                             GeometryReader { geometry in
@@ -179,42 +171,40 @@ struct SignUp: View {
                                             Image(systemName: "arrow.up.circle")
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fit)
-                                                .frame(width: SP.width/15)
+                                                .frame(width: SP.screenWidth/15)
                                                 .foregroundColor(Color("orangeAccent1"))
-                                                .padding(.leading, SP.width*0.001)
+                                                .padding(.leading, SP.screenWidth*0.001)
                                         })
                                     }
-                                    .padding(SP.width*0.08)
+                                    .padding(SP.screenWidth*0.08)
                                     
                                     VStack(spacing: 0) {
                                         pinEntryText1
-                                            .padding(.leading, SP.width*0.08)
-                                            .padding(.trailing, SP.width*0.08)
-                                            .padding(.bottom, SP.width*0.08)
-                                            .padding(.bottom, SP.width*0.05)
-                                            .padding(.top, SP.width*0.04)
+                                            .padding(.leading, SP.screenWidth*0.08)
+                                            .padding(.trailing, SP.screenWidth*0.08)
+                                            .padding(.bottom, SP.screenWidth*0.08)
+                                            .padding(.bottom, SP.screenWidth*0.05)
+                                            .padding(.top, SP.screenWidth*0.04)
                                         
                                         pinBoxes
-                                            .padding(.bottom, SP.width*0.08)
+                                            .padding(.bottom, SP.screenWidth*0.08)
                                     }
                                     .background() { Color("background2") }
-                                    .cornerRadius(20)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color("blueAccent1"), lineWidth: 2)
-                                    )
-                                    .shadow(radius: 1)
-                                    .padding(.leading, SP.width*0.033)
-                                    .padding(.trailing, SP.width*0.033)
+                                    .borderModifier(lineWidth: 2,
+                                                    lineColour: Color("blueAccent1"),
+                                                    cornerRadius: 20,
+                                                    shadowRadius: 1)
+                                    .padding(.leading, SP.screenWidth*0.033)
+                                    .padding(.trailing, SP.screenWidth*0.033)
                                     .onTapGesture {
-                                        if focusedField != .pin { focusedField = .pin }
+//                                        if focusedField != .pin { focusedField = .pin }
                                     }
                                     
                                     VStack(spacing: 0) {
                                         if firstPin.count == 4 && pin.count == 4,
                                            firstPin == pin {
                                             createUserButton
-                                                .padding(.top, SP.width*0.08)
+                                                .padding(.top, SP.screenWidth*0.08)
                                         } else if firstPin.count == 4 && pin.count == 4,
                                                   firstPin != pin {
                                             pinFailure
@@ -230,7 +220,7 @@ struct SignUp: View {
                             }
                         }
                         .id(2)
-                        .frame(width: SP.width, height: SP.safeAreaHeight)
+                        .frame(width: SP.screenWidth, height: SP.safeAreaHeight)
                     }
                     .frame(height: SP.safeAreaHeight*2)
                 }
@@ -244,7 +234,7 @@ struct SignUp: View {
         }
         .sheet(isPresented: $displayEmojiPicker) {
             emojiPickerView
-                .presentationDetents([.height(SP.height*0.5)])
+                .presentationDetents([.height(SP.screenHeight*0.5)])
         }
         .alert("Unable to create user", isPresented: $failure) {
             Button("Try again", role: .cancel) {
@@ -270,13 +260,13 @@ struct SignUp: View {
         }) {
             if let selectedEmoji = selectedEmoji {
                 Text(selectedEmoji.value)
-                    .font(.system(size: SP.width*0.125))
-                    .frame(height: SP.width*0.15)
+                    .font(.system(size: SP.screenWidth*0.125))
+                    .frame(height: SP.screenWidth*0.15)
             } else {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: SP.width*0.15)
+                    .frame(height: SP.screenWidth*0.15)
                     .foregroundColor(Color("blueAccent1"))
             }
         }
@@ -289,47 +279,39 @@ struct SignUp: View {
             .padding()
     }
     
-    var usernameTextfield: some View {
-        let textfield = TextField("Username",
-                                  text: $usernameTM.username,
-                                  onEditingChanged: { isEditing in
-            if isEditing {
-                if self.checkedUsername != nil {
-                    withAnimation(.easeInOut(duration: 0.2)) { self.checkedUsername = nil }
-                }
-            }
-        },
-                                  onCommit: {
-            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
+    var usernameTextField: some View {
+        BZTextField(placeholder: "Username",
+                    startingText: "@",
+                    text: $username,
+                    foregroundColour: Color("text3"),
+                    font: .headline,
+                    fontWeight: .bold,
+                    submitLabel: .go,
+                    characterLimit: 12,
+                    autocapitalisation: false,
+                    autocorrection: false,
+                    trimOnCommit: true,
+                    replaceStartingOnCommit: true,
+                    commitAction: { username in
             
             userDC.checkUsername(username: username) { result in
                 switch result {
                 case .success(let result):
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: 0.15)) {
                         self.checkedUsername = result
                     }
                 case .failure(_): break
                 }
             }
         })
-            .autocapitalization(.none)
-            .disableAutocorrection(true)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .foregroundColor(Color("text3"))
-            .scrollContentBackground(.hidden)
-            .font(.headline)
-            .fontWeight(.regular)
-            .focused($focusedField, equals: .username)
-            .submitLabel(.go)
-            .onChange(of: usernameTM.username) { username in
-                if username.isEmpty {
-                    usernameTM.username = username + "@"
-                } else if username.first != "@" {
-                    usernameTM.username.insert("@", at: usernameTM.username.startIndex)
+        .focused($focusedField, equals: .username)
+        .onAppear() {
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                withAnimation() {
+                    focusedField = .username
                 }
             }
-        
-        return textfield
+        }
     }
     
     @ViewBuilder
@@ -357,7 +339,7 @@ struct SignUp: View {
             
             DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
                 withAnimation() {
-                    focusedField = .pin
+//                    focusedField = .pin
                 }
             }
         }, label: {
@@ -383,7 +365,7 @@ struct SignUp: View {
                 
                 Spacer()
             }
-            .padding(.bottom, SP.width*0.05)
+            .padding(.bottom, SP.screenWidth*0.05)
             
             HStack(spacing: 0) {
                 simpleText(text: "Pick something memorable! There's no other way to access your data",
@@ -400,65 +382,65 @@ struct SignUp: View {
     var pinBoxes: some View {
         HStack(spacing: 0) {
             ForEach(0 ..< 4, id: \.self) { index in
-                pinBoxes(index)
+//                pinBoxes(index)
             }
         }
-        .frame(width: SP.width*0.75)
+        .frame(width: SP.screenWidth*0.75)
         .background(content: {
             TextField("", text: $pin.limit(4))
                 .keyboardType(.numberPad)
                 .frame(width: 1, height: 1)
                 .opacity(0.001)
                 .blendMode(.screen)
-                .focused($focusedField, equals: .pin)
+//                .focused($focusedField, equals: .pin)
         })
     }
     
-    @ViewBuilder
-    func pinBoxes(_ index: Int) -> some View {
-        ZStack{
-            if pin.count > index {
-                let startIndex = pin.startIndex
-                let charIndex = pin.index(startIndex, offsetBy: index)
-                let charToString = String(pin[charIndex])
-                Text(charToString)
-            } else {
-                Text("")
-            }
-        }
-        .frame(width: SP.width*0.125, height: SP.width*0.125)
-        .background() { Color("background2") }
-        .cornerRadius(5)
-        .overlay {
-            let status = (focusedField == .pin && pin.count == index)
-            
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(Color("blueAccent1"), lineWidth: status ? 2 : 0.5)
-                .animation(.easeInOut(duration: 0.2), value: focusedField)
-        }
-        .shadow(radius: 1)
-        .frame(maxWidth: .infinity)
-        .onChange(of: pin) { pin in
-            if pin.count == 4 && firstPin == "" {
-                withAnimation {
-                    self.pin = ""
-                    firstPin = pin
-                }
-            }
-            
-            if firstPin.count == 4 && self.pin.count == 4,
-               firstPin == self.pin {
-                focusedField = nil
-            }
-        }
-    }
+//    @ViewBuilder
+//    func pinBoxes(_ index: Int) -> some View {
+//        ZStack{
+//            if pin.count > index {
+//                let startIndex = pin.startIndex
+//                let charIndex = pin.index(startIndex, offsetBy: index)
+//                let charToString = String(pin[charIndex])
+//                Text(charToString)
+//            } else {
+//                Text("")
+//            }
+//        }
+//        .frame(width: SP.screenWidth*0.125, height: SP.screenWidth*0.125)
+//        .background() { Color("background2") }
+////        .cornerRadius(5)
+//        .overlay {
+//            let status = (focusedField == .pin && pin.count == index)
+//
+//            RoundedRectangle(cornerRadius: 5, style: .continuous)
+//                .stroke(Color("blueAccent1"), lineWidth: status ? 2 : 0.5)
+//                .animation(.easeInOut(duration: 0.2), value: focusedField)
+//        }
+//        .shadow(radius: 1)
+//        .frame(maxWidth: .infinity)
+//        .onChange(of: pin) { pin in
+//            if pin.count == 4 && firstPin == "" {
+//                withAnimation {
+//                    self.pin = ""
+//                    firstPin = pin
+//                }
+//            }
+//
+//            if firstPin.count == 4 && self.pin.count == 4,
+//               firstPin == self.pin {
+//                focusedField = nil
+//            }
+//        }
+//    }
     
     var createUserButton: some View {
         let button = Button(action: {
             
-            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
+//            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
             
-            userDC.createUser(username: username,
+            userDC.createUser(username: "",
                               pin: pin,
                               avatar: selectedEmoji!.name) { result in
                 

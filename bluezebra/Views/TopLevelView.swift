@@ -17,18 +17,16 @@ struct TopLevelView: View {
     @StateObject var styles = Styles()
     
     @State var fetchedUser = false
-    @Binding var scene: String
     
     var body: some View {
         VStack {
             if (userDC.userData == nil || userDC.loggedIn != true) {
                 
-                AuthenticationHome(fetchedUser: $fetchedUser,
-                                   scene: $scene)
+                AuthenticationHome(fetchedUser: $fetchedUser)
                 
             } else if (userDC.userData != nil && userDC.loggedIn == true) {
                 
-                HomePage(scene: $scene)
+                HomePage()
                     .onAppear() {
                         if !userDC.userOnline {
                             socketController.userConnection()
@@ -41,18 +39,14 @@ struct TopLevelView: View {
                     }
             }
         }
+        .sceneModifier(activeAction: {
+            startup()
+        }, inactiveAction: {
+            prepareShutdown()
+        }, backgroundAction: {
+            shutdown()
+        })
         .environmentObject(styles)
-        .onChange(of: scene) { phase in
-            switch phase {
-            case "active":
-                startup()
-            case "inactive":
-                prepareShutdown()
-            case "background":
-                shutdown()
-            default: break
-            }
-        }
     }
     
     func startup() {
