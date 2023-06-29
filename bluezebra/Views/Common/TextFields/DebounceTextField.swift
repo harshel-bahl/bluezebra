@@ -12,8 +12,7 @@ struct DebounceTextField: View {
     @StateObject var textFieldObserver: TextFieldObserver
     
     @Binding var text: String
-    
-    var placeholder: String
+    var placeholder: String?
     
     var foregroundColour: Color
     var font: Font
@@ -33,7 +32,7 @@ struct DebounceTextField: View {
     
     init(text: Binding<String>,
          startingText: String? = nil,
-         placeholder: String,
+         placeholder: String? = nil,
          foregroundColour: Color,
          font: Font,
          fontWeight: Font.Weight? = nil,
@@ -41,6 +40,7 @@ struct DebounceTextField: View {
          border: Color? = nil,
          keyboardType: UIKeyboardType? = nil,
          characterLimit: Int? = nil,
+         valuesToRemove: Set<String>? = nil,
          lineLimit: Int? = nil,
          autocapitalisation: Bool = false,
          autocorrection: Bool = false,
@@ -49,25 +49,26 @@ struct DebounceTextField: View {
          preprocessActions: ((String)->(String))? = nil,
          debouncedAction: ((String)->())? = nil,
          debounceFor: Double? = nil) {
-        self._textFieldObserver = StateObject(wrappedValue: TextFieldObserver(startingText: startingText,
-                                                                              text: text.wrappedValue,
-                                                                              debounceFor: debounceFor,
-                                                                              characterLimit: characterLimit))
-        self._text = text
-        self.placeholder = placeholder
-        self.foregroundColour = foregroundColour
-        self.font = font
-        self.fontWeight = fontWeight
-        self.axis = axis
-        self.border = border
-        self.keyboardType = keyboardType
-        self.lineLimit = lineLimit
-        self.autocapitalisation = autocapitalisation
-        self.autocorrection = autocorrection
-        self.trimOnCommit = trimOnCommit
-        self.replaceStartingOnCommit = replaceStartingOnCommit
-        self.preprocessActions = preprocessActions
-        self.debouncedAction = debouncedAction
+            self._textFieldObserver = StateObject(wrappedValue: TextFieldObserver(startingText: startingText,
+                                                                                  text: text.wrappedValue,
+                                                                                  debounceFor: debounceFor,
+                                                                                  characterLimit: characterLimit,
+                                                                                  valuesToRemove: valuesToRemove))
+            self._text = text
+            self.placeholder = placeholder
+            self.foregroundColour = foregroundColour
+            self.font = font
+            self.fontWeight = fontWeight
+            self.axis = axis
+            self.border = border
+            self.keyboardType = keyboardType
+            self.lineLimit = lineLimit
+            self.autocapitalisation = autocapitalisation
+            self.autocorrection = autocorrection
+            self.trimOnCommit = trimOnCommit
+            self.replaceStartingOnCommit = replaceStartingOnCommit
+            self.preprocessActions = preprocessActions
+            self.debouncedAction = debouncedAction
     }
     
     var body: some View {
@@ -126,11 +127,11 @@ struct DebounceTextField: View {
     
     @ViewBuilder var textField: some View {
         if let axis = axis {
-            TextField(placeholder,
+            TextField(placeholder ??  "",
                       text: $textFieldObserver.text,
                       axis: axis)
         } else {
-            TextField(placeholder,
+            TextField(placeholder ?? "",
                       text: $textFieldObserver.text)
         }
     }

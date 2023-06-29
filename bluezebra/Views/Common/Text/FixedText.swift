@@ -29,10 +29,10 @@ struct FixedText: View {
     
     var body: some View {
         Text(text)
-            .foregroundColor(colour)
             .font(.system(size: size,
                           weight: fontWeight,
                           design: fontDesign))
+            .foregroundColor(colour)
     }
 }
 

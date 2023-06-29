@@ -14,8 +14,6 @@ struct SignUp: View {
     @ObservedObject var channelDC = ChannelDC.shared
     @EnvironmentObject var SP: ScreenProperties
     
-//    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
-    
     @State var username: String = ""
     
     @State var selectedEmoji: Emoji?
@@ -229,7 +227,7 @@ struct SignUp: View {
             }
             
             if createUserSuccess == true {
-                SuccessView1()
+//                SuccessView1()
             }
         }
         .sheet(isPresented: $displayEmojiPicker) {
@@ -282,10 +280,10 @@ struct SignUp: View {
     var usernameTextField: some View {
         DebounceTextField(text: $username,
                           startingText: "@",
-                          placeholder: "Username",
                           foregroundColour: Color("text3"),
                           font: .headline,
                           characterLimit: 13,
+                          valuesToRemove: BZSetup.shared.removeUsernameValues,
                           trimOnCommit: true,
                           replaceStartingOnCommit: true,
                           debouncedAction: { username in
@@ -300,10 +298,10 @@ struct SignUp: View {
                 }
             }
         },
-                          debounceFor: 0.75)
+                          debounceFor: 0.5)
         .focused($focusedField, equals: .username)
         .onAppear() {
-            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation() {
                     focusedField = .username
                 }

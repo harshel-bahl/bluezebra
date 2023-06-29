@@ -28,6 +28,12 @@ class TextFieldObserver : ObservableObject {
                self.text.prefix(startingText.count) != startingText {
                 self.text = startingText
             }
+            
+            if let valuesToRemove = self.valuesToRemove,
+               text != removeValuesFrom(string: text,
+                                        valuesToRemove: valuesToRemove) {
+                self.text = oldValue
+            }
         }
     }
     
@@ -35,18 +41,21 @@ class TextFieldObserver : ObservableObject {
     
     var debounceFor: Double?
     var characterLimit: Int?
+    var valuesToRemove: Set<String>?
     
     private var subscriptions = Set<AnyCancellable>()
     
     init(startingText: String? = nil,
          text: String = "",
          debounceFor: Double? = nil,
-         characterLimit: Int? = nil) {
+         characterLimit: Int? = nil,
+         valuesToRemove: Set<String>? = nil) {
         
         self.startingText = startingText
-        self.text = text
+        self.text = (startingText ?? "") + text
         self.debounceFor = debounceFor
         self.characterLimit = characterLimit
+        self.valuesToRemove = (startingText != nil && valuesToRemove != nil) ? valuesToRemove!.filter({ $0 != self.startingText }) : valuesToRemove
         
         if let debounceFor = debounceFor {
             $text
@@ -56,6 +65,22 @@ class TextFieldObserver : ObservableObject {
                 } )
                 .store(in: &subscriptions)
         }
+    }
+    
+    func removeValuesFrom(string: String, valuesToRemove: Set<String>) -> String {
+        var cleanedString = string
+        
+        for value in valuesToRemove {
+            let regex = try! NSRegularExpression(pattern: NSRegularExpression.escapedPattern(for: value))
+            cleanedString = regex.stringByReplacingMatches(
+                in: cleanedString,
+                options: [],
+                range: NSRange(location: 0, length: cleanedString.utf16.count),
+                withTemplate: ""
+            )
+        }
+        
+        return cleanedString
     }
 }
 

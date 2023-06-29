@@ -24,8 +24,12 @@ struct SPView<Content: View>: View {
     
     var body: some View {
         ZStack {
+            
+            backgroundColour
+                .ignoresSafeArea()
+            
             GeometryReader { proxy in
-                backgroundColour
+                Color.clear
                     .onAppear() {
                         self.SP.safeAreaHeight = UIScreen.main.bounds.height - proxy.safeAreaInsets.top - proxy.safeAreaInsets.bottom
                         self.SP.topSAI = proxy.safeAreaInsets.top

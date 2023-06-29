@@ -12,8 +12,7 @@ struct SubmitTextField: View {
     @StateObject var textFieldObserver: TextFieldObserver
     
     @Binding var text: String
-    
-    var placeholder: String
+    var placeholder: String?
     
     var foregroundColour: Color
     var font: Font
@@ -35,7 +34,7 @@ struct SubmitTextField: View {
     
     init(text: Binding<String>,
          startingText: String? = nil,
-         placeholder: String,
+         placeholder: String? = nil,
          foregroundColour: Color,
          font: Font,
          fontWeight: Font.Weight? = nil,
@@ -44,6 +43,7 @@ struct SubmitTextField: View {
          submitLabel: SubmitLabel? = nil,
          keyboardType: UIKeyboardType? = nil,
          characterLimit: Int? = nil,
+         valuesToRemove: Set<String>? = nil,
          lineLimit: Int? = nil,
          autocapitalisation: Bool = false,
          autocorrection: Bool = false,
@@ -54,7 +54,8 @@ struct SubmitTextField: View {
          submitAction: ((String)->())? = nil) {
         self._textFieldObserver = StateObject(wrappedValue: TextFieldObserver(startingText: startingText,
                                                                               text: text.wrappedValue,
-                                                                              characterLimit: characterLimit))
+                                                                              characterLimit: characterLimit,
+                                                                              valuesToRemove: valuesToRemove))
         self._text = text
         self.placeholder = placeholder
         self.foregroundColour = foregroundColour
@@ -161,11 +162,11 @@ struct SubmitTextField: View {
     /// submitLabel cannot be supplied with axis as the label just creates a new line
     @ViewBuilder var textField: some View {
         if let axis = axis {
-            TextField(placeholder,
+            TextField(placeholder ?? "",
                       text: $textFieldObserver.text,
                       axis: axis)
         } else {
-            TextField(placeholder,
+            TextField(placeholder ?? "",
                       text: $textFieldObserver.text)
             .if(submitLabel != nil, transform: { view in
                 view.submitLabel(submitLabel!)

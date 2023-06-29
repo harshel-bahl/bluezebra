@@ -16,19 +16,20 @@ struct Avatar: View {
         avatarButton
     }
     
+    @ViewBuilder
     var avatarButton: some View {
         if let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-            return AnyView(Text(emoji.value)
+            Text(emoji.value)
                 .font(.system(size: size.height))
                 .frame(width: size.width,
-                       height: size.height))
+                       height: size.height)
         } else {
-            return AnyView(Image(systemName: "person.crop.circle.fill")
+            Image(systemName: "person.crop.circle.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size.width,
                        height: size.height)
-                    .foregroundColor(Color("blueAccent1")))
+                .foregroundColor(Color("blueAccent1"))
         }
     }
 }
