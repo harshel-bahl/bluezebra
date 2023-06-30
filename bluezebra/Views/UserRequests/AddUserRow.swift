@@ -21,9 +21,9 @@ struct AddUserRow: View {
     var body: some View {
         HStack(spacing: 0) {
             
-            Avatar(avatar: remoteUser.avatar, size: .init(width: 40,
-                                                          height: 40))
-            .padding(.trailing, 20)
+//            Avatar(avatar: remoteUser.avatar, size: .init(width: 40,
+//                                                          height: 40))
+//            .padding(.trailing, 20)
             
             Text("@" + remoteUser.username)
                 .font(.headline)

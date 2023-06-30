@@ -11,28 +11,37 @@ struct FixedText: View {
     
     var text: String
     var colour: Color
-    var size: CGFloat
+    let fontSize: CGFloat
+    var size: CGSize?
     var fontWeight: Font.Weight?
     var fontDesign: Font.Design?
+    let lineLimit: Int?
     
     init(text: String,
          colour: Color,
-         size: CGFloat,
+         fontSize: CGFloat,
+         size: CGSize? = nil,
          fontWeight: Font.Weight? = nil,
-         fontDesign: Font.Design? = nil) {
+         fontDesign: Font.Design? = nil,
+         lineLimit: Int? = nil) {
         self.text = text
         self.colour = colour
+        self.fontSize = fontSize
         self.size = size
         self.fontWeight = fontWeight
         self.fontDesign = fontDesign
+        self.lineLimit = lineLimit
     }
     
     var body: some View {
         Text(text)
-            .font(.system(size: size,
+            .font(.system(size: fontSize,
                           weight: fontWeight,
                           design: fontDesign))
+            .frame(width: size?.width,
+                   height: size?.height)
             .foregroundColor(colour)
+            .lineLimit(lineLimit)
     }
 }
 

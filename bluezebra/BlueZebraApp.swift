@@ -15,7 +15,15 @@ struct BlueZebraApp: App {
     var body: some Scene {
         WindowGroup {
             SPView(backgroundColour: Color("background1")) {
-                TopLevelView()
+//                TopLevelView()
+                ButtonAni(label: "harshel",
+                           fontSize: 14,
+                           fontWeight: .bold,
+                           foregroundColour: .white,
+                           BGColour: .accentColor,
+                           action: {
+                    print("hello")
+                })
             }
         }
     }

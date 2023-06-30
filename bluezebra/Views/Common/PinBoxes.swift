@@ -88,7 +88,7 @@ struct PinBoxes: View {
             if pin.count > index {
                 FixedText(text: "*",
                           colour: characterColour,
-                          size: characterSize,
+                          fontSize: characterSize,
                           fontWeight: characterWeight)
                 .offset(y: 7.5)
             }

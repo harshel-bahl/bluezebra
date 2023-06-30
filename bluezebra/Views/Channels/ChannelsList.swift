@@ -105,20 +105,20 @@ struct ChannelsList: View {
                         .frame(width: 15)
                         .padding(.trailing, 2.5)
                         
-                        if let avatar = userDC.userData?.avatar,
-                           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-                            Text(emoji.value)
-                                .font(.system(size: 45))
-                                .frame(width: 45,
-                                       height: 45)
-                        } else {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 45,
-                                       height: 45)
-                                .foregroundColor(Color("blueAccent1"))
-                        }
+//                        if let avatar = userDC.userData?.avatar,
+//                           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
+//                            Text(emoji.value)
+//                                .font(.system(size: 45))
+//                                .frame(width: 45,
+//                                       height: 45)
+//                        } else {
+//                            Image(systemName: "person.crop.circle.fill")
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .frame(width: 45,
+//                                       height: 45)
+//                                .foregroundColor(Color("blueAccent1"))
+//                        }
                         
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {

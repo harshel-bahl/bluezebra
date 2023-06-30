@@ -49,18 +49,5 @@ final class BZEmojiProvider1: EmojiProvider {
             Emoji(value: "🐔", name: "chicken"),
         ]
     }
-    
-    func getEmojiByName(name: String) -> Emoji? {
-            
-            var outputEmojis = [Emoji]()
-            
-            for emoji in self.getAll() {
-                if emoji.name == name {
-                    outputEmojis.append(emoji)
-                }
-            }
-            
-        return outputEmojis.first
-    }
 }
 

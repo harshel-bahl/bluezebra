@@ -6,10 +6,43 @@
 //
 
 import SwiftUI
+import EmojiPicker
 
-struct EmojiPicker: View {
+struct EmojiPicker<Content: View>: View {
+    
+    @Binding var showEmojiPicker: Bool
+    @Binding var selectedEmoji: Emoji?
+    
+    @ViewBuilder var content: (Binding<Bool>, Binding<Emoji?>) -> Content
+    
+    let sheetHeight: CGFloat
+    let emojiProvider: EmojiProvider
+    
+    init(showEmojiPicker: Binding<Bool>,
+         selectedEmoji: Binding<Emoji?>,
+        content: @escaping (Binding<Bool>, Binding<Emoji?>) -> Content,
+         sheetHeight: CGFloat,
+         emojiProvider: EmojiProvider) {
+        self._showEmojiPicker = showEmojiPicker
+        self._selectedEmoji = selectedEmoji
+        self.content = content
+        self.sheetHeight = sheetHeight
+        self.emojiProvider = emojiProvider
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        content($showEmojiPicker, $selectedEmoji)
+            .sheet(isPresented: $showEmojiPicker) {
+                emojiPickerView
+                    .presentationDetents([.height(sheetHeight)])
+            }
+    }
+    
+    var emojiPickerView: some View {
+        EmojiPickerView(selectedEmoji: $selectedEmoji,
+                        selectedColor: .blue,
+                        emojiProvider: self.emojiProvider)
+            .padding()
     }
 }
 

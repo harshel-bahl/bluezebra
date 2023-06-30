@@ -29,21 +29,21 @@ struct AccountTab: View {
                 Spacer()
             }
             
-            ButtonTemp(label: "Reset Accout",
-                       backgroundColour: Color.orange,
-                       foregroundColour: Color("text1")) {
-                Task {
-                    try? await userDC.resetUserData()
-                }
-            }
-            
-            ButtonTemp(label: "Delete Account",
-                       backgroundColour: Color.red,
-                       foregroundColour: Color("text1")) {
-                Task {
-                    try? await userDC.hardReset()
-                }
-            }
+//            ButtonTemp(label: "Reset Accout",
+//                       backgroundColour: Color.orange,
+//                       foregroundColour: Color("text1")) {
+//                Task {
+//                    try? await userDC.resetUserData()
+//                }
+//            }
+//            
+//            ButtonTemp(label: "Delete Account",
+//                       backgroundColour: Color.red,
+//                       foregroundColour: Color("text1")) {
+//                Task {
+//                    try? await userDC.hardReset()
+//                }
+//            }
         }
     }
 }

@@ -47,7 +47,7 @@ struct SignUp: View {
                             HStack {
                                 FixedText(text: "Step 1",
                                           colour: Color("text1"),
-                                          size: 34,
+                                          fontSize: 34,
                                           fontWeight: .bold)
                                 
                                 Spacer()

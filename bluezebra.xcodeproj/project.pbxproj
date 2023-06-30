@@ -96,7 +96,7 @@
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
 		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
 		F07059172A412BAC002571A4 /* RUPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUPacket.swift */; };
-		F09DFA812A438CBB008D4DB1 /* ButtonTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */; };
+		F09DFA812A438CBB008D4DB1 /* ButtonAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */; };
 		F09DFA882A4848F4008D4DB1 /* ExyteMediaPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */; };
 		F09DFA8B2A484BE6008D4DB1 /* FilePicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA8A2A484BE6008D4DB1 /* FilePicker */; };
 		F0AE43662A49EF7800A1E181 /* EmojiPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43652A49EF7800A1E181 /* EmojiPicker.swift */; };
@@ -116,6 +116,13 @@
 		F0AE43882A4BA91200A1E181 /* SimpleSegmentAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */; };
 		F0AE438A2A4C498100A1E181 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43892A4C498100A1E181 /* ProfileView.swift */; };
 		F0AE438C2A4D1C9400A1E181 /* CustomSegmentAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */; };
+		F0AE438E2A4E639B00A1E181 /* SheetModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */; };
+		F0AE43902A4E63B200A1E181 /* AlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */; };
+		F0AE43922A4F78C000A1E181 /* DateDMY.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43912A4F78C000A1E181 /* DateDMY.swift */; };
+		F0AE43942A4F78CA00A1E181 /* DateMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43932A4F78CA00A1E181 /* DateMed.swift */; };
+		F0AE43962A4F78FF00A1E181 /* TimeHMA.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */; };
+		F0AE43982A4F790600A1E181 /* TimeHM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43972A4F790600A1E181 /* TimeHM.swift */; };
+		F0AE439A2A4F795400A1E181 /* DateDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43992A4F795400A1E181 /* DateDay.swift */; };
 		F0E311792A36CA5C00CF74B9 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* Avatar.swift */; };
 /* End PBXBuildFile section */
 
@@ -209,7 +216,7 @@
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
 		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
 		F07059162A412BAC002571A4 /* RUPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUPacket.swift; sourceTree = "<group>"; };
-		F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonTemp.swift; sourceTree = "<group>"; };
+		F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonAni.swift; sourceTree = "<group>"; };
 		F0AE43652A49EF7800A1E181 /* EmojiPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPicker.swift; sourceTree = "<group>"; };
 		F0AE43672A49EF8A00A1E181 /* PaginatedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginatedScrollView.swift; sourceTree = "<group>"; };
 		F0AE43692A4B6C1700A1E181 /* BZSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BZSetup.swift; sourceTree = "<group>"; };
@@ -227,6 +234,13 @@
 		F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSegmentAni.swift; sourceTree = "<group>"; };
 		F0AE43892A4C498100A1E181 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentAni.swift; sourceTree = "<group>"; };
+		F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetModifier.swift; sourceTree = "<group>"; };
+		F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertModifier.swift; sourceTree = "<group>"; };
+		F0AE43912A4F78C000A1E181 /* DateDMY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDMY.swift; sourceTree = "<group>"; };
+		F0AE43932A4F78CA00A1E181 /* DateMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateMed.swift; sourceTree = "<group>"; };
+		F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHMA.swift; sourceTree = "<group>"; };
+		F0AE43972A4F790600A1E181 /* TimeHM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHM.swift; sourceTree = "<group>"; };
+		F0AE43992A4F795400A1E181 /* DateDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDay.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -488,6 +502,8 @@
 				F00E425B2A48764700CFCD32 /* BorderOverlay.swift */,
 				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
 				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
+				F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */,
+				F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -543,6 +559,11 @@
 				F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */,
 				F065C61D2A3384E4007E1D9F /* DateLabel.swift */,
 				F065C61F2A3384EB007E1D9F /* TimeLabel.swift */,
+				F0AE43912A4F78C000A1E181 /* DateDMY.swift */,
+				F0AE43932A4F78CA00A1E181 /* DateMed.swift */,
+				F0AE43992A4F795400A1E181 /* DateDay.swift */,
+				F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */,
+				F0AE43972A4F790600A1E181 /* TimeHM.swift */,
 			);
 			path = DateTime;
 			sourceTree = "<group>";
@@ -568,7 +589,10 @@
 		F0AE436F2A4B8C0E00A1E181 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
-				F09DFA802A438CBB008D4DB1 /* ButtonTemp.swift */,
+				F0AE437D2A4BA89700A1E181 /* ReactionAni.swift */,
+				F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */,
+				F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */,
+				F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -580,13 +604,10 @@
 				F0AE43712A4B918400A1E181 /* PulsatingImage.swift */,
 				F0AE43732A4B92D700A1E181 /* PulsatingCircle.swift */,
 				F0AE437B2A4BA59F00A1E181 /* LoadingSpinner.swift */,
-				F0AE437D2A4BA89700A1E181 /* ReactionAni.swift */,
 				F0AE437F2A4BA8AA00A1E181 /* LikeAni.swift */,
 				F0AE43812A4BA8C900A1E181 /* ProgressBar.swift */,
 				F0AE43832A4BA8F900A1E181 /* RecordingAni.swift */,
 				F0AE43852A4BA90300A1E181 /* TypingAni.swift */,
-				F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */,
-				F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -678,6 +699,7 @@
 				3475AE9129EF9E18001882D4 /* CDPacket.swift in Sources */,
 				349CE1F02969ECE500F8E4F9 /* ProfileHome.swift in Sources */,
 				345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */,
+				F0AE438E2A4E639B00A1E181 /* SheetModifier.swift in Sources */,
 				34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */,
 				F0AE43742A4B92D700A1E181 /* PulsatingCircle.swift in Sources */,
 				341065E12962E1DA001644B0 /* AuthenticationHome.swift in Sources */,
@@ -686,21 +708,24 @@
 				F00E42652A4962EA00CFCD32 /* SubmitTextField.swift in Sources */,
 				34E1E08729E2222D007319C3 /* Styles.swift in Sources */,
 				34938E162967CE6900EA95CF /* Data.xcdatamodeld in Sources */,
-				F09DFA812A438CBB008D4DB1 /* ButtonTemp.swift in Sources */,
+				F09DFA812A438CBB008D4DB1 /* ButtonAni.swift in Sources */,
 				F0AE436A2A4B6C1700A1E181 /* BZSetup.swift in Sources */,
 				F065C61C2A3267D8007E1D9F /* DateUtilities.swift in Sources */,
 				34C839F029CFD9C10093C48B /* DeletionLog.swift in Sources */,
 				34C839F329CFE23A0093C48B /* AddUserRow.swift in Sources */,
 				34E1E08929E22D00007319C3 /* InputContainer.swift in Sources */,
 				346C302F29EACFDA0075107E /* DataPC+Update.swift in Sources */,
+				F0AE43902A4E63B200A1E181 /* AlertModifier.swift in Sources */,
 				34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */,
 				3475AEA229EFBD4A001882D4 /* UserDC+Events.swift in Sources */,
 				3489D5D329F84CC20074EF5E /* ChannelRequest.swift in Sources */,
 				3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */,
 				F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */,
 				34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */,
+				F0AE43942A4F78CA00A1E181 /* DateMed.swift in Sources */,
 				3475AE8F29EF9DB4001882D4 /* UserPacket.swift in Sources */,
 				F0AE43802A4BA8AA00A1E181 /* LikeAni.swift in Sources */,
+				F0AE43922A4F78C000A1E181 /* DateDMY.swift in Sources */,
 				F07059172A412BAC002571A4 /* RUPacket.swift in Sources */,
 				3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */,
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
@@ -708,6 +733,7 @@
 				34938E132967C7FD00EA95CF /* HomePage.swift in Sources */,
 				F065C6222A338D9B007E1D9F /* PEError.swift in Sources */,
 				F0AE43662A49EF7800A1E181 /* EmojiPicker.swift in Sources */,
+				F0AE43962A4F78FF00A1E181 /* TimeHMA.swift in Sources */,
 				F0AE43722A4B918400A1E181 /* PulsatingImage.swift in Sources */,
 				F0AE437E2A4BA89700A1E181 /* ReactionAni.swift in Sources */,
 				F0AE438A2A4C498100A1E181 /* ProfileView.swift in Sources */,
@@ -743,9 +769,11 @@
 				34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */,
 				F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */,
 				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
+				F0AE43982A4F790600A1E181 /* TimeHM.swift in Sources */,
 				F04AEC3D2A2CBE7500276FF4 /* TextFieldObserver.swift in Sources */,
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,
 				F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */,
+				F0AE439A2A4F795400A1E181 /* DateDay.swift in Sources */,
 				349CE22C296FB15500F8E4F9 /* MessageDC.swift in Sources */,
 				F0AE43782A4B961E00A1E181 /* ScrollViewList.swift in Sources */,
 				3475AE9829EFB8DA001882D4 /* ChannelDC+Handlers.swift in Sources */,

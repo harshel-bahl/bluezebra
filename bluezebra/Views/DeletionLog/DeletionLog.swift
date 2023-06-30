@@ -69,9 +69,9 @@ struct DeletionLog: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 
-                Avatar(avatar: CD.icon, size: .init(width: 40,
-                                                    height: 40))
-                .padding(.trailing, 20)
+//                Avatar(avatar: CD.icon, size: .init(width: 40,
+//                                                    height: 40))
+//                .padding(.trailing, 20)
                 
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
