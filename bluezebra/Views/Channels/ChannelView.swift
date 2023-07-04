@@ -63,23 +63,23 @@ struct ChannelView: View {
                         .padding(.trailing, 2.5)
                         
                         ZStack {
-                            if let avatar = RU?.avatar,
-                               let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-                                Text(emoji.value)
-                                    .font(.system(size: 45))
-                                    .frame(width: 45,
-                                           height: 45)
-                                    .onTapGesture {
-                                        // navigate to user profile
-                                    }
-                            } else {
-                                Image(systemName: "person.crop.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 45,
-                                           height: 45)
-                                    .foregroundColor(Color("blueAccent1"))
-                            }
+//                            if let avatar = RU?.avatar,
+//                               let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
+//                                Text(emoji.value)
+//                                    .font(.system(size: 45))
+//                                    .frame(width: 45,
+//                                           height: 45)
+//                                    .onTapGesture {
+//                                        // navigate to user profile
+//                                    }
+//                            } else {
+//                                Image(systemName: "person.crop.circle.fill")
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fit)
+//                                    .frame(width: 45,
+//                                           height: 45)
+//                                    .foregroundColor(Color("blueAccent1"))
+//                            }
                             
                             if let RU = RU,
                                let online = channelDC.onlineUsers[RU.userID],
@@ -120,11 +120,11 @@ struct ChannelView: View {
                                 Spacer()
                                 
                                 if let latestDate = latestMessage?.date {
-                                    DateTimeLabel(date: latestDate,
-                                                  font: .subheadline,
-                                                  colour: Color("text2"),
-                                                  mode: 2)
-                                    .padding(.trailing, 7.5)
+//                                    DateTimeLabel(date: latestDate,
+//                                                  font: .subheadline,
+//                                                  colour: Color("text2"),
+//                                                  mode: 2)
+//                                    .padding(.trailing, 7.5)
                                     
                                 } else {
                                     Text("-")

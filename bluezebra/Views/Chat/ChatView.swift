@@ -67,21 +67,21 @@ struct ChatView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     
-                    if let icon = getIcon(channelID: channel.channelID),
-                       let image = BZEmojiProvider1.shared.getEmojiByName(name: icon) {
-                        Text(image.value)
-                            .font(.system(size: geometry.size.height*0.66))
-                            .frame(height: geometry.size.height*0.66)
-                            .onTapGesture {
-                                // navigate to user profile
-                            }
-                    } else {
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: geometry.size.height*0.66)
-                            .foregroundColor(Color("blueAccent1"))
-                    }
+//                    if let icon = getIcon(channelID: channel.channelID),
+//                       let image = BZEmojiProvider1.shared.getEmojiByName(name: icon) {
+//                        Text(image.value)
+//                            .font(.system(size: geometry.size.height*0.66))
+//                            .frame(height: geometry.size.height*0.66)
+//                            .onTapGesture {
+//                                // navigate to user profile
+//                            }
+//                    } else {
+//                        Image(systemName: "person.crop.circle.fill")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                            .frame(height: geometry.size.height*0.66)
+//                            .foregroundColor(Color("blueAccent1"))
+//                    }
                     
                     if let name = getName(channelID: channel.channelID) {
                         Text(name)

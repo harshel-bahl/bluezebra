@@ -82,16 +82,6 @@ class DateU {
         return df.string(from: date)
     }
     
-    /// datetimeDMYhma
-    /// returns (01-01-23, 11:45 PM)
-    func datetimeDMYhma(date: Date) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "dd-MM-yy, HH:mm"
-        df.timeZone = TimeZone.current
-        df.locale = Locale.current
-        return df.string(from: date)
-    }
-    
     /// dateMed
     /// returns medium style date (Jun 9, 2023) with UTC timezone
     func dateMed(date: Date) -> String {
@@ -102,32 +92,11 @@ class DateU {
         return df.string(from: date)
     }
     
-    /// datetimeMedShor
-    /// returns (Jun 9, 2023 at 3:30 PM) with UTC timezone
-    func datetimeMedShor(date: Date) -> String {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.timeStyle = .short
-        df.timeZone = TimeZone.current
-        df.locale = Locale.current
-        return df.string(from: date)
-    }
-    
     /// dateDay
     /// returns the day of the week for the given date in UTC timezone
     func dateDay(date: Date) -> String {
         let df = DateFormatter()
         df.dateFormat = "EEEE"
-        df.timeZone = TimeZone.current
-        df.locale = Locale.current
-        return df.string(from: date)
-    }
-    
-    /// datetimeDayha
-    /// returns (Wednesday, 1:13PM)
-    func datetimeDayha(date: Date) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "EEEE, HH:mm"
         df.timeZone = TimeZone.current
         df.locale = Locale.current
         return df.string(from: date)
@@ -152,7 +121,37 @@ class DateU {
         df.locale = Locale.current
         return df.string(from: date)
     }
-
+    
+    /// datetimeDMYhma
+    /// returns (01-01-23, 13:45)
+    func datetimeDMYHm(date: Date) -> String {
+        let df = DateFormatter()
+        df.dateFormat = "dd-MM-yy, HH:mm"
+        df.timeZone = TimeZone.current
+        df.locale = Locale.current
+        return df.string(from: date)
+    }
+    
+    /// datetimeMedShor
+    /// returns (Jun 9, 2023 at 3:30 PM) with UTC timezone
+    func datetimeMedShor(date: Date) -> String {
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .short
+        df.timeZone = TimeZone.current
+        df.locale = Locale.current
+        return df.string(from: date)
+    }
+    
+    /// datetimeDayha
+    /// returns (Wednesday, 13:45)
+    func datetimeDayHm(date: Date) -> String {
+        let df = DateFormatter()
+        df.dateFormat = "EEEE, HH:mm"
+        df.timeZone = TimeZone.current
+        df.locale = Locale.current
+        return df.string(from: date)
+    }
 }
 
 extension Date {

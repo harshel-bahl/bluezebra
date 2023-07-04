@@ -20,7 +20,7 @@ struct EmojiPicker<Content: View>: View {
     
     init(showEmojiPicker: Binding<Bool>,
          selectedEmoji: Binding<Emoji?>,
-        content: @escaping (Binding<Bool>, Binding<Emoji?>) -> Content,
+         content: @escaping (Binding<Bool>, Binding<Emoji?>) -> Content,
          sheetHeight: CGFloat,
          emojiProvider: EmojiProvider) {
         self._showEmojiPicker = showEmojiPicker
@@ -42,7 +42,7 @@ struct EmojiPicker<Content: View>: View {
         EmojiPickerView(selectedEmoji: $selectedEmoji,
                         selectedColor: .blue,
                         emojiProvider: self.emojiProvider)
-            .padding()
+        .padding()
     }
 }
 

@@ -67,10 +67,10 @@ struct ProfileHome: View {
                                     .foregroundColor(Color("text2"))
                                 
                                 if let lastOnline = userDC.userData?.lastOnline {
-                                    DateTimeLabel(date: lastOnline,
-                                                  font: .subheadline,
-                                                  colour: Color("text2"),
-                                                  mode: 1)
+//                                    DateTimeLabel(date: lastOnline,
+//                                                  font: .subheadline,
+//                                                  colour: Color("text2"),
+//                                                  mode: 1)
                                 } else {
                                     Text("-")
                                         .font(.subheadline)
@@ -139,23 +139,24 @@ struct ProfileHome: View {
     }
     
     var avatarButton: some View {
-        if let avatar = userDC.userData?.avatar,
-           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-            return AnyView(Text(emoji.value)
-                .font(.system(size: SP.safeAreaHeight*0.06))
-                .frame(width: SP.safeAreaHeight*0.06,
-                       height: SP.safeAreaHeight*0.06)
-                .onTapGesture {
-                    // navigate to user profile
-                })
-        } else {
-            return AnyView(Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: SP.safeAreaHeight*0.06,
-                       height: SP.safeAreaHeight*0.06)
-                .foregroundColor(Color("blueAccent1")))
-        }
+        Text("")
+//        if let avatar = userDC.userData?.avatar,
+//           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
+//            return AnyView(Text(emoji.value)
+//                .font(.system(size: SP.safeAreaHeight*0.06))
+//                .frame(width: SP.safeAreaHeight*0.06,
+//                       height: SP.safeAreaHeight*0.06)
+//                .onTapGesture {
+//                    // navigate to user profile
+//                })
+//        } else {
+//            return AnyView(Image(systemName: "person.crop.circle.fill")
+//                .resizable()
+//                .aspectRatio(contentMode: .fit)
+//                .frame(width: SP.safeAreaHeight*0.06,
+//                       height: SP.safeAreaHeight*0.06)
+//                .foregroundColor(Color("blueAccent1")))
+//        }
     }
     
     func receiveProfileTab(tab: String) -> some View {

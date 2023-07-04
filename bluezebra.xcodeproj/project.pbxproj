@@ -90,9 +90,8 @@
 		F065C6132A2E8D84007E1D9F /* AuthenticationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */; };
 		F065C6152A2E8D9A007E1D9F /* EncryptionTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */; };
 		F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6162A2E8DAB007E1D9F /* PrivacyPolicyTab.swift */; };
-		F065C6192A2FBEAA007E1D9F /* DateTimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */; };
 		F065C61C2A3267D8007E1D9F /* DateUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61B2A3267D8007E1D9F /* DateUtilities.swift */; };
-		F065C61E2A3384E4007E1D9F /* DateLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateLabel.swift */; };
+		F065C61E2A3384E4007E1D9F /* DateMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateMed.swift */; };
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
 		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
 		F07059172A412BAC002571A4 /* RUPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUPacket.swift */; };
@@ -116,13 +115,13 @@
 		F0AE43882A4BA91200A1E181 /* SimpleSegmentAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */; };
 		F0AE438A2A4C498100A1E181 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43892A4C498100A1E181 /* ProfileView.swift */; };
 		F0AE438C2A4D1C9400A1E181 /* CustomSegmentAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */; };
-		F0AE438E2A4E639B00A1E181 /* SheetModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */; };
-		F0AE43902A4E63B200A1E181 /* AlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */; };
-		F0AE43922A4F78C000A1E181 /* DateDMY.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43912A4F78C000A1E181 /* DateDMY.swift */; };
-		F0AE43942A4F78CA00A1E181 /* DateMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43932A4F78CA00A1E181 /* DateMed.swift */; };
-		F0AE43962A4F78FF00A1E181 /* TimeHMA.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */; };
-		F0AE43982A4F790600A1E181 /* TimeHM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43972A4F790600A1E181 /* TimeHM.swift */; };
-		F0AE439A2A4F795400A1E181 /* DateDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43992A4F795400A1E181 /* DateDay.swift */; };
+		F0AE43902A4E63B200A1E181 /* DestroyAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE438F2A4E63B200A1E181 /* DestroyAlert.swift */; };
+		F0AE439E2A5385BA00A1E181 /* DateTimeShor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE439D2A5385BA00A1E181 /* DateTimeShor.swift */; };
+		F0AE43A02A5385D200A1E181 /* DateTimeMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE439F2A5385D200A1E181 /* DateTimeMed.swift */; };
+		F0AE43A22A5385DF00A1E181 /* DateTimeLong.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43A12A5385DF00A1E181 /* DateTimeLong.swift */; };
+		F0AE43A42A538A7100A1E181 /* DateDMY.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43A32A538A7100A1E181 /* DateDMY.swift */; };
+		F0AE43A62A53B56800A1E181 /* InfoAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43A52A53B56800A1E181 /* InfoAlert.swift */; };
+		F0AE43AA2A53D1EB00A1E181 /* SystemIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43A92A53D1EB00A1E181 /* SystemIcon.swift */; };
 		F0E311792A36CA5C00CF74B9 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* Avatar.swift */; };
 /* End PBXBuildFile section */
 
@@ -210,9 +209,8 @@
 		F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTab.swift; sourceTree = "<group>"; };
 		F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTab.swift; sourceTree = "<group>"; };
 		F065C6162A2E8DAB007E1D9F /* PrivacyPolicyTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyTab.swift; sourceTree = "<group>"; };
-		F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeLabel.swift; sourceTree = "<group>"; };
 		F065C61B2A3267D8007E1D9F /* DateUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtilities.swift; sourceTree = "<group>"; };
-		F065C61D2A3384E4007E1D9F /* DateLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateLabel.swift; sourceTree = "<group>"; };
+		F065C61D2A3384E4007E1D9F /* DateMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateMed.swift; sourceTree = "<group>"; };
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
 		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
 		F07059162A412BAC002571A4 /* RUPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUPacket.swift; sourceTree = "<group>"; };
@@ -234,13 +232,13 @@
 		F0AE43872A4BA91200A1E181 /* SimpleSegmentAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSegmentAni.swift; sourceTree = "<group>"; };
 		F0AE43892A4C498100A1E181 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F0AE438B2A4D1C9400A1E181 /* CustomSegmentAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentAni.swift; sourceTree = "<group>"; };
-		F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetModifier.swift; sourceTree = "<group>"; };
-		F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertModifier.swift; sourceTree = "<group>"; };
-		F0AE43912A4F78C000A1E181 /* DateDMY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDMY.swift; sourceTree = "<group>"; };
-		F0AE43932A4F78CA00A1E181 /* DateMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateMed.swift; sourceTree = "<group>"; };
-		F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHMA.swift; sourceTree = "<group>"; };
-		F0AE43972A4F790600A1E181 /* TimeHM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHM.swift; sourceTree = "<group>"; };
-		F0AE43992A4F795400A1E181 /* DateDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDay.swift; sourceTree = "<group>"; };
+		F0AE438F2A4E63B200A1E181 /* DestroyAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestroyAlert.swift; sourceTree = "<group>"; };
+		F0AE439D2A5385BA00A1E181 /* DateTimeShor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeShor.swift; sourceTree = "<group>"; };
+		F0AE439F2A5385D200A1E181 /* DateTimeMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeMed.swift; sourceTree = "<group>"; };
+		F0AE43A12A5385DF00A1E181 /* DateTimeLong.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeLong.swift; sourceTree = "<group>"; };
+		F0AE43A32A538A7100A1E181 /* DateDMY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDMY.swift; sourceTree = "<group>"; };
+		F0AE43A52A53B56800A1E181 /* InfoAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoAlert.swift; sourceTree = "<group>"; };
+		F0AE43A92A53D1EB00A1E181 /* SystemIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemIcon.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -502,8 +500,8 @@
 				F00E425B2A48764700CFCD32 /* BorderOverlay.swift */,
 				34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */,
 				34E1E08E29E25092007319C3 /* EmojiModifier.swift */,
-				F0AE438D2A4E639B00A1E181 /* SheetModifier.swift */,
-				F0AE438F2A4E63B200A1E181 /* AlertModifier.swift */,
+				F0AE438F2A4E63B200A1E181 /* DestroyAlert.swift */,
+				F0AE43A52A53B56800A1E181 /* InfoAlert.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -514,16 +512,16 @@
 				F0AE43702A4B8C2200A1E181 /* Animations */,
 				F0AE436F2A4B8C0E00A1E181 /* Buttons */,
 				F0AE436E2A4B8BEC00A1E181 /* Text */,
+				F0AE43A72A53CEBF00A1E181 /* Images */,
 				F0AE436D2A4B8BBF00A1E181 /* Avatar */,
 				F0AE436C2A4B8B0100A1E181 /* DateTime */,
 				F0AE436B2A4B8ADD00A1E181 /* TextFields */,
 				F00E42632A490F9C00CFCD32 /* Modifiers */,
+				F0AE43A82A53D1B700A1E181 /* ScrollViews */,
 				34403EBC29924DAC00181C94 /* ScreenProperties.swift */,
 				F065C6102A2E8894007E1D9F /* PinBoxes.swift */,
 				341A0DA42A219F2B00C5B00C /* ChildSizeReader.swift */,
-				F0AE43672A49EF8A00A1E181 /* PaginatedScrollView.swift */,
 				F0AE43752A4B95EA00A1E181 /* TabView1.swift */,
-				F0AE43772A4B961E00A1E181 /* ScrollViewList.swift */,
 				F0AE43892A4C498100A1E181 /* ProfileView.swift */,
 			);
 			path = Common;
@@ -556,14 +554,12 @@
 		F0AE436C2A4B8B0100A1E181 /* DateTime */ = {
 			isa = PBXGroup;
 			children = (
-				F065C6182A2FBEAA007E1D9F /* DateTimeLabel.swift */,
-				F065C61D2A3384E4007E1D9F /* DateLabel.swift */,
+				F065C61D2A3384E4007E1D9F /* DateMed.swift */,
+				F0AE43A32A538A7100A1E181 /* DateDMY.swift */,
 				F065C61F2A3384EB007E1D9F /* TimeLabel.swift */,
-				F0AE43912A4F78C000A1E181 /* DateDMY.swift */,
-				F0AE43932A4F78CA00A1E181 /* DateMed.swift */,
-				F0AE43992A4F795400A1E181 /* DateDay.swift */,
-				F0AE43952A4F78FF00A1E181 /* TimeHMA.swift */,
-				F0AE43972A4F790600A1E181 /* TimeHM.swift */,
+				F0AE439D2A5385BA00A1E181 /* DateTimeShor.swift */,
+				F0AE439F2A5385D200A1E181 /* DateTimeMed.swift */,
+				F0AE43A12A5385DF00A1E181 /* DateTimeLong.swift */,
 			);
 			path = DateTime;
 			sourceTree = "<group>";
@@ -610,6 +606,23 @@
 				F0AE43852A4BA90300A1E181 /* TypingAni.swift */,
 			);
 			path = Animations;
+			sourceTree = "<group>";
+		};
+		F0AE43A72A53CEBF00A1E181 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				F0AE43A92A53D1EB00A1E181 /* SystemIcon.swift */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		F0AE43A82A53D1B700A1E181 /* ScrollViews */ = {
+			isa = PBXGroup;
+			children = (
+				F0AE43672A49EF8A00A1E181 /* PaginatedScrollView.swift */,
+				F0AE43772A4B961E00A1E181 /* ScrollViewList.swift */,
+			);
+			path = ScrollViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -699,7 +712,6 @@
 				3475AE9129EF9E18001882D4 /* CDPacket.swift in Sources */,
 				349CE1F02969ECE500F8E4F9 /* ProfileHome.swift in Sources */,
 				345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */,
-				F0AE438E2A4E639B00A1E181 /* SheetModifier.swift in Sources */,
 				34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */,
 				F0AE43742A4B92D700A1E181 /* PulsatingCircle.swift in Sources */,
 				341065E12962E1DA001644B0 /* AuthenticationHome.swift in Sources */,
@@ -715,17 +727,15 @@
 				34C839F329CFE23A0093C48B /* AddUserRow.swift in Sources */,
 				34E1E08929E22D00007319C3 /* InputContainer.swift in Sources */,
 				346C302F29EACFDA0075107E /* DataPC+Update.swift in Sources */,
-				F0AE43902A4E63B200A1E181 /* AlertModifier.swift in Sources */,
+				F0AE43902A4E63B200A1E181 /* DestroyAlert.swift in Sources */,
 				34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */,
 				3475AEA229EFBD4A001882D4 /* UserDC+Events.swift in Sources */,
 				3489D5D329F84CC20074EF5E /* ChannelRequest.swift in Sources */,
 				3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */,
 				F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */,
 				34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */,
-				F0AE43942A4F78CA00A1E181 /* DateMed.swift in Sources */,
 				3475AE8F29EF9DB4001882D4 /* UserPacket.swift in Sources */,
 				F0AE43802A4BA8AA00A1E181 /* LikeAni.swift in Sources */,
-				F0AE43922A4F78C000A1E181 /* DateDMY.swift in Sources */,
 				F07059172A412BAC002571A4 /* RUPacket.swift in Sources */,
 				3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */,
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
@@ -733,7 +743,6 @@
 				34938E132967C7FD00EA95CF /* HomePage.swift in Sources */,
 				F065C6222A338D9B007E1D9F /* PEError.swift in Sources */,
 				F0AE43662A49EF7800A1E181 /* EmojiPicker.swift in Sources */,
-				F0AE43962A4F78FF00A1E181 /* TimeHMA.swift in Sources */,
 				F0AE43722A4B918400A1E181 /* PulsatingImage.swift in Sources */,
 				F0AE437E2A4BA89700A1E181 /* ReactionAni.swift in Sources */,
 				F0AE438A2A4C498100A1E181 /* ProfileView.swift in Sources */,
@@ -744,22 +753,25 @@
 				346C303329EAD10A0075107E /* DataPC+Delete.swift in Sources */,
 				346879CD2988596B002F3B5E /* SocketController.swift in Sources */,
 				346C303529EAD13A0075107E /* DataPC+Reset.swift in Sources */,
+				F0AE439E2A5385BA00A1E181 /* DateTimeShor.swift in Sources */,
 				3489D5DB29F850B70074EF5E /* Team.swift in Sources */,
 				34403EBD29924DAC00181C94 /* ScreenProperties.swift in Sources */,
 				F0AE437C2A4BA59F00A1E181 /* LoadingSpinner.swift in Sources */,
 				349CE1FA296CA7DF00F8E4F9 /* SignUp.swift in Sources */,
 				34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */,
 				F00E42672A49630200CFCD32 /* DebounceTextField.swift in Sources */,
+				F0AE43A22A5385DF00A1E181 /* DateTimeLong.swift in Sources */,
 				F0AE43882A4BA91200A1E181 /* SimpleSegmentAni.swift in Sources */,
-				F065C6192A2FBEAA007E1D9F /* DateTimeLabel.swift in Sources */,
+				F0AE43A42A538A7100A1E181 /* DateDMY.swift in Sources */,
 				341065ED2962E857001644B0 /* ChatView.swift in Sources */,
 				3489D5D929F850AF0074EF5E /* Channel.swift in Sources */,
 				3445BEBC297D902A0033269B /* TopLevelView.swift in Sources */,
 				349CE1F5296C64F300F8E4F9 /* CustomTabView.swift in Sources */,
-				F065C61E2A3384E4007E1D9F /* DateLabel.swift in Sources */,
+				F065C61E2A3384E4007E1D9F /* DateMed.swift in Sources */,
 				341065DF2962E1DA001644B0 /* BlueZebraApp.swift in Sources */,
 				3475AEA029EFBD2F001882D4 /* UserDC+Authentication.swift in Sources */,
 				F0AE43862A4BA90300A1E181 /* TypingAni.swift in Sources */,
+				F0AE43A62A53B56800A1E181 /* InfoAlert.swift in Sources */,
 				34AFD46729DD1EC700B2AC74 /* UserRequestsView.swift in Sources */,
 				3489D5E529F9D90C0074EF5E /* Settings.swift in Sources */,
 				345EEF5329F4173A00861DB9 /* MessageDC+Local.swift in Sources */,
@@ -769,14 +781,13 @@
 				34C839F729CFE6110093C48B /* ChannelRequestRow.swift in Sources */,
 				F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */,
 				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
-				F0AE43982A4F790600A1E181 /* TimeHM.swift in Sources */,
 				F04AEC3D2A2CBE7500276FF4 /* TextFieldObserver.swift in Sources */,
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,
 				F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */,
-				F0AE439A2A4F795400A1E181 /* DateDay.swift in Sources */,
 				349CE22C296FB15500F8E4F9 /* MessageDC.swift in Sources */,
 				F0AE43782A4B961E00A1E181 /* ScrollViewList.swift in Sources */,
 				3475AE9829EFB8DA001882D4 /* ChannelDC+Handlers.swift in Sources */,
+				F0AE43A02A5385D200A1E181 /* DateTimeMed.swift in Sources */,
 				3475AE9E29EFBCAC001882D4 /* UserDC+Handlers.swift in Sources */,
 				34E1E08329E1FE8C007319C3 /* TextContainer.swift in Sources */,
 				34F886542A01E4C30096CBF1 /* TeamPacket.swift in Sources */,
@@ -794,6 +805,7 @@
 				349CE1F22969ECF800F8E4F9 /* ChannelsList.swift in Sources */,
 				3463275D29935C3D00FACB50 /* ChannelView.swift in Sources */,
 				349CE200296D353B00F8E4F9 /* Login.swift in Sources */,
+				F0AE43AA2A53D1EB00A1E181 /* SystemIcon.swift in Sources */,
 				F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */,
 				F0AE43822A4BA8C900A1E181 /* ProgressBar.swift in Sources */,
 				F0AE438C2A4D1C9400A1E181 /* CustomSegmentAni.swift in Sources */,

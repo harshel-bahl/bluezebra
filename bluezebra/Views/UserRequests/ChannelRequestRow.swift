@@ -44,10 +44,10 @@ struct ChannelRequestRow: View {
                         
                         channelRequestButton(result: true, sfSymbol: "checkmark.circle")
                     } else {
-                        DateTimeLabel(date: channelRequest.date,
-                                      font: .subheadline,
-                                      colour: Color("text1"),
-                                      mode: 2)
+//                        DateTimeLabel(date: channelRequest.date,
+//                                      font: .subheadline,
+//                                      colour: Color("text1"),
+//                                      mode: 2)
                     }
                 }
             }

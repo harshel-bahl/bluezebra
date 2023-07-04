@@ -136,11 +136,11 @@ struct ChannelsList: View {
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
-                                    DateTimeLabel(date: latestDate,
-                                                  font: .subheadline,
-                                                  colour: Color("text2"),
-                                                  mode: 2)
-                                    .padding(.trailing, 7.5)
+//                                    DateTimeLabel(date: latestDate,
+//                                                  font: .subheadline,
+//                                                  colour: Color("text2"),
+//                                                  mode: 2)
+//                                    .padding(.trailing, 7.5)
                                     
                                 } else {
                                     Text("-")

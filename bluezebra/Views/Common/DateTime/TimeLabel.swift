@@ -10,16 +10,16 @@ import SwiftUI
 struct TimeLabel: View {
     
     var date: Date
-    var font: Font
+    var fontSize: CGFloat
     var colour: Color
     var mode: Int
     
     init(date: Date,
-         font: Font,
-         colour: Color,
-         mode: Int) {
+         fontSize: CGFloat = 12,
+         colour: Color = Color("text1"),
+         mode: Int = 1) {
         self.date = date
-        self.font = font
+        self.fontSize = fontSize
         self.colour = colour
         self.mode = mode
     }
@@ -27,13 +27,13 @@ struct TimeLabel: View {
     var body: some View {
         HStack(spacing: 0 ) {
             if mode==1 {
-                Text(DateU.shared.timeHm(date: date))
-                    .font(font)
-                    .foregroundColor(colour)
+                FixedText(text: DateU.shared.timeHm(date: date),
+                          colour: self.colour,
+                          fontSize: self.fontSize)
             } else if mode==2 {
-                Text(DateU.shared.timehma(date: date))
-                    .font(font)
-                    .foregroundColor(colour)
+                FixedText(text: DateU.shared.timehma(date: date),
+                          colour: self.colour,
+                          fontSize: self.fontSize)
             }
         }
     }

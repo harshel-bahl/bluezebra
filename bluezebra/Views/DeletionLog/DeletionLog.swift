@@ -82,10 +82,10 @@ struct DeletionLog: View {
                         
                         Spacer()
                         
-                        DateTimeLabel(date: CD.deletionDate,
-                                      font: .subheadline,
-                                      colour: Color("text2"),
-                                      mode: 2)
+//                        DateTimeLabel(date: CD.deletionDate,
+//                                      font: .subheadline,
+//                                      colour: Color("text2"),
+//                                      mode: 2)
                     }
                     .padding(.bottom, 5)
                     
