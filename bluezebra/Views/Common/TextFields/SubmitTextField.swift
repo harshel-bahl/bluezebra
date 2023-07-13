@@ -41,7 +41,7 @@ struct SubmitTextField: View {
          axis: Axis? = nil,
          border: Color? = nil,
          submitLabel: SubmitLabel? = nil,
-         keyboardType: UIKeyboardType? = nil,
+         keyboardType: UIKeyboardType? = .alphabet,
          characterLimit: Int? = nil,
          valuesToRemove: Set<String>? = nil,
          lineLimit: Int? = nil,

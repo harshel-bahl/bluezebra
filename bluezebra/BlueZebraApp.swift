@@ -12,18 +12,11 @@ import SwiftUI
 struct BlueZebraApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     var body: some Scene {
         WindowGroup {
             SPView(backgroundColour: Color("background1")) {
-//                TopLevelView()
-                ButtonAni(label: "harshel",
-                           fontSize: 14,
-                           fontWeight: .bold,
-                           foregroundColour: .white,
-                           BGColour: .accentColor,
-                           action: {
-                    print("hello")
-                })
+                TopLevelView()
             }
         }
     }

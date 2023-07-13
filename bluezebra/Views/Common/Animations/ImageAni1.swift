@@ -15,7 +15,9 @@ struct ImageAni1: View {
     
     @State private var BGColourChanged = false
     @State private var imageColourChanged = false
+    @State private var showImage = false
     @State private var sizeChanged = false
+    @State private var BGOpacity = false
     
     var size: CGSize
     var imageScale: Double
@@ -28,22 +30,26 @@ struct ImageAni1: View {
     var secondImgColour: Color
     var changeImgColour: Bool
     var scaleRatio: CGFloat
-    var animationSpeed: Double
-    var backgroundBlur: CGFloat
+    var mainAniDur: Double
+    var showImgAniDur: Double
+    var opacityAniDur: Double
+    var opacity: CGFloat
     
-    init(size: CGSize = CGSize(width: 50, height: 50),
-         imageScale: Double = 0.9,
+    init(size: CGSize = CGSize(width: 80, height: 80),
+         imageScale: Double = 0.75,
          showBG: Bool = true,
          firstBGColour: Color = .white,
          secondBGColour: Color = .white,
-         changeBGColour: Bool = false,
+         changeBGColour: Bool = true,
          imageName: String,
          firstImgColour: Color = .white,
          secondImgColour: Color = .white,
-         changeImgColour: Bool = false,
-         scaleRatio: CGFloat,
-         animationSpeed: Double = 0,
-         backgroundBlur: CGFloat = 0) {
+         changeImgColour: Bool = true,
+         scaleRatio: CGFloat = 2,
+         mainAniDur: Double = 2,
+         showImgAniDur: CGFloat = 0.25,
+         opacityAniDur: CGFloat = 0.3,
+         opacity: CGFloat = 0.9) {
         self.size = size
         self.imageScale = imageScale
         self.showBG = showBG
@@ -55,37 +61,54 @@ struct ImageAni1: View {
         self.secondImgColour = secondImgColour
         self.changeImgColour = changeImgColour
         self.scaleRatio = scaleRatio
-        self.animationSpeed = animationSpeed
-        self.backgroundBlur = backgroundBlur
+        self.mainAniDur = mainAniDur
+        self.showImgAniDur = showImgAniDur
+        self.opacityAniDur = opacityAniDur
+        self.opacity = opacity
     }
     
     var body: some View {
         ZStack {
-            Color.clear
-                .if(self.backgroundBlur > 0, transform: { view in
-                    view
-                        .ignoresSafeArea()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .blur(radius: self.backgroundBlur)
-                })
-                    
-                    if self.showBG {
+            if opacity > 0 {
+                Color.gray
+                    .ignoresSafeArea()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .opacity(BGOpacity ? opacity : 0)
+            }
+            
+            if showImage {
+                if self.showBG {
                     Circle()
                         .frame(width: size.width, height: size.height)
                         .foregroundColor(BGColourChanged ? secondBGColour : firstBGColour)
                         .scaleEffect(sizeChanged ? scaleRatio : 1)
                 }
-            
-            Image(systemName: imageName)
-                .font(.system(size: size.height * imageScale))
-                .foregroundColor(imageColourChanged ? secondImgColour : firstImgColour)
-                .scaleEffect(sizeChanged ? scaleRatio : 1)
+                
+                Image(systemName: imageName)
+                    .font(.system(size: size.height * imageScale))
+                    .foregroundColor(imageColourChanged ? secondImgColour : firstImgColour)
+                    .scaleEffect(sizeChanged ? scaleRatio : 1)
+            }
+        
         }
         .onAppear() {
-            withAnimation(.easeInOut(duration: animationSpeed)) {
+            
+            if showImgAniDur > 0 {
+                withAnimation(.easeInOut(duration: showImgAniDur).delay(showImgAniDur)) {
+                    showImage = true
+                }
+            } else {
+                showImage = true
+            }
+            
+            withAnimation(.easeInOut(duration: mainAniDur).delay(mainAniDur*0.25)) {
                 if changeBGColour { BGColourChanged = true }
                 if changeImgColour { imageColourChanged = true }
                 sizeChanged = true
+            }
+            
+            withAnimation(.easeInOut(duration: opacityAniDur)) {
+                if opacity > 0 { BGOpacity = true }
             }
         }
     }

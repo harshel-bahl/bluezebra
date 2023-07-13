@@ -27,7 +27,7 @@ struct DateTimeShor: View {
                       colour: self.colour,
                       fontSize: self.fontSize)
         } else if Calendar.current.isDateInYesterday(date) {
-            FixedText(text: "Yesterday, " + DateU.shared.timeHm(date: date),
+            FixedText(text: "Yesterday",
                       colour: self.colour,
                       fontSize: self.fontSize)
         } else if date.isInThisWeek {

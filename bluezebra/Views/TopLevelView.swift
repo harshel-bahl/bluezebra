@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TopLevelView: View {
     
+    @EnvironmentObject var SP: ScreenProperties
+    
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     @ObservedObject var messageDC = MessageDC.shared
@@ -18,20 +20,21 @@ struct TopLevelView: View {
     
     @State var fetchedUser = false
     
+    @State var tab: String = "channels"
+    
     var body: some View {
-        VStack {
+        ZStack {
             if (userDC.userData == nil || userDC.loggedIn != true) {
                 
                 AuthenticationHome(fetchedUser: $fetchedUser)
                 
             } else if (userDC.userData != nil && userDC.loggedIn == true) {
                 
-                HomePage()
+                topLevelTabView
                     .onAppear() {
                         if !userDC.userOnline {
                             socketController.userConnection()
                         }
-                        
                         
                         if (userDC.userSettings?.biometricSetup == nil) {
                             userDC.setupBiometricAuth()
@@ -89,6 +92,35 @@ struct TopLevelView: View {
     func shutdown() {
         SocketController.shared.closeConnection()
         userDC.loggedIn = false
+    }
+    
+    var topLevelTabView: some View {
+        TopLevelTabView(tabView: TabView1(tab: $tab,
+                                          tabNames: ["channels",
+                                                     "profile"],
+                                          imageNames: ["message.circle",
+                                                       "person.crop.circle"],
+                                          selectedNames: ["message.circle.fill",
+                                                          "person.crop.circle.fill"],
+                                          selectedColour: Color("blueAccent1"),
+                                          unselectedColour:  Color("darkAccent1"),
+                                          backgroundColour: Color("background3"),
+                                          betweenPadding: SP.screenWidth*0.18),
+                        tabContent: ["channels": {
+            AnyView(
+                ChannelsList()
+            )},
+                                     "profile": {
+            AnyView(
+                ProfileHome()
+            )}],
+                        notActiveBG: {
+            Color("background2")
+        },
+                        topSafeBG: Color("background1"),
+                        bottomSafeBG: Color("background3"),
+                        tabContentBG: Color("background1"),
+                        tab: $tab)
     }
 }
 

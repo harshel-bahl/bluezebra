@@ -38,6 +38,7 @@ struct SPView<Content: View>: View {
             }
             
             content()
+                .ignoresSafeArea()
                 .environmentObject(SP)
         }
     }

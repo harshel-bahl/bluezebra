@@ -36,14 +36,16 @@ struct AccountTab: View {
 //                    try? await userDC.resetUserData()
 //                }
 //            }
-//            
-//            ButtonTemp(label: "Delete Account",
-//                       backgroundColour: Color.red,
-//                       foregroundColour: Color("text1")) {
-//                Task {
-//                    try? await userDC.hardReset()
-//                }
-//            }
+//
+            ButtonAni(label: "Delete Account",
+                      fontSize: 18,
+                      foregroundColour: Color.white,
+                      BGColour: Color.red,
+                      action: {
+                Task {
+                    try? await userDC.hardReset()
+                }
+            })
         }
     }
 }

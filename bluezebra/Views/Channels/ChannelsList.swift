@@ -23,73 +23,73 @@ struct ChannelsList: View {
     @State var textSize: CGSize = .zero
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                
-                Color("background1")
-                
-                VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            
+            banner
+                .edgePadding(top: 10,
+                             bottom: 10,
+                             leading: 20,
+                             trailing: 20)
+            
+            Divider()
+            
+            ScrollView() {
+                LazyVStack(spacing: 0) {
                     
-                    banner
-                        .padding(.leading, 20)
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 10)
-                        .padding(.top, 12.5)
+                    meChannel
                     
-                    Divider()
-                    
-                    
-                    ScrollView() {
-                        LazyVStack(spacing: 0) {
-                            
-                            meChannel
-                            
-                            ForEach(channelDC.channels, id: \.channelID) { channel in
-                                ChannelView(channel: channel)
-                            }
+                    ForEach(channelDC.channels, id: \.channelID) { channel in
+                        if let RUID = channel.userID,
+                           let RU = channelDC.RUs[RUID] {
+                            ChannelView(channel: channel,
+                                        RU: RU)
                         }
                     }
-                    
                 }
-                .sheet(isPresented: $showUserRequestsView, content: {
-                    UserRequestsView(showUserRequestsView: $showUserRequestsView)
-                })
-                .sheet(isPresented: $showDeletionLog, content: {
-                    DeletionLog(channelType: "user")
-                })
-                
             }
-            .ignoresSafeArea(.keyboard)
+            
         }
+        .sheet(isPresented: $showUserRequestsView, content: {
+            UserRequestsView(showUserRequestsView: $showUserRequestsView)
+        })
+        .sheet(isPresented: $showDeletionLog, content: {
+            DeletionLog(channelType: "user")
+        })
     }
+    
     
     var banner: some View {
         HStack(alignment: .center, spacing: 0) {
             
-            Button(action: { showDeletionLog.toggle() }, label: {
-                Image(systemName: "arrow.uturn.backward.circle")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundColor(Color("blueAccent1"))
+            SystemIcon(systemName: "arrow.uturn.backward.circle",
+                       size: .init(width: 25, height: 25),
+                       colour: Color("blueAccent1"),
+                       BGColour: Color.white,
+                       applyClip: true,
+                       shadow: 1,
+            buttonAction: {
+                showDeletionLog.toggle()
             })
             
             Spacer()
             
-            Text("Channels")
-                .font(.system(size: 16))
-                .fontWeight(.bold)
-                .foregroundColor(Color("text1"))
+            FixedText(text: "Channels",
+                      colour: Color("text1"),
+                      fontSize: 16,
+                      fontWeight: .bold)
             
             Spacer()
             
-            Button(action: { showUserRequestsView.toggle() }, label: {
-                Image(systemName: "plus.circle")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundColor(Color("blueAccent1"))
+            SystemIcon(systemName: "plus.circle",
+                       size: .init(width: 25, height: 25),
+                       colour: Color("blueAccent1"),
+                       BGColour: Color.white,
+                       applyClip: true,
+                       shadow: 1.15,
+            buttonAction: {
+                showDeletionLog.toggle()
             })
         }
-        .frame(height: 25)
     }
     
     var meChannel: some View {
@@ -99,85 +99,72 @@ struct ChannelsList: View {
             } label: {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            
-                        }
-                        .frame(width: 15)
+                        
+                        Color.clear
+                        .frame(width: 15,
+                               height: 0)
                         .padding(.trailing, 2.5)
                         
-//                        if let avatar = userDC.userData?.avatar,
-//                           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-//                            Text(emoji.value)
-//                                .font(.system(size: 45))
-//                                .frame(width: 45,
-//                                       height: 45)
-//                        } else {
-//                            Image(systemName: "person.crop.circle.fill")
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                                .frame(width: 45,
-//                                       height: 45)
-//                                .foregroundColor(Color("blueAccent1"))
-//                        }
+                        if let avatar = userDC.userData?.avatar {
+                            EmojiIcon(avatar: avatar,
+                                      size: .init(width: 45, height: 45),
+                                      emojis: BZEmojiProvider1.shared.getAll(),
+                                      buttonAction: { avatar in
+                                
+                            })
+                        }
                         
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
-                                Text("@" + userDC.userData!.username)
-                                    .font(.headline)
-                                    .foregroundColor(Color("blueAccent1"))
                                 
-                                Text("(Me)")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color("orangeAccent1"))
-                                    .fontWeight(.regular)
-                                    .offset(y: -1)
-                                    .padding(.leading, 5)
+                                FixedText(text: "@" + userDC.userData!.username,
+                                          colour: Color("blueAccent1"),
+                                          fontSize: 17,
+                                          fontWeight: .bold)
+                                
+                                FixedText(text: "(Me)",
+                                          colour: Color("orangeAccent1"),
+                                          fontSize: 15,
+                                          fontWeight: .regular,
+                                          padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
                                 
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
-//                                    DateTimeLabel(date: latestDate,
-//                                                  font: .subheadline,
-//                                                  colour: Color("text2"),
-//                                                  mode: 2)
-//                                    .padding(.trailing, 7.5)
-                                    
+                                    DateTimeShor(date: latestDate,
+                                                 fontSize: 15,
+                                                 colour: Color("text2"))
                                 } else {
-                                    Text("-")
-                                        .font(.caption)
-                                        .foregroundColor(Color("text1"))
-                                        .padding(.trailing, 10)
+                                    FixedText(text: "-",
+                                              colour: Color("text1"),
+                                              fontSize: 15)
                                 }
                                 
-                                Image(systemName: "chevron.right")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: 12)
-                                    .foregroundColor(Color("blueAccent1"))
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 8, height: 12.5),
+                                           colour: Color("blueAccent1"),
+                                           padding: .init(top: 0,
+                                                          leading: 10,
+                                                          bottom: 0,
+                                                          trailing: 0))
                             }
-                            .padding(.bottom, 5)
+                            .edgePadding(bottom: 5)
                             
-                            //                        Text("Subject: ")
-                            //                            .font(.caption2)
-                            //                            .foregroundColor(Color.gray)
-                            //                            .lineLimit(1)
                             
-                            HStack(spacing: 0) {
-                                Text(messageDC.personalMessages.first?.message ?? "Tap to chat!")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color("text2"))
-                                    .multilineTextAlignment(.leading)
-                                    .lineLimit(2...2)
-                                
-                                Spacer()
-                            }
+                                FixedText(text: messageDC.personalMessages.first?.message ?? "Tap to chat!",
+                                          colour: Color("text2"),
+                                          fontSize: 15,
+                                          lineLimit: 2...2,
+                                          padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8),
+                                          multilineAlignment: .leading,
+                                          pushText: .leading)
                         }
-                        .padding(.leading, 12.5)
+                        .edgePadding(leading: 12.5)
                     }
-                    .padding(.top, 15)
-                    .padding(.bottom, 13.5)
-                    .padding(.trailing, 15)
-                    .padding(.leading, 7.5)
+                    .edgePadding(top: 15,
+                                 bottom: 13.5,
+                                 leading: 7.5,
+                                 trailing: 15)
                     
                     HStack(spacing: 0) {
                         Spacer()
@@ -196,7 +183,7 @@ struct ChannelsList: View {
                     Button("Clear Channel", action: {
                         
                     })
-
+                    
                 }
             }
             

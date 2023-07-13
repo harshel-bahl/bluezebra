@@ -1,8 +1,8 @@
 //
 //  SignUp.swift
-//  BlueZebra
+//  bluezebra
 //
-//  Created by Harshel Bahl on 09/01/2023.
+//  Created by Harshel Bahl on 06/07/2023.
 //
 
 import SwiftUI
@@ -10,280 +10,248 @@ import EmojiPicker
 
 struct SignUp: View {
     
-    @ObservedObject var userDC = UserDC.shared
-    @ObservedObject var channelDC = ChannelDC.shared
     @EnvironmentObject var SP: ScreenProperties
     
-    @State var username: String = ""
+    @ObservedObject var userDC = UserDC.shared
     
     @State var selectedEmoji: Emoji?
-    @State var displayEmojiPicker = false
-    @State var displayUsernameBlock = false
+    @State var  showEmojiPicker = false
+    
+    @State var username = ""
+    @State var checkedUsername: Bool? = nil
+    
     @State var pin: String = ""
     @State var firstPin: String = ""
-    @State var checkedUsername: Bool? = nil
-    @State var createUserSuccess = false
+    
+    @FocusState var focusField: String?
+    
+    @State var createdUser = false
     @State var failure = false
-    
-    @FocusState private var focusedField: Field?
-    
-    enum Field {
-        case username
-        case pin
-    }
     
     var body: some View {
         ZStack {
+            PaginatedScrollView(backgroundColour: Color("background4"),
+                                content: [
+                                    ViewKey(id: 1): { proxy in
+                                        AnyView(
+                                            page1(proxy: proxy)
+                                        )
+                                    }, ViewKey(id: 2): { proxy in
+                                        AnyView(
+                                            page2(proxy: proxy)
+                                        )
+                                    }
+                                ])
             
-            Color("background4")
-                .ignoresSafeArea()
-            
-            ScrollViewReader { proxy in
-                ScrollView(showsIndicators: false) {
-                    
-                    VStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            
-                            HStack {
-                                FixedText(text: "Step 1",
-                                          colour: Color("text1"),
-                                          fontSize: 34,
-                                          fontWeight: .bold)
-                                
-                                Spacer()
-                            }
-                            .id(1)
-                            .padding(.leading, 25)
-                            .padding(.top, 40)
-//                            .padding(SP.screenWidth*0.08)
-                            
-                            
-                            VStack(spacing: 0) {
-                                HStack(spacing: 0) {
-                                    simpleText(text: "Choose an avatar",
-                                               colour: Color("text1"),
-                                               fontWeight: .regular,
-                                               font: .headline)
-                                    
-                                    Spacer()
-                                }
-                                .padding(.top, SP.screenWidth*0.04)
-                                .padding(.leading, SP.screenWidth*0.08 - SP.screenWidth*0.033)
-                                .padding(.bottom, SP.screenWidth*0.05)
-                                
-                                avatarButton
-                                    .padding(.bottom, SP.screenWidth*0.05)
-                                
-                            }
-                            .background() { Color("background2") }
-                            .borderModifier(lineWidth: 2,
-                                            lineColour: Color("blueAccent1"),
-                                            cornerRadius: 20,
-                                            shadowRadius: 1)
-                            .padding(.leading, SP.screenWidth*0.033)
-                            .padding(.trailing, SP.screenWidth*0.033)
-                            .padding(.bottom, SP.screenWidth*0.08)
-                            
-                            
-                            VStack(spacing: 0) {
-                                if let _ = selectedEmoji {
-                                    VStack(spacing: 0) {
-                                        HStack(spacing: 0) {
-                                            simpleText(text: "Choose a username",
-                                                       colour: Color("text1"),
-                                                       fontWeight: .regular,
-                                                       font: .headline)
-                                            
-                                            Spacer()
-                                        }
-                                        .padding(.top, SP.screenWidth*0.04)
-                                        .padding(.leading, SP.screenWidth*0.08 - SP.screenWidth*0.033)
-                                        .padding(.bottom, SP.screenWidth*0.05)
-                                        
-                                        VStack(spacing: 0) {
-                                            GeometryReader { geometry in
-                                                HStack(spacing: 0) {
-                                                    usernameTextField
-                                                                .frame(width: geometry.size.width*0.666)
-                                                    
-                                                    checkUsernameBadge
-                                                        .frame(width: geometry.size.width*0.066)
-                                                        .padding(.leading)
-                                                }
-                                                .frame(width: geometry.size.width, height: geometry.size.height)
-                                            }
-                                            .frame(height: SP.safeAreaHeight*0.066)
-                                            
-                                            if let _ = checkedUsername, checkedUsername == false {
-                                                Text("Username unavailable :(")
-                                                    .foregroundColor(Color("orangeAccent1"))
-                                                    .fontWeight(.regular)
-                                            }
-                                        }
-                                        .padding(.bottom, SP.screenWidth*0.05)
-                                    }
-                                    .background() { Color("background2") }
-                                    .borderModifier(lineWidth: 2,
-                                                    lineColour: Color("blueAccent1"),
-                                                    cornerRadius: 20,
-                                                    shadowRadius: 1)
-                                    .padding(.leading, SP.screenWidth*0.033)
-                                    .padding(.trailing, SP.screenWidth*0.033)
-                                    
-                                    
-                                    if let checkedUsername = checkedUsername, checkedUsername == true {
-                                        continueButton1(proxy: proxy)
-                                            .padding(.top, SP.screenWidth*0.08)
-                                    }
-                                }
-                            }
-                            .animation(.easeInOut(duration: 0.33).delay(0.25), value: selectedEmoji)
-                            
-                            Spacer()
-                        }
-                        .frame(width: SP.screenWidth, height: SP.safeAreaHeight)
-                        
-                        VStack(spacing: 0) {
-                            GeometryReader { geometry in
-                                VStack(spacing: 0) {
-                                    HStack(spacing: 0) {
-                                        simpleText(text: "Step 2",
-                                                   colour: Color("text1"),
-                                                   fontWeight: .bold,
-                                                   font: .largeTitle)
-                                        
-                                        Spacer()
-                                        
-                                        Button(action: {
-                                            withAnimation() {
-                                                resetPin()
-                                                focusedField = nil
-                                                proxy.scrollTo(1, anchor: .top)
-                                            }
-                                        }, label: {
-                                            Text("back")
-                                                .font(.subheadline)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(Color("orangeAccent1"))
-                                            
-                                            Image(systemName: "arrow.up.circle")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: SP.screenWidth/15)
-                                                .foregroundColor(Color("orangeAccent1"))
-                                                .padding(.leading, SP.screenWidth*0.001)
-                                        })
-                                    }
-                                    .padding(SP.screenWidth*0.08)
-                                    
-                                    VStack(spacing: 0) {
-                                        pinEntryText1
-                                            .padding(.leading, SP.screenWidth*0.08)
-                                            .padding(.trailing, SP.screenWidth*0.08)
-                                            .padding(.bottom, SP.screenWidth*0.08)
-                                            .padding(.bottom, SP.screenWidth*0.05)
-                                            .padding(.top, SP.screenWidth*0.04)
-                                        
-                                        pinBoxes
-                                            .padding(.bottom, SP.screenWidth*0.08)
-                                    }
-                                    .background() { Color("background2") }
-                                    .borderModifier(lineWidth: 2,
-                                                    lineColour: Color("blueAccent1"),
-                                                    cornerRadius: 20,
-                                                    shadowRadius: 1)
-                                    .padding(.leading, SP.screenWidth*0.033)
-                                    .padding(.trailing, SP.screenWidth*0.033)
-                                    .onTapGesture {
-//                                        if focusedField != .pin { focusedField = .pin }
-                                    }
-                                    
-                                    VStack(spacing: 0) {
-                                        if firstPin.count == 4 && pin.count == 4,
-                                           firstPin == pin {
-                                            createUserButton
-                                                .padding(.top, SP.screenWidth*0.08)
-                                        } else if firstPin.count == 4 && pin.count == 4,
-                                                  firstPin != pin {
-                                            pinFailure
-                                                .padding()
-                                            
-                                            retryPinButton
-                                        }
-                                    }
-                                    .animation(.easeInOut(duration: 0.2), value: pin)
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        .id(2)
-                        .frame(width: SP.screenWidth, height: SP.safeAreaHeight)
-                    }
-                    .frame(height: SP.safeAreaHeight*2)
-                }
-                .scrollDisabled(true)
-                .ignoresSafeArea(.keyboard)
-            }
-            
-            if createUserSuccess == true {
-//                SuccessView1()
-            }
-        }
-        .sheet(isPresented: $displayEmojiPicker) {
-            emojiPickerView
-                .presentationDetents([.height(SP.screenHeight*0.5)])
-        }
-        .alert("Unable to create user", isPresented: $failure) {
-            Button("Try again", role: .cancel) {
+            if createdUser {
+                ImageAni1(firstBGColour: Color("blueAccent1"),
+                          imageName: "checkmark.seal.fill",
+                          secondImgColour: Color("blueAccent1"))
             }
         }
     }
     
-    func simpleText(text: String,
-                    colour: Color,
-                    fontWeight: Font.Weight,
-                    font: Font) -> some View {
-        let text = Text(text)
-            .font(font)
-            .fontWeight(fontWeight)
-            .foregroundColor(colour)
+    func page1(proxy: ScrollViewProxy) -> some View {
         
-        return text
-    }
-    
-    var avatarButton: some View {
-        Button(action: {
-            displayEmojiPicker = true
-        }) {
-            if let selectedEmoji = selectedEmoji {
-                Text(selectedEmoji.value)
-                    .font(.system(size: SP.screenWidth*0.125))
-                    .frame(height: SP.screenWidth*0.15)
-            } else {
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: SP.screenWidth*0.15)
-                    .foregroundColor(Color("blueAccent1"))
+        EmojiPicker(showEmojiPicker: $showEmojiPicker,
+                    selectedEmoji: $selectedEmoji,
+                    sheetHeight: SP.screenHeight/2,
+                    emojiProvider: BZEmojiProvider1.shared) {
+            
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    FixedText(text: "Create Profile",
+                              colour: Color("text1"),
+                              fontSize: 30,
+                              fontWeight: .bold)
+                    
+                    Spacer()
+                }
+                .edgePadding(top: 25,
+                             bottom: 15,
+                             leading: 20,
+                             trailing: 20)
+                
+                chooseAvatarBlock
+                    .edgePadding(top: 15,
+                                 bottom: 15,
+                                 leading: 20,
+                                 trailing: 20)
+                
+                ZStack {
+                    if let _ = selectedEmoji {
+                        chooseUsernameBlock(proxy: proxy)
+                            .edgePadding(top: 15,
+                                         leading: 20,
+                                         trailing: 20)
+                    }
+                }
+                .animation(.easeInOut(duration: 0.5).delay(0.15),
+                           value: selectedEmoji)
+                
+                Spacer()
             }
         }
     }
     
-    var emojiPickerView: some View {
-        EmojiPickerView(selectedEmoji: $selectedEmoji,
-                        selectedColor: .blue,
-                        emojiProvider: BZEmojiProvider1())
-            .padding()
+    func page2(proxy: ScrollViewProxy) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                FixedText(text: "Secure Account",
+                          colour: Color("text1"),
+                          fontSize: 30,
+                          fontWeight: .bold)
+                
+                Spacer()
+                
+                SystemIcon(systemName: "arrow.up.circle",
+                           size: .init(width: 27.5, height: 27.5),
+                           colour: Color("orangeAccent1"),
+                           padding: .init(top: 0,
+                                          leading: 0,
+                                          bottom: 0,
+                                          trailing: 5),
+                           BGColour: .white,
+                           applyClip: true,
+                           shadow: 1,
+                           buttonAction: {
+                    
+                    focusField = nil
+                    
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        self.pin = ""
+                        self.firstPin = ""
+                        proxy.scrollTo(1, anchor: .top)
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.51) {
+                        focusField = "username"
+                    }
+                })
+            }
+            .edgePadding(top: 25,
+                         bottom: 15,
+                         leading: 20,
+                         trailing: 20)
+            
+            
+            pinEntry
+                .edgePadding(top: 15,
+                             leading: 20,
+                             trailing: 20)
+            
+            signUpFlow
+                .edgePadding(top: 30)
+            
+            Spacer()
+        }
     }
     
-    var usernameTextField: some View {
+    var chooseAvatarBlock: some View {
+        ZStack {
+            VStack(spacing: 27.5) {
+                HStack(spacing: 0) {
+                    VariableText(text: "Choose an avatar",
+                                 colour: Color("text1"),
+                                 font: .headline,
+                                 fontWeight: .medium)
+                    
+                    Spacer()
+                }
+                
+                avatarButton
+            }
+            .edgePadding(top: 17.5,
+                         bottom: 17.5,
+                         leading: 17.5,
+                         trailing: 17.5)
+        }
+        .background() { Color("background2") }
+        .borderModifier(lineWidth: 2,
+                        lineColour: Color("blueAccent1"),
+                        cornerRadius: 20,
+                        shadowRadius: 1)
+    }
+    
+    @ViewBuilder
+    var avatarButton: some View {
+        if let selectedEmoji = selectedEmoji {
+            EmojiIcon(avatar: selectedEmoji.name,
+                      size: .init(width: 60, height: 60),
+                      emojis: BZEmojiProvider1.shared.getAll(),
+                      buttonAction: { avatar in
+                showEmojiPicker = true
+            })
+        } else {
+            SystemIcon(systemName: "person.crop.circle.fill",
+                       size: .init(width: 60, height: 60),
+                       colour: Color("blueAccent1"),
+                       padding: nil,
+                       buttonAction: {
+                showEmojiPicker = true
+            })
+        }
+    }
+    
+    func chooseUsernameBlock(proxy: ScrollViewProxy) -> some View {
+        ZStack {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 0) {
+                    VariableText(text: "Choose a username",
+                                 colour: Color("text1"),
+                                 font: .headline,
+                                 fontWeight: .medium)
+                    
+                    Spacer()
+                }
+                
+                HStack(alignment: .center, spacing: 25) {
+                    usernameTextField(proxy: proxy)
+                    
+                    ZStack {
+                        checkUsernameBadge
+                    }
+                    .frame(width: 25)
+                }
+                .edgePadding(top: 25)
+                
+                if let _ = checkedUsername,
+                   checkedUsername == false {
+                    HStack(spacing: 0) {
+                        
+                        Spacer()
+                        
+                        Text("Username unavailable :(")
+                            .foregroundColor(Color("orangeAccent1"))
+                            .fontWeight(.regular)
+                        
+                        Spacer()
+                    }
+                    .edgePadding(top: 12.5)
+                }
+            }
+            .edgePadding(top: 17.5,
+                         bottom: 17.5,
+                         leading: 17.5,
+                         trailing: 25)
+        }
+        .background() { Color("background2") }
+        .borderModifier(lineWidth: 2,
+                        lineColour: Color("blueAccent1"),
+                        cornerRadius: 20,
+                        shadowRadius: 1)
+        
+    }
+    
+    func usernameTextField(proxy: ScrollViewProxy) -> some View {
         DebounceTextField(text: $username,
                           startingText: "@",
                           foregroundColour: Color("text3"),
                           font: .headline,
+                          submitLabel: .go,
                           characterLimit: 13,
                           valuesToRemove: BZSetup.shared.removeUsernameValues,
+                          autocorrection: false,
                           trimOnCommit: true,
                           replaceStartingOnCommit: true,
                           debouncedAction: { username in
@@ -291,210 +259,147 @@ struct SignUp: View {
             userDC.checkUsername(username: username) { result in
                 switch result {
                 case .success(let result):
-                    withAnimation(.easeInOut(duration: 0.33)) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
                         self.checkedUsername = result
                     }
                 case .failure(_): break
                 }
             }
         },
-                          debounceFor: 0.5)
-        .focused($focusedField, equals: .username)
-        .onAppear() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation() {
-                    focusedField = .username
+                          debounceFor: 0.5,
+                          submitAction: { username in
+            
+            if let checkedUsername = checkedUsername,
+               checkedUsername {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    proxy.scrollTo(2, anchor: .top)
                 }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.51) {
+                    focusField = "pin"
+                }
+            }
+        })
+        .focused($focusField, equals: "username")
+        .onAppear() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) {
+                focusField = "username"
             }
         }
     }
     
     @ViewBuilder
     var checkUsernameBadge: some View {
-        if let _ = checkedUsername, checkedUsername == true {
-            Image(systemName: "checkmark.seal.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .foregroundColor(Color("blueAccent1"))
-        } else if let _ = checkedUsername, checkedUsername == false {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .foregroundColor(Color("orangeAccent1"))
-        } else {
-            EmptyView()
+        if let _ = checkedUsername,
+           checkedUsername == true {
+            SystemIcon(systemName: "checkmark.seal.fill",
+                       size: .init(width: 25,
+                                   height: 25),
+                       colour: Color("blueAccent1"))
+        } else if let _ = checkedUsername,
+                  checkedUsername == false {
+            SystemIcon(systemName: "exclamationmark.triangle.fill",
+                       size: .init(width: 25,
+                                   height: 25),
+                       colour: Color("orangeAccent1"))
         }
     }
     
-    func continueButton1(proxy: ScrollViewProxy) -> some View {
-        let button = Button(action: {
-            withAnimation() {
-                proxy.scrollTo(2, anchor: .top)
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-                withAnimation() {
-//                    focusedField = .pin
+    var pinEntry: some View {
+        ZStack {
+            VStack(spacing: 17.5) {
+                HStack(spacing: 0) {
+                    VariableText(text: firstPin.count == 4 ? "Retype your pin" : "Create a pin",
+                                 colour: Color("text1"),
+                                 font: .headline,
+                                 fontWeight: .medium)
+                    
+                    Spacer(minLength: 0)
                 }
-            }
-        }, label: {
-            Text("Continue")
-                .font(.system(size: 16, design: .rounded))
-                .padding()
-                .background(Color("blueAccent1"))
-                .foregroundColor(Color.white)
-                .clipShape(Capsule())
-                .shadow(radius: 1)
-        })
-        
-        return button
-    }
-    
-    var pinEntryText1: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                simpleText(text: firstPin.count == 4 ? "Retype your pin" : "Create a pin",
-                           colour: Color("text1"),
-                           fontWeight: .regular,
-                           font: .headline)
                 
-                Spacer()
-            }
-            .padding(.bottom, SP.screenWidth*0.05)
-            
-            HStack(spacing: 0) {
-                simpleText(text: "Pick something memorable! There's no other way to access your data",
-                           colour: Color("text1"),
-                           fontWeight: .regular,
-                           font: .caption)
+                HStack(spacing: 0) {
+                    VariableText(text: "Pick something memorable! There's no other way to access your data",
+                                 colour: Color("text1"),
+                                 font: .subheadline)
+                    
+                    Spacer(minLength: 0)
+                }
                 
-                Spacer()
-            }
-            .frame(height: SP.safeAreaHeight*0.04)
-        }
-    }
-    
-    var pinBoxes: some View {
-        HStack(spacing: 0) {
-            ForEach(0 ..< 4, id: \.self) { index in
-//                pinBoxes(index)
-            }
-        }
-        .frame(width: SP.screenWidth*0.75)
-        .background(content: {
-            TextField("", text: $pin.limit(4))
-                .keyboardType(.numberPad)
-                .frame(width: 1, height: 1)
-                .opacity(0.001)
-                .blendMode(.screen)
-//                .focused($focusedField, equals: .pin)
-        })
-    }
-    
-//    @ViewBuilder
-//    func pinBoxes(_ index: Int) -> some View {
-//        ZStack{
-//            if pin.count > index {
-//                let startIndex = pin.startIndex
-//                let charIndex = pin.index(startIndex, offsetBy: index)
-//                let charToString = String(pin[charIndex])
-//                Text(charToString)
-//            } else {
-//                Text("")
-//            }
-//        }
-//        .frame(width: SP.screenWidth*0.125, height: SP.screenWidth*0.125)
-//        .background() { Color("background2") }
-////        .cornerRadius(5)
-//        .overlay {
-//            let status = (focusedField == .pin && pin.count == index)
-//
-//            RoundedRectangle(cornerRadius: 5, style: .continuous)
-//                .stroke(Color("blueAccent1"), lineWidth: status ? 2 : 0.5)
-//                .animation(.easeInOut(duration: 0.2), value: focusedField)
-//        }
-//        .shadow(radius: 1)
-//        .frame(maxWidth: .infinity)
-//        .onChange(of: pin) { pin in
-//            if pin.count == 4 && firstPin == "" {
-//                withAnimation {
-//                    self.pin = ""
-//                    firstPin = pin
-//                }
-//            }
-//
-//            if firstPin.count == 4 && self.pin.count == 4,
-//               firstPin == self.pin {
-//                focusedField = nil
-//            }
-//        }
-//    }
-    
-    var createUserButton: some View {
-        let button = Button(action: {
-            
-//            let username = usernameTM.username.replacingOccurrences(of: "@", with: "")
-            
-            userDC.createUser(username: "",
-                              pin: pin,
-                              avatar: selectedEmoji!.name) { result in
-                
-                withAnimation { createUserSuccess = true }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
-                    switch result {
-                    case .success(let userData):
-                        userDC.userData = userData
-                        userDC.loggedIn = true
-                    case .failure(_):
-                        self.failure = true
+                PinBoxes(pin: $pin,
+                         outerBorder: false,
+                         focus: $focusField,
+                         focusValue: "pin",
+                         commitAction: { pin in
+                    if firstPin == "" {
+                        withAnimation {
+                            firstPin = pin
+                            self.pin = ""
+                        }
+                    } else if !firstPin.isEmpty {
+                        focusField = nil
                     }
-                }
+                })
+                .edgePadding(top: 17.5)
             }
-        }, label: {
-            Text("Create User")
-                .font(.system(size: 16, design: .rounded))
-                .padding()
-                .background(Color("blueAccent1"))
-                .foregroundColor(Color.white)
-                .clipShape(Capsule())
-                .shadow(radius: 1)
-        })
-        
-        return button
+            .edgePadding(top: 17.5,
+                         bottom: 17.5,
+                         leading: 17.5,
+                         trailing: 17.5)
+        }
+        .background() { Color("background2") }
+        .borderModifier(lineWidth: 2,
+                        lineColour: Color("blueAccent1"),
+                        cornerRadius: 20,
+                        shadowRadius: 1)
     }
     
-    var pinFailure: some View {
-        let text = simpleText(text: "Pin doesn't match :(",
-                              colour: Color("orangeAccent1"),
-                              fontWeight: .regular,
-                              font: .subheadline)
+    @ViewBuilder
+    var signUpFlow: some View {
         
-        return text
+        VStack(spacing: 15) {
+            if firstPin==pin && firstPin.count==4 && pin.count==4 {
+                ButtonAni(label: "Join BZ",
+                          fontSize: 16,
+                          foregroundColour: Color.white,
+                          BGColour: Color("blueAccent1"),
+                          padding: 17.5,
+                          action: {
+                    userDC.createUser(username: self.username,
+                                      pin: pin,
+                                      avatar: selectedEmoji!.name) { result in
+                        
+                        createdUser = true
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now()+2.75) {
+                            switch result {
+                            case .success(let userData):
+                                userDC.userData = userData
+                                userDC.loggedIn = true
+                            case .failure(_):
+                                self.failure = true
+                            }
+                        }
+                    }
+                })
+            } else if firstPin != pin && firstPin.count==4 && pin.count==4 {
+                FixedText(text: "Pin doesn't match :(",
+                          colour: Color("orangeAccent1"),
+                          fontSize: 14)
+                
+                ButtonAni(label: "Retry Pin",
+                          fontSize: 16,
+                          foregroundColour: Color.white,
+                          BGColour: Color("orangeAccent1"),
+                          padding: 17.5,
+                          action: {
+                    self.pin = ""
+                    self.firstPin = ""
+                })
+            }
+        }
+        .animation(.easeInOut(duration: 0.35), value: pin)
     }
     
-    var retryPinButton: some View {
-        let button = Button(action: {
-            withAnimation { resetPin() }
-        }, label: {
-            Text("Retry Pin")
-                .font(.system(size: 16, design: .rounded))
-                .padding()
-                .background(Color("orangeAccent1"))
-                .foregroundColor(Color.white)
-                .clipShape(Capsule())
-                .shadow(radius: 1)
-        })
-        
-        return button
-    }
     
-    func resetPin() {
-        self.pin = ""
-        self.firstPin = ""
-    }
 }
-
-
-
 

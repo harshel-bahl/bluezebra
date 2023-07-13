@@ -1,5 +1,5 @@
 //
-//  Avatar.swift
+//  EmojiIcon.swift
 //  bluezebra
 //
 //  Created by Harshel Bahl on 12/06/2023.
@@ -8,7 +8,7 @@
 import SwiftUI
 import EmojiPicker
 
-struct Icon: View {
+struct EmojiIcon: View {
     
     let avatar: String
     let size: CGSize

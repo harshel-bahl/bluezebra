@@ -95,7 +95,6 @@ struct ChatView: View {
                                 .font(.subheadline)
                                 .foregroundColor(Color("orangeAccent1"))
                                 .fontWeight(.regular)
-//                                .offset(y: -1)
                                 .padding(.leading, SP.screenWidth*0.015)
                         }
                     }

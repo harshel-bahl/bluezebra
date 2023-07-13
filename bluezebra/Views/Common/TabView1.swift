@@ -31,7 +31,7 @@ struct TabView1: View {
          selectedNames: [String],
          iconSize: CGSize = .init(width: 27.5, height: 27.5),
          iconPadding: CGFloat = 7.5,
-         fontSize: CGFloat = 10,
+         fontSize: CGFloat = 12,
          selectedColour: Color,
          unselectedColour: Color,
          backgroundColour: Color,

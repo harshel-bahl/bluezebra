@@ -20,7 +20,6 @@ struct AuthenticationHome: View {
             if (fetchedUser == false) {
                 
                 Color("background2")
-                    .ignoresSafeArea()
                 
             } else if (fetchedUser == true && userDC.userData == nil) {
                 

@@ -7,31 +7,39 @@
 
 import SwiftUI
 
-struct PaginatedScrollView<Content: View>: View {
+struct PaginatedScrollView: View {
     
     @EnvironmentObject var SP: ScreenProperties
     
-    let content: [ViewKey: (ScrollViewProxy) -> Content]
     let backgroundColour: Color
+    let content: [ViewKey: (ScrollViewProxy) -> AnyView]
     
     var body: some View {
-        
         ZStack {
-            
             backgroundColour
             
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: false) {
-                    ForEach(content.sorted(by: { $0.key.id < $1.key.id }), id: \.key) { key, page in
-                        page(proxy)
-                            .id(key)
+                    LazyVStack(spacing: 0) {
+                        ForEach(content.sorted(by: { $0.key.id < $1.key.id }), id: \.key) { key, page in
+                            
+                            SafeAreaScreen(BGColour: backgroundColour) {
+                                page(proxy)
+                            }
                             .frame(height: SP.screenHeight)
+                            .id(key.id)
+                        }
                     }
                 }
+                .scrollDisabled(true)
             }
+            .ignoresSafeArea()
         }
-        .ignoresSafeArea()
-        .frame(height: SP.screenHeight)
+    }
+    
+    static func scrollTo(pageID: Int,
+                         proxy: ScrollViewProxy) {
+        proxy.scrollTo(pageID, anchor: .top)
     }
 }
 

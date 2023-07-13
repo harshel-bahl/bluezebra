@@ -12,98 +12,141 @@ struct PinBoxes: View {
     @EnvironmentObject var SP: ScreenProperties
     
     @Binding var pin: String
-    
-    @FocusState var focused: Bool
-    
-    let delayFocus: Bool
-    let delayFocusLength: Float
     let pinLength: Int
-    let characterSize: CGFloat
-    let characterColour: Color
-    let characterWeight: Font.Weight
+    
     let boxSize: CGSize
+    let boxSpacing: CGFloat
+    let boxBG: Color
+    let boxCR: CGFloat
+    let boxBorder: Color
+    let boxBorderLength: CGFloat
+    let boxShadow: CGFloat
+    
+    let outerBorder: Bool
+    let padding: EdgeInsets
+    let outerBG: Color
+    let outerCR: CGFloat
+    let outerShadow: CGFloat
+    
+    let character: String
+    let characSize: CGFloat
+    let characColour: Color
+    let characWeight: Font.Weight
+    let characOffset: CGFloat
+    
+    var focus: FocusState<String?>.Binding
+    let focusValue: String
+    
     let commitAction: (String)->()
     
     init(pin: Binding<String>,
-         delayFocus: Bool,
-         delayFocusLength: Float,
-         pinLength: Int,
-         characterSize: CGFloat,
-         characterColour: Color,
-         characterWeight: Font.Weight,
-         boxSize: CGSize,
+         pinLength: Int = 4,
+         boxSize: CGSize = .init(width: 50, height: 50),
+         boxSpacing: CGFloat = 25,
+         boxBG: Color = Color("background2"),
+         boxCR: CGFloat = 5,
+         boxBorder: Color = Color("blueAccent1"),
+         boxBorderLength: CGFloat = 0.5,
+         boxShadow: CGFloat = 0.5,
+         outerBorder: Bool = true,
+         padding: EdgeInsets = .init(top: 20, leading: 22.5, bottom: 20, trailing: 22.5),
+         outerBG: Color = Color("background2"),
+         outerCR: CGFloat = 20,
+         outerShadow: CGFloat = 2,
+         character: String = "*",
+         characSize: CGFloat = 47.5,
+         characColour: Color = Color("text1"),
+         characWeight: Font.Weight = .regular,
+         characOffset: CGFloat = 10,
+         focus: FocusState<String?>.Binding,
+         focusValue: String,
          commitAction: @escaping (String)->()) {
         self._pin = pin
-        self.delayFocus = delayFocus
-        self.delayFocusLength = delayFocusLength
         self.pinLength = pinLength
-        self.characterSize = characterSize
-        self.characterColour = characterColour
-        self.characterWeight = characterWeight
+        
         self.boxSize = boxSize
+        self.boxSpacing = boxSpacing
+        self.boxBG = boxBG
+        self.boxCR = boxCR
+        self.boxBorder = boxBorder
+        self.boxBorderLength = boxBorderLength
+        self.boxShadow = boxShadow
+        
+        self.outerBorder = outerBorder
+        self.padding = padding
+        self.outerBG = outerBG
+        self.outerCR = outerCR
+        self.outerShadow = outerShadow
+        
+        self.character = character
+        self.characSize = characSize
+        self.characColour = characColour
+        self.characWeight = characWeight
+        self.characOffset = characOffset
+        
+        self.focus = focus
+        self.focusValue = focusValue
+        
         self.commitAction = commitAction
     }
     
     var body: some View {
         ZStack {
-            TextField("", text: $pin.limit(4))
+            TextField("", text: $pin.limit(pinLength))
                 .keyboardType(.numberPad)
                 .frame(width: 1, height: 1)
                 .opacity(0.001)
                 .blendMode(.screen)
-                .focused($focused)
-                .if(self.delayFocus, transform: { view in
-                    view
-                        .onAppear() {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                                focused = true
-                            })
-                        }
-                })
-                    
-                    pinBoxes
+                .focused(focus, equals: focusValue)
+            
+            pinBoxes
         }
+        .onChange(of: pin) { pin in
+        if self.pin.count == pinLength {
+            commitAction(pin)
+        }
+    }
     }
     
     var pinBoxes: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: boxSpacing) {
             ForEach(0 ..< self.pinLength, id: \.self) { index in
-                
-                if index != 0 { Spacer() }
-                
                 pinBoxes(index)
-                
-                if index != pinLength-1 { Spacer() }
             }
         }
-        .onChange(of: pin) { pin in
-            if self.pin.count == 4 {
-            }
-        }
+        .if(outerBorder == true, transform: { view in
+            view
+                .padding(padding)
+                .background { outerBG }
+                .borderModifier(lineWidth: 2,
+                                lineColour: boxBorder,
+                                cornerRadius: outerCR)
+                .shadow(radius: outerShadow)
+        })
     }
     
     @ViewBuilder
     func pinBoxes(_ index: Int) -> some View {
         ZStack(alignment: .center) {
             if pin.count > index {
-                FixedText(text: "*",
-                          colour: characterColour,
-                          fontSize: characterSize,
-                          fontWeight: characterWeight)
-                .offset(y: 7.5)
+                FixedText(text: character,
+                          colour: characColour,
+                          fontSize: characSize,
+                          fontWeight: characWeight)
+                .offset(y: characOffset)
             }
         }
         .frame(width: boxSize.width, height: boxSize.height)
-        .background() { Color("background2") }
-        .cornerRadius(5)
+        .background() { boxBG }
+        .cornerRadius(boxCR)
         .overlay {
-            let status = (focused && pin.count == index)
+            let status = (focus.wrappedValue == focusValue && pin.count == index)
             
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(Color("blueAccent1"), lineWidth: status ? 2 : 0.5)
-                .animation(.easeInOut(duration: 0.2), value: focused)
+            RoundedRectangle(cornerRadius: boxCR, style: .continuous)
+                .stroke(boxBorder, lineWidth: status ? boxBorderLength*4 : boxBorderLength)
+                .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue)
         }
-        .shadow(radius: 1)
+        .shadow(radius: boxShadow)
     }
 }
 

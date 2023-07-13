@@ -22,13 +22,15 @@ struct ScrollViewList<Data: Identifiable, Content: View>: View {
                 ScrollView(showsIndicators: showIndicators) {
                     VStack {
                         ForEach(data, id: \.id) { element in
-                            GeometryReader { geometry in
-                                Color.clear
-                                    .preference(key: ViewOffsetKey<Data.ID>.self,
-                                                value: [ViewOffset(id: element.id,
-                                                                   offset: geometry.frame(in: .named("scrollView")).minY)])
+                            ZStack(alignment: .top) {
+                                GeometryReader { geometry in
+                                    Color.clear
+                                        .preference(key: ViewOffsetKey<Data.ID>.self,
+                                                    value: [ViewOffset(id: element.id,
+                                                                       offset: geometry.frame(in: .named("scrollView")).minY)])
+                                }
+                                self.contentView(element)
                             }
-                            self.contentView(element)
                         }
                     }
                     .coordinateSpace(name: "scrollView")

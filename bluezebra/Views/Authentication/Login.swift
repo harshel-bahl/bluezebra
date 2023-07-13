@@ -9,113 +9,84 @@ import SwiftUI
 
 struct Login: View {
     
-    @ObservedObject var userDC = UserDC.shared
-    
     @EnvironmentObject var SP: ScreenProperties
     
+    @ObservedObject var userDC = UserDC.shared
+    
     @State var pin: String = ""
-    @State var showRetryPinButton = false
+    @State var showRetryPin = false
     @State var faceIDFailed = false
     
     @Environment(\.scenePhase) var scene
     
-//    @Binding var scene: String
-    
-    @FocusState var focusedField: Field?
-    
-    enum Field {
-        case logIn
-    }
+    @FocusState var focusField: String?
     
     var body: some View {
         
         if scene == .active {
             
-            ZStack {
-                
-                Color("background4")
-                    .ignoresSafeArea()
+            SafeAreaScreen(BGColour: Color("background4")) {
                 
                 if userDC.userSettings?.biometricSetup==true && faceIDFailed == false {
                     
                     faceID
                     
                 } else {
-                    
                     VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            (
-                                Text("Hello ")
-                                    .foregroundColor(Color("text1"))
-                                    .font(.largeTitle) +
-                                
-                                Text("@")
-                                    .foregroundColor(Color("blueAccent1"))
-                                    .font(.largeTitle) +
-                                
-                                Text(userDC.userData!.username)
-                                    .foregroundColor(Color("text1"))
-                                    .font(.largeTitle)
-                            )
+                        HStack(spacing: 2.5) {
+                            
+                            FixedText(text: "Hello ",
+                                      colour: Color("text1"),
+                                      fontSize: 38)
+                            
+                            FixedText(text: "@",
+                                      colour: Color("blueAccent1"),
+                                      fontSize: 38,
+                                      fontWeight: .medium)
+                            
+                            FixedText(text: userDC.userData!.username,
+                                      colour: Color("text1"),
+                                      fontSize: 38)
                             
                             Spacer()
                         }
-                        .padding(.leading, SP.screenWidth*0.08)
-                        .padding(.top, SP.safeAreaHeight*0.08)
-                        .padding(.bottom, SP.safeAreaHeight*0.08)
+                        .edgePadding(top: SP.safeAreaHeight*0.075,
+                                     leading: 25)
                         
-                        VStack(spacing: 0) {
-                            pinBoxes
-                                .onAppear() {
-                                    focusedField = .logIn
+                        PinBoxes(pin: $pin,
+                                 outerBorder: true,
+                                 focus: $focusField,
+                                 focusValue: "logIn",
+                                 commitAction: { pin in
+                            userDC.pinAuth(pin: pin) { result in
+                                switch result {
+                                case .success():
+                                    focusField = nil
+                                    userDC.loggedIn = true
+                                case .failure(_):
+                                    withAnimation() { showRetryPin = true }
                                 }
-                                .padding(SP.screenWidth*0.05)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .background() { Color("background2") }
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color("blueAccent1"), lineWidth: 2)
-                        )
-                        .shadow(radius: 1)
-                        .padding(.leading, SP.screenWidth*0.08)
-                        .padding(.trailing, SP.screenWidth*0.08)
-                        
-                        VStack(spacing: 0) {
-                            if showRetryPinButton {
-                                Text("Incorrect Pin :(")
-                                    .foregroundColor(Color("orangeAccent1"))
-                                    .fontWeight(.regular)
-                                    .padding()
-                                
-                                retryPinButton
                             }
-                        }
-                        .animation(.easeInOut(duration: 0.3), value: showRetryPinButton)
+                        })
+                        .edgePadding(top: SP.safeAreaHeight*0.07,
+                                     bottom: 20)
                         
-                        TextField("", text: $pin.limit(4))
-                            .keyboardType(.numberPad)
-                            .frame(width: 1, height: 1)
-                            .opacity(0.001)
-                            .blendMode(.screen)
-                            .focused($focusedField, equals: .logIn)
+                        if showRetryPin {
+                            retryButton
+                        }
                         
                         Spacer()
-                        
+                    }
+                    .onAppear {
+                        focusField = "logIn"
                     }
                 }
             }
         }
-        else {
-            Color("background2r")
-                .ignoresSafeArea()
-        }
     }
     
     var faceID: some View {
-        Color("background2")
-            .edgesIgnoringSafeArea(.all)
+        Color.clear
             .onAppear() {
                 userDC.biometricAuth() { result in
                     switch result {
@@ -128,76 +99,25 @@ struct Login: View {
             }
     }
     
-    var pinBoxes: some View {
-        HStack(spacing: 0) {
-            ForEach(0 ..< 4, id: \.self) { index in
-                
-                if index != 0 { Spacer() }
-                
-                pinBoxes(index)
-                
-                if index != 3 { Spacer() }
-            }
-        }
-        .frame(width: SP.screenWidth*0.75)
-        .onChange(of: pin) { pin in
-            if self.pin.count == 4 {
-                userDC.pinAuth(pin: self.pin) { result in
-                    switch result {
-                    case .success():
-                        focusedField = nil
-                        userDC.loggedIn = true
-                    case .failure(_):
-                        showRetryPinButton = true
-                    }
+    var retryButton: some View {
+        
+        VStack(spacing: 10) {
+            
+            FixedText(text: "Incorrect Pin",
+                      colour: Color("orangeAccent1"),
+                      fontSize: 16)
+            
+            ButtonAni(label: "Try Again",
+                      fontSize: 16,
+                      fontWeight: .bold,
+                      foregroundColour: Color.white,
+                      BGColour: Color("orangeAccent1"), padding: 16) {
+                withAnimation {
+                    showRetryPin = false
+                    self.pin = ""
                 }
             }
         }
-    }
-    
-    @ViewBuilder
-    func pinBoxes(_ index: Int) -> some View {
-        ZStack(alignment: .center) {
-            if pin.count > index {
-                Text("*")
-                    .font(.system(size: 40))
-                    .foregroundColor(Color("text1"))
-                    .fontWeight(.bold)
-                    .offset(y: 7.5)
-            } else {
-                Text("")
-            }
-        }
-        .frame(width: SP.screenWidth*0.125, height: SP.screenWidth*0.125)
-        .background() { Color("background2") }
-        .cornerRadius(5)
-        .overlay {
-            let status = (focusedField == .logIn && pin.count == index)
-            
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(Color("blueAccent1"), lineWidth: status ? 2 : 0.5)
-                .animation(.easeInOut(duration: 0.2), value: focusedField)
-        }
-        .shadow(radius: 1)
-    }
-    
-    var retryPinButton: some View {
-        let button = Button(action: {
-            withAnimation {
-                showRetryPinButton = false
-                self.pin = ""
-            }
-        }, label: {
-            Text("Retry Pin")
-                .font(.system(size: 16, design: .rounded))
-                .padding()
-                .background(Color("orangeAccent1"))
-                .foregroundColor(Color.white)
-                .clipShape(Capsule())
-                .shadow(radius: 1)
-        })
-        
-        return button
     }
 }
 

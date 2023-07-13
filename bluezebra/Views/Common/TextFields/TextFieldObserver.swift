@@ -18,17 +18,17 @@ class TextFieldObserver : ObservableObject {
                     self.text = oldValue
                 }
             }
-            
+
             if let startingText = self.startingText,
                self.text.isEmpty {
                 self.text = startingText
             }
-            
+
             if let startingText = startingText,
                self.text.prefix(startingText.count) != startingText {
                 self.text = startingText
             }
-            
+
             if let valuesToRemove = self.valuesToRemove,
                text != removeValuesFrom(string: text,
                                         valuesToRemove: valuesToRemove) {
