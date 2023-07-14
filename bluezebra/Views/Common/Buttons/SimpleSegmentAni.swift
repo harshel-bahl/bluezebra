@@ -9,31 +9,35 @@ import SwiftUI
 
 struct SimpleSegmentAni: View {
     
-    let size: CGSize
-    let imageNames: [String]?
-    let textNames: [String]?
-    let elementPadding: CGFloat
-    
     @Binding var selected: Int
     
-    init(size: CGSize,
-         BGColour: Color,
-         selectedBGColour: Color,
-         selectedIconColour: Color,
-         unselectedIconColour: Color,
+    let imageNames: [String]?
+    let textNames: [String]?
+    
+    let width: CGFloat
+    let height: CGFloat?
+    let elementPadding: CGFloat?
+    
+    init(selected: Binding<Int>,
          imageNames: [String]? = nil,
          textNames: [String]? = nil,
-         elementPadding: CGFloat,
-         selected: Binding<Int>) {
-        self.size = size
+         width: CGFloat = 150,
+         height: CGFloat? = nil,
+         BGColour: Color,
+         selectedBGColour: Color,
+         selectedIconColour: Color = .white,
+         unselectedIconColour: Color = .white,
+         elementPadding: CGFloat? = nil) {
+        self._selected = selected
+        self.imageNames = imageNames
+        self.textNames = textNames
+        self.width = width
+        self.height = height
         UISegmentedControl.appearance().backgroundColor = UIColor(BGColour)
         UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(selectedBGColour)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(selectedIconColour)], for: .selected)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(unselectedIconColour)], for: .normal)
-        self.imageNames = imageNames
-        self.textNames = textNames
         self.elementPadding = elementPadding
-        self._selected = selected
     }
     
     var body: some View {
@@ -46,8 +50,8 @@ struct SimpleSegmentAni: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: size.width,
-                   height: size.height)
+            .frame(width: width,
+                   height: height)
             
         } else if let imageNames = self.imageNames {
             
@@ -58,8 +62,8 @@ struct SimpleSegmentAni: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: size.width,
-                   height: size.height)
+            .frame(width: width,
+                   height: height)
         }
     }
 }

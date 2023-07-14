@@ -45,7 +45,7 @@ struct PinBoxes: View {
          boxSpacing: CGFloat = 25,
          boxBG: Color = Color("background2"),
          boxCR: CGFloat = 5,
-         boxBorder: Color = Color("blueAccent1"),
+         boxBorder: Color = Color("accent1"),
          boxBorderLength: CGFloat = 0.5,
          boxShadow: CGFloat = 0.5,
          outerBorder: Bool = true,

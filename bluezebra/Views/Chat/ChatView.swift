@@ -80,7 +80,7 @@ struct ChatView: View {
 //                            .resizable()
 //                            .aspectRatio(contentMode: .fit)
 //                            .frame(height: geometry.size.height*0.66)
-//                            .foregroundColor(Color("blueAccent1"))
+//                            .foregroundColor(Color("accent1"))
 //                    }
                     
                     if let name = getName(channelID: channel.channelID) {

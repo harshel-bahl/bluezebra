@@ -26,7 +26,21 @@ struct TopLevelView: View {
         ZStack {
             if (userDC.userData == nil || userDC.loggedIn != true) {
                 
-                AuthenticationHome(fetchedUser: $fetchedUser)
+                ZStack {
+                    if (fetchedUser == false) {
+                        
+                        Color("background2")
+                        
+                    } else if (fetchedUser == true && userDC.userData == nil) {
+                        
+                        SignUp()
+                        
+                    } else if (userDC.userData != nil && userDC.loggedIn == false) {
+                        
+                        Login()
+                        
+                    }
+                }
                 
             } else if (userDC.userData != nil && userDC.loggedIn == true) {
                 
@@ -102,7 +116,7 @@ struct TopLevelView: View {
                                                        "person.crop.circle"],
                                           selectedNames: ["message.circle.fill",
                                                           "person.crop.circle.fill"],
-                                          selectedColour: Color("blueAccent1"),
+                                          selectedColour: Color("accent1"),
                                           unselectedColour:  Color("darkAccent1"),
                                           backgroundColour: Color("background3"),
                                           betweenPadding: SP.screenWidth*0.18),

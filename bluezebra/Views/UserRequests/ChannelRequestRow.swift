@@ -34,7 +34,7 @@ struct ChannelRequestRow: View {
                     
                     Text("@" + remoteUser.username)
                         .font(.headline)
-                        .foregroundColor(Color("blueAccent1"))
+                        .foregroundColor(Color("accent1"))
                     
                     Spacer()
                     
@@ -85,7 +85,7 @@ struct ChannelRequestRow: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 27.5, height: 27.5)
-                .foregroundColor(Color("blueAccent1"))
+                .foregroundColor(Color("accent1"))
         })
         
         return button

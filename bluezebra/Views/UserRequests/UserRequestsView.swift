@@ -9,145 +9,150 @@ import SwiftUI
 
 struct UserRequestsView: View {
     
-    @Binding var showUserRequestsView: Bool
-    
-    @State var segment1 = 0
-    @State var segment2 = 0
-    
     @EnvironmentObject var SP: ScreenProperties
     
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     
-//    @ObservedObject var usernameTM = UsernameTextManager(limit: 13, text: "@")
+    @Binding var showUserRequestsView: Bool
     
+    @State var selected1: Int = 0
+    @State var selected2: Int = 0
+    
+    @State var username = ""
+    @FocusState var focusField: String?
     @State var fetchedUsers = [RUPacket]()
-    
     @State var searchFailure = false
     
-    @FocusState var usernameField: Bool
-    
     var body: some View {
-        ZStack {
-            
-            Color("background1")
-                .ignoresSafeArea(edges: .bottom)
-            
-            VStack(spacing: 0) {
-                
-                Rectangle()
-                    .fill(Color("darkAccent1").opacity(0.75))
-                    .frame(width: SP.screenWidth*0.08, height: 5)
-                    .cornerRadius(7.5)
-                    .padding(.top, SP.safeAreaHeight*0.01)
-                    .padding(.bottom, SP.safeAreaHeight*0.025)
-                    .frame(width: SP.screenWidth)
-                    .background() { Color("background3") }
-                    
-                Picker("", selection: $segment1) {
-                    Text("Add Users")
-                        .tag(0)
-                    
-                    Text("Requests")
-                        .tag(1)
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, SP.screenWidth*0.25)
-                .padding(.bottom, SP.safeAreaHeight*0.025)
-                .background() { Color("background3")}
-                
-                if segment1==0 {
-                    addUser
-                } else {
-                    requestView
-                }
-            }
-        }
-    }
-    
-    var addUser: some View {
         VStack(spacing: 0) {
             
-//            UsernameTextField(textManager: usernameTM) { username in
-//                channelDC.fetchRUs(username: username) { (userDataList) in
-//                    switch userDataList {
-//                    case .success(let users):
-//                        fetchedUsers = users
-//                    case .failure(_): searchFailure = true
-//                    }
-//                }
-//            }
-//            .padding(.horizontal, SP.screenWidth*0.15)
-//            .padding(.bottom, SP.safeAreaHeight*0.025)
-//            .onAppear { usernameField.toggle() }
-//            .focused($usernameField)
-//            .background() { Color("background3") }
+            TextSegmentView(selected: $selected1,
+                            textNames: ["Add Users", "Requests"],
+                            BGColour: Color("accent2"),
+                            selectedBGColour: Color("accent1"))
+            .edgePadding(bottom: 25)
             
-            ScrollView {
-                ForEach(fetchedUsers, id: \.userID) { user in
-                    
-                    VStack(spacing: 0) {
-                        AddUserRow(remoteUser: user)
-                            .padding(.horizontal, SP.screenWidth*0.1)
-                            .padding(.vertical, SP.safeAreaHeight*0.0225)
+            if selected1 == 0 {
+                addUserView
+            } else if selected1 == 1 {
+                requestView
+            }
+        }
+        .ignoresSafeArea()
+        .onChange(of: selected1, perform: { selected1 in
+            if selected1 != 0 {
+                focusField = nil
+                self.username = ""
+                self.fetchedUsers = [RUPacket]()
+            }
+        })
+    }
+    
+    var addUserView: some View {
+        VStack(spacing: 0) {
+            
+            usernameTextField()
+                .frame(width: 250)
+                .edgePadding(bottom: 10)
+                .frame(width: SP.screenWidth)
+                .background() { Color("background3") }
+            
+            ZStack {
+                
+                Color("background1")
+                
+                ScrollView {
+                    ForEach(fetchedUsers, id: \.userID) { user in
                         
-                        Divider()
+                        VStack(spacing: 0) {
+                            AddUserRow(remoteUser: user)
+                                .edgePadding(top: 15,
+                                             bottom: 15,
+                                             leading: 20,
+                                             trailing: 20)
+                            
+                            Divider()
+                        }
                     }
                 }
             }
         }
-        .onDisappear() {
-//            self.usernameTM.username = ""
-            self.fetchedUsers = [RUPacket]()
-        }
-        .alert("Unable to search for users", isPresented: $searchFailure) {
-            Button("Try again later", role: .cancel) {
-//                self.usernameTM.username = ""
+        .keyboardAwarePadding()
+    }
+    
+    func usernameTextField() -> some View {
+        DebounceTextField(text: $username,
+                          startingText: "@",
+                          foregroundColour: Color("text3"),
+                          font: .headline,
+                          characterLimit: 13,
+                          valuesToRemove: BZSetup.shared.removeUsernameValues,
+                          autocorrection: false,
+                          trimOnCommit: true,
+                          replaceStartingOnCommit: true,
+                          debouncedAction: { username in
+            
+            channelDC.fetchRUs(username: username) { result in
+                switch result {
+                case .success(let packets):
+                    fetchedUsers = packets
+                case .failure(_): break
+                }
+            }
+            
+        },
+                          debounceFor: 0.4)
+        .focused($focusField, equals: "username")
+        .onAppear() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                focusField = "username"
             }
         }
     }
+
     
     var requestView: some View {
         VStack(spacing: 0) {
             
             HStack {
-                Picker("", selection: $segment2) {
-                    
-                    Text("received")
-                        .tag(0)
-                    
-                    Text("sent")
-                        .tag(1)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 125)
+                SimpleSegmentAni(selected: $selected2,
+                                 textNames: ["received", "sent"],
+                                 BGColour: Color("accent2"),
+                                 selectedBGColour: Color("accent1"))
                 
                 Spacer()
             }
-            .padding(.leading, 20)
-            .padding(.vertical, 10)
+            .edgePadding(top: 5,
+                         bottom: 10,
+                         leading: 25)
             
-            ScrollView {
-                if segment2==0 {
-                    ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.channelID) { channelRequest in
-                        
-                        VStack(spacing: 0) {
-                            ChannelRequestRow(channelRequest: channelRequest)
-                                .padding(.horizontal, SP.screenWidth*0.1)
-                                .padding(.vertical, SP.safeAreaHeight*0.0225)
+            ZStack {
+                
+                Color("background1")
+                
+                ScrollView {
+                    if selected2==0 {
+                        ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.channelID) { channelRequest in
                             
-                            Divider()
+                            VStack(spacing: 0) {
+                                ChannelRequestRow(channelRequest: channelRequest)
+                                    .padding(.horizontal, SP.screenWidth*0.1)
+                                    .padding(.vertical, SP.safeAreaHeight*0.0225)
+                                
+                                Divider()
+                            }
                         }
-                    }
-                } else if segment2==1 {
-                    ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.channelID) { channelRequest in
-                        
-                        VStack(spacing: 0) {
-                            ChannelRequestRow(channelRequest: channelRequest)
-                                .padding(.horizontal, SP.screenWidth*0.1)
-                                .padding(.vertical, SP.safeAreaHeight*0.0225)
+                    } else if selected2==1 {
+                        ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.channelID) { channelRequest in
                             
-                            Divider()
+                            VStack(spacing: 0) {
+                                ChannelRequestRow(channelRequest: channelRequest)
+                                    .padding(.horizontal, SP.screenWidth*0.1)
+                                    .padding(.vertical, SP.safeAreaHeight*0.0225)
+                                
+                                Divider()
+                            }
                         }
                     }
                 }

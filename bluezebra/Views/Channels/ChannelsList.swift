@@ -49,9 +49,10 @@ struct ChannelsList: View {
             }
             
         }
-        .sheet(isPresented: $showUserRequestsView, content: {
+        .sheetModifier(isPresented: $showUserRequestsView,
+                       BG: Color("background3")) {
             UserRequestsView(showUserRequestsView: $showUserRequestsView)
-        })
+        }
         .sheet(isPresented: $showDeletionLog, content: {
             DeletionLog(channelType: "user")
         })
@@ -63,8 +64,8 @@ struct ChannelsList: View {
             
             SystemIcon(systemName: "arrow.uturn.backward.circle",
                        size: .init(width: 25, height: 25),
-                       colour: Color("blueAccent1"),
-                       BGColour: Color.white,
+                       colour: Color("accent1"),
+                       BGColour: Color("background1"),
                        applyClip: true,
                        shadow: 1,
             buttonAction: {
@@ -82,12 +83,12 @@ struct ChannelsList: View {
             
             SystemIcon(systemName: "plus.circle",
                        size: .init(width: 25, height: 25),
-                       colour: Color("blueAccent1"),
-                       BGColour: Color.white,
+                       colour: Color("accent1"),
+                       BGColour: Color("background1"),
                        applyClip: true,
                        shadow: 1.15,
             buttonAction: {
-                showDeletionLog.toggle()
+                showUserRequestsView.toggle()
             })
         }
     }
@@ -118,7 +119,7 @@ struct ChannelsList: View {
                             HStack(spacing: 0) {
                                 
                                 FixedText(text: "@" + userDC.userData!.username,
-                                          colour: Color("blueAccent1"),
+                                          colour: Color("accent1"),
                                           fontSize: 17,
                                           fontWeight: .bold)
                                 
@@ -142,7 +143,7 @@ struct ChannelsList: View {
                                 
                                 SystemIcon(systemName: "chevron.right",
                                            size: .init(width: 8, height: 12.5),
-                                           colour: Color("blueAccent1"),
+                                           colour: Color("accent1"),
                                            padding: .init(top: 0,
                                                           leading: 10,
                                                           bottom: 0,

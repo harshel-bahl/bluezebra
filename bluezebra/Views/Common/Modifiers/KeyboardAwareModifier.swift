@@ -12,7 +12,9 @@ internal struct KeyboardAwareModifier: ViewModifier {
     
     @EnvironmentObject var SP: ScreenProperties
     
-    @State private var keyboardHeight: CGFloat = 0 
+    @State private var keyboardHeight: CGFloat = 0
+    
+    let bottomSAI: Bool
     
     private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
         Publishers.Merge(
@@ -22,14 +24,21 @@ internal struct KeyboardAwareModifier: ViewModifier {
                 .map { $0.cgRectValue.height },
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in CGFloat(SP.bottomSAI) }
+                .map { _ in CGFloat(0) }
         ).eraseToAnyPublisher()
     }
     
     public func body(content: Content) -> some View {
         content
-            .padding(.bottom, (keyboardHeight==0 ? SP.bottomSAI : keyboardHeight))
-            .onReceive(keyboardHeightPublisher) { height in
+            .if(bottomSAI == true, transform: { view in
+                view
+                    .padding(.bottom, (keyboardHeight==0 ? SP.bottomSAI : keyboardHeight))
+            })
+                .if(bottomSAI == false, transform: { view in
+                    view
+                        .padding(.bottom, (keyboardHeight==0 ? 0 : keyboardHeight))
+                })
+                    .onReceive(keyboardHeightPublisher) { height in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     keyboardHeight = height
                 }
@@ -39,8 +48,8 @@ internal struct KeyboardAwareModifier: ViewModifier {
 
 internal extension View {
     
-    func keyboardAwarePadding() -> some View {
-        ModifiedContent(content: self, modifier: KeyboardAwareModifier())
+    func keyboardAwarePadding(bottomSAI: Bool = false) -> some View {
+        modifier(KeyboardAwareModifier(bottomSAI: bottomSAI))
     }
     
 }

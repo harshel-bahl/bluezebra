@@ -44,9 +44,9 @@ struct SignUp: View {
                                 ])
             
             if createdUser {
-                ImageAni1(firstBGColour: Color("blueAccent1"),
+                ImageAni1(firstBGColour: Color("accent1"),
                           imageName: "checkmark.seal.fill",
-                          secondImgColour: Color("blueAccent1"))
+                          secondImgColour: Color("accent1"))
             }
         }
     }
@@ -168,7 +168,7 @@ struct SignUp: View {
         }
         .background() { Color("background2") }
         .borderModifier(lineWidth: 2,
-                        lineColour: Color("blueAccent1"),
+                        lineColour: Color("accent1"),
                         cornerRadius: 20,
                         shadowRadius: 1)
     }
@@ -185,7 +185,7 @@ struct SignUp: View {
         } else {
             SystemIcon(systemName: "person.crop.circle.fill",
                        size: .init(width: 60, height: 60),
-                       colour: Color("blueAccent1"),
+                       colour: Color("accent1"),
                        padding: nil,
                        buttonAction: {
                 showEmojiPicker = true
@@ -237,7 +237,7 @@ struct SignUp: View {
         }
         .background() { Color("background2") }
         .borderModifier(lineWidth: 2,
-                        lineColour: Color("blueAccent1"),
+                        lineColour: Color("accent1"),
                         cornerRadius: 20,
                         shadowRadius: 1)
         
@@ -295,7 +295,7 @@ struct SignUp: View {
             SystemIcon(systemName: "checkmark.seal.fill",
                        size: .init(width: 25,
                                    height: 25),
-                       colour: Color("blueAccent1"))
+                       colour: Color("accent1"))
         } else if let _ = checkedUsername,
                   checkedUsername == false {
             SystemIcon(systemName: "exclamationmark.triangle.fill",
@@ -348,7 +348,7 @@ struct SignUp: View {
         }
         .background() { Color("background2") }
         .borderModifier(lineWidth: 2,
-                        lineColour: Color("blueAccent1"),
+                        lineColour: Color("accent1"),
                         cornerRadius: 20,
                         shadowRadius: 1)
     }
@@ -361,7 +361,7 @@ struct SignUp: View {
                 ButtonAni(label: "Join BZ",
                           fontSize: 16,
                           foregroundColour: Color.white,
-                          BGColour: Color("blueAccent1"),
+                          BGColour: Color("accent1"),
                           padding: 17.5,
                           action: {
                     userDC.createUser(username: self.username,

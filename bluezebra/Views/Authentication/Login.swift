@@ -40,7 +40,7 @@ struct Login: View {
                                       fontSize: 38)
                             
                             FixedText(text: "@",
-                                      colour: Color("blueAccent1"),
+                                      colour: Color("accent1"),
                                       fontSize: 38,
                                       fontWeight: .medium)
                             

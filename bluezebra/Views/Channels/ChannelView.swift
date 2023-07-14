@@ -47,7 +47,7 @@ struct ChannelView: View {
                            userDC.userData!.userID == readReceipt  {
                             SystemIcon(systemName: "circle.fill",
                                        size: .init(width: 7.5, height: 7.5),
-                                       colour: Color("blueAccent1"))
+                                       colour: Color("accent1"))
                         }
                     }
                     .frame(width: 15)
@@ -78,7 +78,7 @@ struct ChannelView: View {
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
                             FixedText(text: "@" + RU.username,
-                                      colour: Color("blueAccent1"),
+                                      colour: Color("accent1"),
                                       fontSize: 17,
                                       fontWeight: .bold)
                             
@@ -96,7 +96,7 @@ struct ChannelView: View {
                             
                             SystemIcon(systemName: "chevron.right",
                                        size: .init(width: 8, height: 12.5),
-                                       colour: Color("blueAccent1"),
+                                       colour: Color("accent1"),
                                        padding: .init(top: 0,
                                                       leading: 10,
                                                       bottom: 0,
