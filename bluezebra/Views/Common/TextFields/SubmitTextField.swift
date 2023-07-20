@@ -78,35 +78,34 @@ struct SubmitTextField: View {
     var body: some View {
         
         textField
-            .if(self.editingAction != nil, transform: { view in
-                view
-                    .onChange(of: self.textFieldObserver.text, perform: { changedText in
-                        
-                        var editingText = changedText
-                        
-                        if replaceStartingOnCommit,
-                           let startingText = self.textFieldObserver.startingText {
-                            editingText = editingText.replacingOccurrences(of: startingText, with: "")
-                        }
-                        
-                        if trimOnCommit {
-                            editingText = editingText.trimmingCharacters(in: .whitespacesAndNewlines)
-                        }
-                        
-                        if let preprocessActions = preprocessActions,
-                           let editingAction = editingAction {
-                            
-                            let preprocessedText = preprocessActions(editingText)
-                            self.text = preprocessedText
-                            editingAction(preprocessedText)
-                            
-                        } else if let editingAction = editingAction {
-                            
-                            self.text = editingText
-                            editingAction(editingText)
-                            
-                        }
-                    })
+            .onChange(of: self.textFieldObserver.text, perform: { changedText in
+                var editingText = changedText
+                
+                if replaceStartingOnCommit,
+                   let startingText = self.textFieldObserver.startingText {
+                    editingText = editingText.replacingOccurrences(of: startingText, with: "")
+                }
+                
+                if trimOnCommit {
+                    editingText = editingText.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+                
+                if let preprocessActions = preprocessActions {
+                    editingText = preprocessActions(editingText)
+                }
+                
+                if self.text != editingText {
+                    self.text = editingText
+                }
+                
+                if let editingAction = editingAction {
+                    editingAction(editingText)
+                }
+            })
+            .onChange(of: self.text, perform: { changedText in
+                if self.textFieldObserver.text != changedText {
+                    self.textFieldObserver.text = changedText
+                }
             })
             .if(self.submitAction != nil, transform: { view in
                 view
@@ -127,15 +126,11 @@ struct SubmitTextField: View {
                            let submitAction = submitAction {
                             
                             let preprocessedText = preprocessActions(commitText)
-                            self.text = preprocessedText
                             submitAction(preprocessedText)
                             
                         } else if commitText != "",
                                   let submitAction = submitAction {
-                            
-                            self.text = commitText
                             submitAction(commitText)
-                            
                         }
                     }
             })

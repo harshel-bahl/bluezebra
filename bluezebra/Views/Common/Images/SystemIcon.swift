@@ -21,7 +21,7 @@ struct SystemIcon<ClipShape: Shape>: View {
     let buttonAction: (()->Void)?
     
     init(systemName: String,
-         size: CGSize,
+         size: CGSize = .init(width: 25, height: 25),
          colour: Color,
          padding: EdgeInsets? = nil,
          BGColour: Color? = nil,
@@ -41,13 +41,16 @@ struct SystemIcon<ClipShape: Shape>: View {
     }
     
     var body: some View {
-        icon
-            .if(buttonAction != nil, transform: { view in
-                view
-                    .onTapGesture {
-                        buttonAction!()
-                    }
+        
+        if let buttonAction = buttonAction {
+            Button(action: {
+                buttonAction()
+            }, label: {
+                icon
             })
+        } else {
+            icon
+        }  
     }
     
     var icon: some View {

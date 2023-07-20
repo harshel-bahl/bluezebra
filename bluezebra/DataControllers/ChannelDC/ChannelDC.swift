@@ -42,8 +42,8 @@ class ChannelDC: ObservableObject {
                     self.typingUsers[channelID] = false
                 }
                 
-                if !MessageDC.shared.userMessages.keys.contains(channelID) {
-                    MessageDC.shared.userMessages[channelID] = [SMessage]()
+                if !MessageDC.shared.channelMessages.keys.contains(channelID) {
+                    MessageDC.shared.channelMessages[channelID] = [SMessage]()
                 }
             }
         }

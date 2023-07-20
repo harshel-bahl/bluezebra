@@ -15,7 +15,7 @@ struct ChannelsList: View {
     
     @EnvironmentObject var SP: ScreenProperties
     
-    @State var showUserRequestsView = false
+    @State var showCRView = false
     @State var showDeletionLog = false
     
     @State var chatNavigation: String? = nil
@@ -39,8 +39,7 @@ struct ChannelsList: View {
                     meChannel
                     
                     ForEach(channelDC.channels, id: \.channelID) { channel in
-                        if let RUID = channel.userID,
-                           let RU = channelDC.RUs[RUID] {
+                        if let RU = channelDC.RUs[channel.userID] {
                             ChannelView(channel: channel,
                                         RU: RU)
                         }
@@ -49,13 +48,14 @@ struct ChannelsList: View {
             }
             
         }
-        .sheetModifier(isPresented: $showUserRequestsView,
+        .sheetModifier(isPresented: $showCRView,
                        BG: Color("background3")) {
-            UserRequestsView(showUserRequestsView: $showUserRequestsView)
+            CRView(showCRView: $showCRView)
         }
-        .sheet(isPresented: $showDeletionLog, content: {
-            DeletionLog(channelType: "user")
-        })
+                       .sheetModifier(isPresented: $showDeletionLog,
+                                      BG: Color("background3")) {
+                           DeletionLog(channelType: "user")
+                       }
     }
     
     
@@ -88,7 +88,7 @@ struct ChannelsList: View {
                        applyClip: true,
                        shadow: 1.15,
             buttonAction: {
-                showUserRequestsView.toggle()
+                showCRView.toggle()
             })
         }
     }
@@ -96,7 +96,8 @@ struct ChannelsList: View {
     var meChannel: some View {
         ZStack {
             NavigationLink {
-                ChatView(channel: channelDC.personalChannel!)
+                ChatInterface(channelType: .personal,
+                              channel: channelDC.personalChannel!)
             } label: {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
@@ -120,25 +121,25 @@ struct ChannelsList: View {
                                 
                                 FixedText(text: "@" + userDC.userData!.username,
                                           colour: Color("accent1"),
-                                          fontSize: 17,
+                                          fontSize: 18,
                                           fontWeight: .bold)
                                 
                                 FixedText(text: "(Me)",
                                           colour: Color("orangeAccent1"),
-                                          fontSize: 15,
-                                          fontWeight: .regular,
+                                          fontSize: 12,
+                                          fontWeight: .bold,
                                           padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
                                 
                                 Spacer()
                                 
                                 if let latestDate = messageDC.personalMessages.first?.date {
                                     DateTimeShor(date: latestDate,
-                                                 fontSize: 15,
+                                                 fontSize: 16,
                                                  colour: Color("text2"))
                                 } else {
                                     FixedText(text: "-",
-                                              colour: Color("text1"),
-                                              fontSize: 15)
+                                              colour: Color("text2"),
+                                              fontSize: 16)
                                 }
                                 
                                 SystemIcon(systemName: "chevron.right",
@@ -154,7 +155,7 @@ struct ChannelsList: View {
                             
                                 FixedText(text: messageDC.personalMessages.first?.message ?? "Tap to chat!",
                                           colour: Color("text2"),
-                                          fontSize: 15,
+                                          fontSize: 16,
                                           lineLimit: 2...2,
                                           padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8),
                                           multilineAlignment: .leading,
@@ -184,10 +185,8 @@ struct ChannelsList: View {
                     Button("Clear Channel", action: {
                         
                     })
-                    
                 }
             }
-            
         }
     }
 }

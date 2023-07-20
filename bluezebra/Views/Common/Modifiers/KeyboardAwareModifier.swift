@@ -16,12 +16,14 @@ internal struct KeyboardAwareModifier: ViewModifier {
     
     let bottomSAI: Bool
     
+    let paddingAnimation: Animation
+    
     private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
         Publishers.Merge(
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
-                .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue }
-                .map { $0.cgRectValue.height },
+                .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect }
+                .map { $0.height },
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in CGFloat(0) }
@@ -32,24 +34,28 @@ internal struct KeyboardAwareModifier: ViewModifier {
         content
             .if(bottomSAI == true, transform: { view in
                 view
-                    .padding(.bottom, (keyboardHeight==0 ? SP.bottomSAI : keyboardHeight))
+                    .padding(.bottom, (keyboardHeight==0 ? 0 : keyboardHeight))
+                    .background() { Color.red }
             })
                 .if(bottomSAI == false, transform: { view in
                     view
                         .padding(.bottom, (keyboardHeight==0 ? 0 : keyboardHeight))
                 })
                     .onReceive(keyboardHeightPublisher) { height in
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(paddingAnimation) {
                     keyboardHeight = height
                 }
             }
+            .ignoresSafeArea()
     }
 }
 
 internal extension View {
     
-    func keyboardAwarePadding(bottomSAI: Bool = false) -> some View {
-        modifier(KeyboardAwareModifier(bottomSAI: bottomSAI))
+    func keyboardAwarePadding(bottomSAI: Bool = false,
+                              paddingAnimation: Animation = .linear(duration: 0.25)) -> some View {
+        modifier(KeyboardAwareModifier(bottomSAI: bottomSAI,
+                                       paddingAnimation: paddingAnimation))
     }
     
 }

@@ -25,13 +25,13 @@ struct PulsatingCircle: View {
     var fontWeight: Font.Weight
     var padding: CGFloat
     
-    init(size: CGSize = CGSize(width: 50, height: 50),
-         colour: Color = .white,
-         scaleRatio: CGFloat,
-         animationSpeed: Double = 0,
+    init(size: CGSize = CGSize(width: 9, height: 9),
+         colour: Color = .green,
+         scaleRatio: CGFloat = 0.8,
+         animationSpeed: Double = 1.5,
          text: String? = nil,
          textColour: Color = .black,
-         fontSize: CGFloat = 9,
+         fontSize: CGFloat = 10,
          fontWeight: Font.Weight = .regular,
          padding: CGFloat = 5) {
         self.size = size

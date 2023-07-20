@@ -81,6 +81,8 @@ struct TopLevelView: View {
                 }
                 
                 remoteConnection()
+                
+               try await messageDC.syncMessageDC()
             } catch {
                 fetchedUser = true
                 

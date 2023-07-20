@@ -16,13 +16,11 @@ class MessageDC: ObservableObject {
     /// personalMessages: personal channel messages
     @Published var personalMessages = [SMessage]() 
     
-    /// userMessages: [channelID: Messages]
+    /// channelMessages: [channelID: Messages]
     /// First message is the latest message
-    @Published var userMessages = [String: [SMessage]]()
+    @Published var channelMessages = [String: [SMessage]]()
     
-    /// teamMessages: [channelID: Messages]
-    /// 
-    @Published var teamMessages = [String: [SMessage]]()
+    @Published var unreadChannels: Int?
     
     init() {
         self.addSocketHandlers()
@@ -63,8 +61,7 @@ class MessageDC: ObservableObject {
     func resetState() {
         DispatchQueue.main.async {
             self.personalMessages = [SMessage]()
-            self.userMessages = [String: [SMessage]]()
-            self.teamMessages = [String: [SMessage]]()
+            self.channelMessages = [String: [SMessage]]()
         }
     }
 }

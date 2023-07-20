@@ -55,8 +55,8 @@ extension MessageDC {
                                                                             delivered: [String](),
                                                                             read: [String](),
                                                                             remoteDeleted: [String]())
-                        if self.userMessages.keys.contains(remoteUserID) {
-                            self.userMessages[remoteUserID]?.insert(message, at: 0)
+                        if self.channelMessages.keys.contains(remoteUserID) {
+                            self.channelMessages[remoteUserID]?.insert(message, at: 0)
                         } else {
                             // fetch remote user messages
                         }
@@ -114,6 +114,11 @@ extension MessageDC {
                                 functionName: "sendReadMessage",
                                 failureCompletion: completion) { _ in }
         }
+    }
+    
+    func deleteMessage(messageID: String) {
+        
+        print(messageID)
     }
 }
 

@@ -11,13 +11,52 @@ extension MessageDC {
     
     /// Local Read/Write Functions
     ///
-
-    func syncPersonalChannel() async throws {
+    func syncMessageDC() async throws {
+        try await syncChannel(channelID: "personal")
         
-        let sMOs = try await self.fetchMessages()
+        for channel in ChannelDC.shared.channels {
+            try await self.syncChannel(channelID: channel.channelID)
+        }
+    }
+    
+    func syncChannel(channelID: String,
+                     fetchLimit: Int = 15,
+                     sortKey: String = "date",
+                     sortAscending: Bool = false) async throws {
         
-        DispatchQueue.main.async {
-            self.personalMessages = sMOs
+        if channelID == "personal" {
+            let SMOs = try await self.fetchMessages()
+            
+            DispatchQueue.main.async {
+                self.personalMessages = SMOs
+            }
+        } else {
+            let SMOs = try await fetchMessages(channelID: channelID)
+            
+            DispatchQueue.main.async {
+                self.channelMessages[channelID] = SMOs
+            }
+        }
+    }
+    
+    func addMessages(channelID: String,
+                     fetchLimit: Int = 25,
+                     sortKey: String = "date",
+                     sortAscending: Bool = false) async throws {
+        
+        let earliestSMO = self.channelMessages[channelID]?.last
+        
+        if let earliestSMO = earliestSMO {
+            let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestSMO.date])
+            
+            let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Message.self,
+                                                              customPredicate: predicate,
+                                                              fetchLimit: fetchLimit,
+                                                              sortKey: sortKey,
+                                                              sortAscending: sortAscending)
+            DispatchQueue.main.async {
+                self.channelMessages[channelID]?.append(contentsOf: SMOs)
+            }
         }
     }
     

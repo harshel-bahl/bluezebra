@@ -1,0 +1,159 @@
+//
+//  TextContainer.swift
+//  bluezebra
+//
+//  Created by Harshel Bahl on 08/04/2023.
+//
+
+import SwiftUI
+
+struct TextContainer: View {
+    
+    @EnvironmentObject var SP: ScreenProperties
+    @ObservedObject var messageDC = MessageDC.shared
+    
+    let message: SMessage
+    
+    let textColour: [Color]
+    let textFont: Font
+    
+    let showReceipt: Bool
+    let messageStatus: String?
+    let receiptSize: CGSize?
+    
+    let dateColour: [Color]
+    let dateFont: Font
+    
+    let bubblePadding: EdgeInsets
+    let BG: [Color]
+    let cornerRadius: CGFloat
+    let outerPadding: EdgeInsets
+    let maxWidthProp: Double
+    
+    let showContextMenu: Bool
+    
+    @State var messageTextWidth: CGFloat = 0
+    @State var timeTextWidth: CGFloat = 0
+    
+    init(message: SMessage,
+         textColour: [Color] = [.white, .black],
+         textFont: Font = .system(size: 17.5),
+         showReceipt: Bool = false,
+         messageStatus: String? = nil,
+         receiptSize: CGSize = .init(width: 7.5, height: 7.5),
+         dateColour: [Color] = [.white, .black],
+         dateFont: Font = .system(size: 12),
+         bubblePadding: EdgeInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5),
+         BG: [Color] = [Color("accent1"), Color("accent3")],
+         cornerRadius: CGFloat = 10,
+         outerPadding: EdgeInsets = .init(top: 1, leading: 15, bottom: 1, trailing: 15),
+         maxWidthProp: Double = 0.66,
+         showContextMenu: Bool = true) {
+        self.message = message
+        self.textColour = textColour
+        self.textFont = textFont
+        self.showReceipt = showReceipt
+        self.messageStatus = messageStatus
+        self.receiptSize = receiptSize
+        self.dateColour = dateColour
+        self.dateFont = dateFont
+        self.bubblePadding = bubblePadding
+        self.BG = BG
+        self.cornerRadius = cornerRadius
+        self.outerPadding = outerPadding
+        self.maxWidthProp = maxWidthProp
+        self.showContextMenu = showContextMenu
+    }
+    
+    var body: some View {
+        basicMessage
+    }
+    
+    var basicMessage: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            
+            Text(message.message)
+                .font(textFont)
+                .foregroundColor(message.isSender ? textColour[0] : textColour[1])
+                .overlay {
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear() {
+                                messageTextWidth = geometry.size.width
+                            }
+                    }
+                }
+            
+            HStack(alignment: .bottom, spacing: 0) {
+                
+                if message.isSender {
+                    if showReceipt {
+                        if messageStatus == "notSent" || messageStatus == "sent" {
+                            Circle()
+                                .fill(messageStatus == "sent" ? .yellow : .red)
+                                .frame(width: receiptSize?.width, height: receiptSize?.height)
+                        } else if messageStatus == "delivered" || messageStatus == "read" {
+                            Circle()
+                                .fill(messageStatus == "read" ? .green : .gray)
+                                .frame(width: receiptSize?.width, height: receiptSize?.height)
+                            
+                            Circle()
+                                .fill(messageStatus == "read" ? .green : .gray)
+                                .frame(width: receiptSize?.width, height: receiptSize?.height)
+                                .edgePadding(leading: 2)
+                        }
+                    }
+                    
+                    Spacer(minLength: 15)
+                    
+                    Text(DateU.shared.timeHm(date: message.date))
+                        .font(dateFont)
+                        .foregroundColor(dateColour[0])
+                        .fixedSize()
+                } else {
+                    Text(DateU.shared.timeHm(date: message.date))
+                        .font(dateFont)
+                        .foregroundColor(dateColour[0])
+                        .fixedSize()
+                    
+                    Spacer(minLength: 15)
+                }
+            }
+            .padding(.top, 7.5)
+            .overlay {
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear() {
+                                timeTextWidth = geometry.size.width
+                        }
+                }
+            }
+            .frame(width: {
+                if messageTextWidth >= timeTextWidth {
+                    return messageTextWidth
+                } else {
+                    return timeTextWidth
+                }
+            }())
+            
+        }
+        .padding(bubblePadding)
+        .background(message.isSender ? BG[0] : BG[1])
+        .cornerRadius(cornerRadius)
+        
+        .if(showContextMenu == true, transform: { view in
+            view
+                .contextMenu {
+                    Button("Delete Message", action: {
+                        messageDC.deleteMessage(messageID: message.messageID)
+                    })
+                }
+        })
+        
+        .frame(width: SP.screenWidth*maxWidthProp, alignment: message.isSender ? .trailing : .leading)
+        .padding(outerPadding)
+        .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
+    }
+}
+
+

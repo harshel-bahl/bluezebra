@@ -82,8 +82,7 @@ extension ChannelDC {
         
         var userIDs = [String]()
         for channel in self.channels {
-            guard let userID = channel.userID else { return }
-            userIDs.append(userID)
+            userIDs.append(channel.userID)
         }
         
         SocketController.shared.clientSocket.emitWithAck("checkOnlineUsers", ["userIDs": userIDs])
@@ -156,6 +155,9 @@ extension ChannelDC {
             self.socketCallback(data: data,
                                 functionName: "sendCR",
                                 failureCompletion: completion) { _ in
+                
+                completion(.success(()))
+                
                 Task {
                     do {
                         let channelRequest = try await DataPC.shared.createChannelRequest(channelID: CRPacket.channel.channelID,
@@ -185,7 +187,7 @@ extension ChannelDC {
     
     /// sendCRResult:
     ///
-    func sendCRResult(channelRequest: SChannelRequest,
+    func sendCRResult(CR: SChannelRequest,
                       result: Bool,
                       completion: @escaping (Result<Void, DCError>)->()) {
         
@@ -195,11 +197,10 @@ extension ChannelDC {
             return
         }
         
-        guard let userID = channelRequest.userID else { return }
         let date = DateU.shared.currDT
         
-        SocketController.shared.clientSocket.emitWithAck("sendCRResult", ["userID": userID,
-                                                                          "packet": ["channelID": channelRequest.channelID,
+        SocketController.shared.clientSocket.emitWithAck("sendCRResult", ["userID": CR.userID,
+                                                                          "packet": ["channelID": CR.channelID,
                                                                                      "date": DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!),
                                                                                      "result": result]])
         .timingOut(after: 1) { [weak self] data in
@@ -213,12 +214,12 @@ extension ChannelDC {
                         do {
                             try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
                                                                        predicateProperty: "channelID",
-                                                                       predicateValue: channelRequest.channelID)
+                                                                       predicateValue: CR.channelID)
                             try await self.syncCRs()
                             
                             let _ = try await DataPC.shared.updateMO(entity: Channel.self,
                                                                      predicateProperty: "channelID",
-                                                                     predicateValue: channelRequest.channelID,
+                                                                     predicateValue: CR.channelID,
                                                                      property: ["active", "creationDate"],
                                                                      value: [true, date])
                             try await self.syncChannels()
@@ -229,16 +230,16 @@ extension ChannelDC {
                         do {
                             try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
                                                                        predicateProperty: "channelID",
-                                                                       predicateValue: channelRequest.channelID)
+                                                                       predicateValue: CR.channelID)
                             try await self.syncCRs()
                             
                             try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
                                                                        predicateProperty: "channelID",
-                                                                       predicateValue: channelRequest.channelID)
+                                                                       predicateValue: CR.channelID)
                             
                             try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
                                                                        predicateProperty: "userID",
-                                                                       predicateValue: channelRequest.userID)
+                                                                       predicateValue: CR.userID)
                             try await self.syncRUs()
                         } catch {
                             completion(.failure(.failed))
@@ -265,10 +266,9 @@ extension ChannelDC {
                                 type: type)
         
         guard let jsonPacket = try? DataU.shared.jsonEncode(CDPacket),
-              let userID = channel.userID,
               let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
         
-        SocketController.shared.clientSocket.emitWithAck("sendCD", ["userID": userID,
+        SocketController.shared.clientSocket.emitWithAck("sendCD", ["userID": channel.userID,
                                                                     "packet": jsonPacket])
         .timingOut(after: 1, callback: { [weak self] data in
             guard let self = self else { return }
@@ -286,7 +286,7 @@ extension ChannelDC {
                                                                               name: remoteUser.username,
                                                                               icon: remoteUser.avatar,
                                                                               nUsers: 1,
-                                                                              toDeleteUserIDs: [userID],
+                                                                              toDeleteUserIDs: [channel.userID],
                                                                               isOrigin: true)
                         try await self.syncCDs()
                         

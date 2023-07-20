@@ -170,15 +170,13 @@ extension ChannelDC {
             
             Task {
                 do {
-                    let sChannel = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
+                    let SChannel = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
                                                                          predicateProperty: "channelID",
                                                                          predicateValue: CDPacket.channelID)
                     
-                    guard let userID = sChannel.userID else { throw DCError.failed }
-                    
                     let remoteUser = try await DataPC.shared.fetchSMOAsync(entity: RemoteUser.self,
                                                                            predicateProperty: "userID",
-                                                                           predicateValue: userID)
+                                                                           predicateValue: SChannel.userID)
                     
                     let channelDeletion = try await DataPC.shared.createChannelDeletion(deletionID: CDPacket.deletionID,
                                                                                         channelType: "user",
@@ -196,7 +194,7 @@ extension ChannelDC {
                         
                         let _ = try await DataPC.shared.updateMO(entity: Channel.self,
                                                                  predicateProperty: "channelID",
-                                                                 predicateValue: sChannel.channelID,
+                                                                 predicateValue: SChannel.channelID,
                                                                  property: ["lastMessageDate"],
                                                                  value: [nil])
                         try await self.syncChannels()
@@ -211,7 +209,7 @@ extension ChannelDC {
                         
                         try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
                                                                    predicateProperty: "userID",
-                                                                   predicateValue: userID)
+                                                                   predicateValue: SChannel.userID)
                         try await self.syncRUs()
                     }
                 } catch {

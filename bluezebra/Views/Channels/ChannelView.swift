@@ -29,15 +29,16 @@ struct ChannelView: View {
         self.channel = channel
         self.RU = RU
         
-        if let latestMessage = messageDC.userMessages[channel.channelID]?.first {
+        if let latestMessage = messageDC.channelMessages[channel.channelID]?.first {
             self._latestMessage = State(wrappedValue: latestMessage)
         }
     }
     
     var body: some View {
         NavigationLink {
-            ChatView(channel: channel,
-                     remoteUser: RU)
+            ChatInterface(channelType: .RU,
+                          channel: self.channel,
+                          RU: self.RU)
         } label: {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
@@ -90,7 +91,7 @@ struct ChannelView: View {
                                              colour: Color("text2"))
                             } else {
                                 FixedText(text: "-",
-                                          colour: Color("text1"),
+                                          colour: Color("text2"),
                                           fontSize: 15)
                             }
                             
