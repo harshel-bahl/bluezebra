@@ -59,6 +59,8 @@ struct SystemIcon<ClipShape: Shape>: View {
             .aspectRatio(contentMode: .fit)
             .frame(width: size.width,
                    height: size.height)
+            .shadow(radius: shadow)
+
             .foregroundColor(colour)
             .if(BGColour != nil, transform: { view in
                 view
@@ -67,9 +69,7 @@ struct SystemIcon<ClipShape: Shape>: View {
                 .if(applyClip == true, transform: { view in
                     view
                         .clipShape(clipShape)
-                })
-                    .shadow(radius: shadow)
-                    .if(padding != nil, transform: { view in
+                })                    .if(padding != nil, transform: { view in
                         view
                             .padding(padding!)
                     })

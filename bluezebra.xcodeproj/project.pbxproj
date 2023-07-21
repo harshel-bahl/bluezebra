@@ -133,6 +133,8 @@
 		F0AE43D32A65CB3800A1E181 /* DeletedContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43D22A65CB3800A1E181 /* DeletedContainer.swift */; };
 		F0AE43D52A66209500A1E181 /* ChatState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43D42A66209500A1E181 /* ChatState.swift */; };
 		F0AE43D82A68E70200A1E181 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F0AE43D72A68E70200A1E181 /* Kingfisher */; };
+		F0AE43DC2A6A0DF500A1E181 /* BZImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43DB2A6A0DF500A1E181 /* BZImage.swift */; };
+		F0AE43DE2A6A1F9F00A1E181 /* IdentifiableImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */; };
 		F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */; };
 /* End PBXBuildFile section */
 
@@ -260,6 +262,8 @@
 		F0AE43CC2A659AB300A1E181 /* ImageContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContainer.swift; sourceTree = "<group>"; };
 		F0AE43D22A65CB3800A1E181 /* DeletedContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedContainer.swift; sourceTree = "<group>"; };
 		F0AE43D42A66209500A1E181 /* ChatState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatState.swift; sourceTree = "<group>"; };
+		F0AE43DB2A6A0DF500A1E181 /* BZImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BZImage.swift; sourceTree = "<group>"; };
+		F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableImage.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -451,8 +455,8 @@
 				F04AEC3B2A2C10AD00276FF4 /* Common */,
 				349CE1F6296C85DC00F8E4F9 /* Authentication */,
 				34938E07296396D500EA95CF /* Channels */,
+				F0AE43BF2A62355B00A1E181 /* Chat */,
 				34938E09296396EB00EA95CF /* Profile */,
-				F0AE43D12A65B1D600A1E181 /* Chat */,
 				F09DFA822A465AC5008D4DB1 /* RUProfile */,
 				34C839F529CFE5F80093C48B /* DeletionLog */,
 				34C839F129CFE2290093C48B /* UserRequests */,
@@ -520,7 +524,6 @@
 		F04AEC3B2A2C10AD00276FF4 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				F0AE43BF2A62355B00A1E181 /* Chat */,
 				F0AE43702A4B8C2200A1E181 /* Animations */,
 				F0AE436F2A4B8C0E00A1E181 /* Buttons */,
 				F0AE436E2A4B8BEC00A1E181 /* Text */,
@@ -629,6 +632,8 @@
 			isa = PBXGroup;
 			children = (
 				F0AE43A92A53D1EB00A1E181 /* SystemIcon.swift */,
+				F0AE43DB2A6A0DF500A1E181 /* BZImage.swift */,
+				F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -651,6 +656,7 @@
 				F0AE43C22A624B9200A1E181 /* MessageContainer.swift */,
 				F0AE43CA2A64B67000A1E181 /* InputContainer.swift */,
 				F0AE43D42A66209500A1E181 /* ChatState.swift */,
+				F0AE43C62A6256A600A1E181 /* ChatInterface.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -663,14 +669,6 @@
 				F0AE43D22A65CB3800A1E181 /* DeletedContainer.swift */,
 			);
 			path = Containers;
-			sourceTree = "<group>";
-		};
-		F0AE43D12A65B1D600A1E181 /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				F0AE43C62A6256A600A1E181 /* ChatInterface.swift */,
-			);
-			path = Chat;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -778,6 +776,7 @@
 				346C302F29EACFDA0075107E /* DataPC+Update.swift in Sources */,
 				F0AE43902A4E63B200A1E181 /* DestroyAlert.swift in Sources */,
 				34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */,
+				F0AE43DE2A6A1F9F00A1E181 /* IdentifiableImage.swift in Sources */,
 				3475AEA229EFBD4A001882D4 /* UserDC+Events.swift in Sources */,
 				3489D5D329F84CC20074EF5E /* ChannelRequest.swift in Sources */,
 				3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */,
@@ -819,6 +818,7 @@
 				F0AE43A42A538A7100A1E181 /* DateDMY.swift in Sources */,
 				3489D5D929F850AF0074EF5E /* Channel.swift in Sources */,
 				3445BEBC297D902A0033269B /* TopLevelView.swift in Sources */,
+				F0AE43DC2A6A0DF500A1E181 /* BZImage.swift in Sources */,
 				F065C61E2A3384E4007E1D9F /* DateMed.swift in Sources */,
 				341065DF2962E1DA001644B0 /* BlueZebraApp.swift in Sources */,
 				3475AEA029EFBD2F001882D4 /* UserDC+Authentication.swift in Sources */,

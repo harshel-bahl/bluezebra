@@ -18,7 +18,7 @@ struct InputContainer: View {
     @State var message = ""
     
     // Images
-    @State var selectedImages: [UIImage]?
+    @State var selectedImages = [IdentifiableImage]()
     
     @State var showMediaPicker = false
     
@@ -54,9 +54,9 @@ struct InputContainer: View {
          spacing: CGFloat = 10,
          outerPadding: EdgeInsets = .init(top: 10, leading: 12.5, bottom: 10, trailing: 12.5),
          focusedField: FocusState<String?>,
-         imagePreviewSize: CGSize = .init(width: 70, height: 85),
+         imagePreviewSize: CGSize = .init(width: 125, height: 150),
          imagePreviewBG: Color = .black,
-         imagePreviewCR: CGFloat = 7.5) {
+         imagePreviewCR: CGFloat = 10) {
         self.BG = BG
         self.placeholder = placeholder
         self.textColour = textColour
@@ -77,19 +77,50 @@ struct InputContainer: View {
             
             Divider()
             
-            VStack(spacing: 0) {
-                if let selectedImages = selectedImages,
-                   !selectedImages.isEmpty {
-                    HStack(spacing: 0) {
-                        ForEach(selectedImages.indices, id: \.self) { index in
-                            Image(uiImage: selectedImages[index])
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: imagePreviewSize.width, height: imagePreviewSize.height)
-                                .background() { imagePreviewBG }
-                                .cornerRadius(imagePreviewCR)
+            VStack(spacing: 5) {
+                
+                if !selectedImages.isEmpty {
+                    ScrollView(.horizontal,
+                               showsIndicators: false) {
+                        LazyHStack(spacing: 2.5) {
+                            ForEach(selectedImages, id: \.id) { image in
+                                
+                                BZImage(uiImage: image.image,
+                                        aspectRatio: .fill,
+                                        height: imagePreviewSize.height,
+                                        width: imagePreviewSize.width,
+                                        cornerRadius: imagePreviewCR)
+                                .allowsHitTesting(false)
+                                .overlay {
+                                    VStack(spacing: 0) {
+                                        HStack(spacing: 0) {
+                                            Spacer()
+                                            
+                                            SystemIcon(systemName: "xmark.circle",
+                                                       size: .init(width: 22.5, height: 22.5),
+                                                       colour: Color("accent1"),
+                                                       padding: .init(top: 5, leading: 0, bottom: 0, trailing: 5),
+                                                       BGColour: .white,
+                                                       applyClip: true,
+                                                       shadow: 1,
+                                                       buttonAction: {
+                                                withAnimation {
+                                                    if let index = self.selectedImages.firstIndex(where: { $0.id == image.id }) {
+                                                        self.selectedImages.remove(at: index)
+                                                    }
+                                                }
+                                            })
+                                            .contentShape(Rectangle())
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                }
+                                
+                            }
                         }
                     }
+                               .frame(height: imagePreviewSize.height)
                 }
                 
                 HStack(alignment: .bottom, spacing: spacing) {
@@ -131,7 +162,11 @@ struct InputContainer: View {
                     }
                     
                     let uiImages = images.compactMap() { image in
-                        return UIImage(data: image)
+                        if let uiImage = UIImage(data: image) {
+                            return IdentifiableImage(image: uiImage)
+                        } else {
+                            return nil
+                        }
                     }
                     
                     selectedImages = uiImages
