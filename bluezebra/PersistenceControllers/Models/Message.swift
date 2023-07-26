@@ -14,11 +14,13 @@ struct SMessage {
     var userID: String
     var type: String
     var date: Date
-    var message: String
     var isSender: Bool
+    var message: String
+    var resourceIDs: String?
     var sent: String?
     var delivered: String?
     var read: String?
+    var localDeleted: Bool
     var remoteDeleted: String?
 }
 
@@ -28,11 +30,13 @@ class Message: NSManagedObject {
     @NSManaged var userID: String?
     @NSManaged var type: String?
     @NSManaged var date: Date?
-    @NSManaged var message: String?
     @NSManaged var isSender: Bool
+    @NSManaged var message: String?
+    @NSManaged var resourceIDs: String?
     @NSManaged var sent: String?
     @NSManaged var delivered: String?
     @NSManaged var read: String?
+    @NSManaged var localDeleted: Bool
     @NSManaged var remoteDeleted: String?
 }
 
@@ -53,11 +57,13 @@ extension Message: ToSafeObject {
                         userID: userID,
                         type: type,
                         date: date,
-                        message: message,
                         isSender: self.isSender,
+                        message: message,
+                        resourceIDs: self.resourceIDs,
                         sent: self.sent,
                         delivered: self.delivered,
                         read: self.read,
+                        localDeleted: self.localDeleted,
                         remoteDeleted: self.remoteDeleted)
     }
 }

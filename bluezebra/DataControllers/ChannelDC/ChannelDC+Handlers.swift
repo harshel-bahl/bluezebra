@@ -178,7 +178,7 @@ extension ChannelDC {
                                                                            predicateProperty: "userID",
                                                                            predicateValue: SChannel.userID)
                     
-                    let channelDeletion = try await DataPC.shared.createChannelDeletion(deletionID: CDPacket.deletionID,
+                    let channelDeletion = try await DataPC.shared.createCD(deletionID: CDPacket.deletionID,
                                                                                         channelType: "user",
                                                                                         deletionDate: deletionDate,
                                                                                         type: CDPacket.type,

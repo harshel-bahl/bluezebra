@@ -13,12 +13,16 @@ import Kingfisher
 struct InputContainer: View {
     
     @EnvironmentObject var chatState: ChatState
+    @ObservedObject var messageDC = MessageDC.shared
     
     // Text
     @State var message = ""
     
     // Images
     @State var selectedImages = [IdentifiableImage]()
+    
+    // Files
+    @State var selectedFiles = [Data]()
     
     @State var showMediaPicker = false
     
@@ -85,7 +89,7 @@ struct InputContainer: View {
                         LazyHStack(spacing: 2.5) {
                             ForEach(selectedImages, id: \.id) { image in
                                 
-                                BZImage(uiImage: image.image,
+                                BZImage(uiImage: image.imageThumbnail,
                                         aspectRatio: .fill,
                                         height: imagePreviewSize.height,
                                         width: imagePreviewSize.width,
@@ -100,7 +104,7 @@ struct InputContainer: View {
                                                        size: .init(width: 22.5, height: 22.5),
                                                        colour: Color("accent1"),
                                                        padding: .init(top: 5, leading: 0, bottom: 0, trailing: 5),
-                                                       BGColour: .white,
+                                                       BGColour: Color("accent4"),
                                                        applyClip: true,
                                                        shadow: 1,
                                                        buttonAction: {
@@ -153,23 +157,19 @@ struct InputContainer: View {
             MediaPicker(isPresented: $showMediaPicker, onChange: { media in
                 
                 Task {
-                    var images = [Data]()
+                    var iImages = [IdentifiableImage]()
                     
                     for image in media {
-                        if let imageData = await image.getData() {
-                            images.append(imageData)
+                        if let imageData = await image.getData(),
+                           let uiImage = UIImage(data: imageData),
+                           let imageThumbnail = await image.getThumbnailData(),
+                           let uiThumbnail = UIImage(data: imageThumbnail) {
+                            iImages.append(IdentifiableImage(image: uiImage,
+                                                            imageThumbnail: uiThumbnail))
                         }
                     }
                     
-                    let uiImages = images.compactMap() { image in
-                        if let uiImage = UIImage(data: image) {
-                            return IdentifiableImage(image: uiImage)
-                        } else {
-                            return nil
-                        }
-                    }
-                    
-                    selectedImages = uiImages
+                    selectedImages = iImages
                 }
             })
         })
@@ -180,25 +180,29 @@ struct InputContainer: View {
         FilePicker(types: [.plainText], allowMultiple: false) { urls in
             
         } label: {
-            SystemIcon(systemName: "folder.circle.fill",
+            SystemIcon(systemName: "folder.circle",
                        size: iconSize,
                        colour: iconColour,
-                       BGColour: Color("background1"),
+                       fontWeight: .light,
+                       BGColour: Color("accent4"),
                        applyClip: true,
-                       shadow: 1)
+                       shadow: 1.2)
         }
+        .disabled(!selectedImages.isEmpty)
     }
     
     var cameraButton: some View {
-        SystemIcon(systemName: "camera.circle.fill",
+        SystemIcon(systemName: "camera.circle",
                    size: iconSize,
                    colour: iconColour,
-                   BGColour: Color("background1"),
+                   fontWeight: .light,
+                   BGColour: Color("accent4"),
                    applyClip: true,
-                   shadow: 1,
+                   shadow: 1.2,
                    buttonAction: {
             showMediaPicker = true
         })
+        .disabled(!selectedFiles.isEmpty)
     }
     
     var messageEditor: some View {
@@ -216,20 +220,63 @@ struct InputContainer: View {
     }
     
     var sendButton: some View {
-        SystemIcon(systemName: message.isEmpty ? "arrow.up.circle" : "arrow.up.circle.fill",
+        SystemIcon(systemName: message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                   selectedImages.isEmpty &&
+                   selectedFiles.isEmpty ? "arrow.up.circle" : "arrow.up.circle.fill",
                    size: iconSize,
                    colour: iconColour,
-                   BGColour: Color("background1"),
+                   BGColour: Color("accent4"),
                    applyClip: true,
-                   shadow: 1,
+                   shadow: 1.2,
                    buttonAction: {
             Task {
-                
-                self.message.removeAll()
+                do {
+                    try await handleSend(channelID: chatState.currChannel.channelID,
+                                         message: self.message,
+                                         selectedImages: self.selectedImages.isEmpty ? nil : self.selectedImages,
+                                         selectedFiles: self.selectedFiles.isEmpty ? nil : self.selectedFiles)
+                } catch {
+                    
+                }
             }
         })
-        .disabled(message.isEmpty)
+        .disabled(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedImages.isEmpty && selectedFiles.isEmpty)
     }
     
+    func handleSend(channelID: String,
+                    message: String,
+                    selectedImages: [IdentifiableImage]? = nil,
+                    selectedFiles: [Data]? = nil) async throws {
+        
+        if selectedImages == nil && selectedFiles == nil {
+            
+            let SMessage = try await messageDC.createTextMessage(channelID: chatState.currChannel.channelID,
+                                                                 userID: chatState.currChannel.userID,
+                                                                 message: self.message)
+            
+            messageDC.addMessage(channelID: chatState.currChannel.channelID,
+                                 message: SMessage)
+            
+            self.message.removeAll()
+            
+        } else if let selectedImages = selectedImages {
+            
+            let SMessage = try await messageDC.createImageMessage(channelID: chatState.currChannel.channelID,
+                                                                  userID: chatState.currChannel.userID,
+                                                                  message: self.message,
+                                                                  selectedImages: selectedImages)
+            
+            messageDC.addMessage(channelID: chatState.currChannel.channelID,
+                                 message: SMessage)
+            
+            self.message.removeAll()
+            withAnimation() { self.selectedImages = [IdentifiableImage]() }
+            
+        } else if let selectedFiles = selectedFiles {
+            
+            
+        }
+        
+    }
 }
 

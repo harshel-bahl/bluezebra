@@ -25,7 +25,7 @@ struct SheetModifier<SheetContent: View>: ViewModifier {
                     VStack(spacing: 0) {
                         
                         Rectangle()
-                            .fill(Color("darkAccent1").opacity(0.75))
+                            .fill(Color("accent5").opacity(0.75))
                             .frame(width: 35,
                                    height: 5)
                             .cornerRadius(7.5)

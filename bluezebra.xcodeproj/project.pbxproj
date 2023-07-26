@@ -86,7 +86,7 @@
 		F065C61C2A3267D8007E1D9F /* DateUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61B2A3267D8007E1D9F /* DateUtilities.swift */; };
 		F065C61E2A3384E4007E1D9F /* DateMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateMed.swift */; };
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
-		F065C6222A338D9B007E1D9F /* PEError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PEError.swift */; };
+		F065C6222A338D9B007E1D9F /* PError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PError.swift */; };
 		F07059172A412BAC002571A4 /* RUPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUPacket.swift */; };
 		F09DFA812A438CBB008D4DB1 /* ButtonAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */; };
 		F09DFA882A4848F4008D4DB1 /* ExyteMediaPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */; };
@@ -135,6 +135,8 @@
 		F0AE43D82A68E70200A1E181 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F0AE43D72A68E70200A1E181 /* Kingfisher */; };
 		F0AE43DC2A6A0DF500A1E181 /* BZImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43DB2A6A0DF500A1E181 /* BZImage.swift */; };
 		F0AE43DE2A6A1F9F00A1E181 /* IdentifiableImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */; };
+		F0AF8D6B2A6A5BED00B45249 /* DataPC+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */; };
+		F0AF8D6D2A6E01D800B45249 /* FileContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */; };
 		F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */; };
 /* End PBXBuildFile section */
 
@@ -218,7 +220,7 @@
 		F065C61B2A3267D8007E1D9F /* DateUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtilities.swift; sourceTree = "<group>"; };
 		F065C61D2A3384E4007E1D9F /* DateMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateMed.swift; sourceTree = "<group>"; };
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
-		F065C6212A338D9B007E1D9F /* PEError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEError.swift; sourceTree = "<group>"; };
+		F065C6212A338D9B007E1D9F /* PError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PError.swift; sourceTree = "<group>"; };
 		F07059162A412BAC002571A4 /* RUPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUPacket.swift; sourceTree = "<group>"; };
 		F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonAni.swift; sourceTree = "<group>"; };
 		F0AE43652A49EF7800A1E181 /* EmojiPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPicker.swift; sourceTree = "<group>"; };
@@ -264,6 +266,8 @@
 		F0AE43D42A66209500A1E181 /* ChatState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatState.swift; sourceTree = "<group>"; };
 		F0AE43DB2A6A0DF500A1E181 /* BZImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BZImage.swift; sourceTree = "<group>"; };
 		F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableImage.swift; sourceTree = "<group>"; };
+		F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Files.swift"; sourceTree = "<group>"; };
+		F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContainer.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -440,11 +444,12 @@
 				3489D5D129F84CB10074EF5E /* Models */,
 				34938E192967CFDC00EA95CF /* DataPC.swift */,
 				346C302C29EACFBF0075107E /* DataPC+Create.swift */,
+				F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */,
 				346C302E29EACFDA0075107E /* DataPC+Update.swift */,
 				346C303029EAD0BD0075107E /* DataPC+Fetch.swift */,
 				346C303229EAD10A0075107E /* DataPC+Delete.swift */,
 				346C303429EAD13A0075107E /* DataPC+Reset.swift */,
-				F065C6212A338D9B007E1D9F /* PEError.swift */,
+				F065C6212A338D9B007E1D9F /* PError.swift */,
 			);
 			path = PersistenceControllers;
 			sourceTree = "<group>";
@@ -652,10 +657,10 @@
 			isa = PBXGroup;
 			children = (
 				F0AE43D02A659AC400A1E181 /* Containers */,
+				F0AE43D42A66209500A1E181 /* ChatState.swift */,
 				F0AE43C02A62357D00A1E181 /* MessageScrollView.swift */,
 				F0AE43C22A624B9200A1E181 /* MessageContainer.swift */,
 				F0AE43CA2A64B67000A1E181 /* InputContainer.swift */,
-				F0AE43D42A66209500A1E181 /* ChatState.swift */,
 				F0AE43C62A6256A600A1E181 /* ChatInterface.swift */,
 			);
 			path = Chat;
@@ -666,6 +671,7 @@
 			children = (
 				34E1E08229E1FE8C007319C3 /* TextContainer.swift */,
 				F0AE43CC2A659AB300A1E181 /* ImageContainer.swift */,
+				F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */,
 				F0AE43D22A65CB3800A1E181 /* DeletedContainer.swift */,
 			);
 			path = Containers;
@@ -790,8 +796,9 @@
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
 				F0AE43AC2A5607BA00A1E181 /* SimpleScrollView.swift in Sources */,
 				F0AE437A2A4BA25100A1E181 /* VariableText.swift in Sources */,
-				F065C6222A338D9B007E1D9F /* PEError.swift in Sources */,
+				F065C6222A338D9B007E1D9F /* PError.swift in Sources */,
 				F0AE43662A49EF7800A1E181 /* EmojiPicker.swift in Sources */,
+				F0AF8D6D2A6E01D800B45249 /* FileContainer.swift in Sources */,
 				F0AE43C12A62357D00A1E181 /* MessageScrollView.swift in Sources */,
 				F0AE43722A4B918400A1E181 /* PulsatingImage.swift in Sources */,
 				F0AE43C92A626C0600A1E181 /* NavBar.swift in Sources */,
@@ -801,6 +808,7 @@
 				F0AE43C32A624B9200A1E181 /* MessageContainer.swift in Sources */,
 				F0AE43D52A66209500A1E181 /* ChatState.swift in Sources */,
 				3475AE9A29EFB9B0001882D4 /* ChannelDC+Events.swift in Sources */,
+				F0AF8D6B2A6A5BED00B45249 /* DataPC+Files.swift in Sources */,
 				341A0DA52A219F2B00C5B00C /* ChildSizeReader.swift in Sources */,
 				F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */,
 				346C303329EAD10A0075107E /* DataPC+Delete.swift in Sources */,

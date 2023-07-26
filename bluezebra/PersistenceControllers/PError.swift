@@ -14,4 +14,7 @@ enum PError: Error {
     case multipleRecords
     case typecastError
     case safeMapError
+    case fileSystemFailure
+    case fileStoreFailure
+    case fetchFileFailure
 }

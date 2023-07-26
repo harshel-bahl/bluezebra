@@ -24,13 +24,11 @@ class ChannelDC: ObservableObject {
             }
         }
     }
+    
     /// onlineUsers: [userID: online true/false]
     @Published var onlineUsers = [String: Bool]()
     
-    
-    @Published var personalChannel: SChannel?
-    
-    /// userChannels: channels with a single remote user
+    /// channels: channels with a single remote user
     /// - uses an array since it is fetched in order of lastMessageDate
     /// - only contains active=true objects
     @Published var channels = [SChannel]() {
@@ -38,17 +36,21 @@ class ChannelDC: ObservableObject {
             for channel in channels {
                 let channelID = channel.channelID
                 
-                if !self.typingUsers.keys.contains(channelID) {
-                    self.typingUsers[channelID] = false
-                }
-                
                 if !MessageDC.shared.channelMessages.keys.contains(channelID) {
                     MessageDC.shared.channelMessages[channelID] = [SMessage]()
                 }
             }
         }
     }
-    @Published var typingUsers = [String: Bool]()
+    
+    @Published var personalChannel: SChannel? {
+        didSet {
+            if let personalChannel = personalChannel,
+               !MessageDC.shared.channelMessages.keys.contains(personalChannel.channelID) {
+                MessageDC.shared.channelMessages[personalChannel.channelID] = [SMessage]()
+            }
+        }
+    }
 
     /// channelRequests:
     /// - uses an array since it is fetched in order of date
@@ -114,7 +116,7 @@ class ChannelDC: ObservableObject {
             self.onlineUsers = [String: Bool]()
             
             self.channels = [SChannel]()
-            self.typingUsers = [String: Bool]()
+            self.personalChannel = nil
             
             self.CRs = [SChannelRequest]()
             self.CDs = [SChannelDeletion]()

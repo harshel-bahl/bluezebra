@@ -12,6 +12,7 @@ struct SystemIcon<ClipShape: Shape>: View {
     let systemName: String
     let size: CGSize
     let colour: Color
+    let fontWeight: Font.Weight?
     let padding: EdgeInsets?
     let BGColour: Color?
     let applyClip: Bool
@@ -23,6 +24,7 @@ struct SystemIcon<ClipShape: Shape>: View {
     init(systemName: String,
          size: CGSize = .init(width: 25, height: 25),
          colour: Color,
+         fontWeight: Font.Weight? = nil,
          padding: EdgeInsets? = nil,
          BGColour: Color? = nil,
          applyClip: Bool = false,
@@ -32,6 +34,7 @@ struct SystemIcon<ClipShape: Shape>: View {
         self.systemName = systemName
         self.size = size
         self.colour = colour
+        self.fontWeight = fontWeight
         self.padding = padding
         self.BGColour = BGColour
         self.shadow = shadow
@@ -59,9 +62,8 @@ struct SystemIcon<ClipShape: Shape>: View {
             .aspectRatio(contentMode: .fit)
             .frame(width: size.width,
                    height: size.height)
-            .shadow(radius: shadow)
-
             .foregroundColor(colour)
+            .fontWeight(self.fontWeight)
             .if(BGColour != nil, transform: { view in
                 view
                     .background() { BGColour }
@@ -69,7 +71,9 @@ struct SystemIcon<ClipShape: Shape>: View {
                 .if(applyClip == true, transform: { view in
                     view
                         .clipShape(clipShape)
-                })                    .if(padding != nil, transform: { view in
+                })
+                    .shadow(radius: shadow)
+                    .if(padding != nil, transform: { view in
                         view
                             .padding(padding!)
                     })

@@ -82,7 +82,8 @@ struct TopLevelView: View {
                 
                 remoteConnection()
                 
-               try await messageDC.syncMessageDC()
+                try messageDC.checkAndCreateDirs()
+                try await messageDC.syncMessageDC()
             } catch {
                 fetchedUser = true
                 
@@ -119,7 +120,7 @@ struct TopLevelView: View {
                                           selectedNames: ["message.circle.fill",
                                                           "person.crop.circle.fill"],
                                           selectedColour: Color("accent1"),
-                                          unselectedColour:  Color("darkAccent1"),
+                                          unselectedColour:  Color("accent5"),
                                           backgroundColour: Color("background3"),
                                           betweenPadding: SP.screenWidth*0.18),
                         tabContent: ["channels": {

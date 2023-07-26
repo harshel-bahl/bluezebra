@@ -53,22 +53,17 @@ struct ChatInterface: View {
                           emojis: BZEmojiProvider1.shared.getAll()) { avatar in }
                     .edgePadding(trailing: 10)
                 
+                FixedText(text: "@" + getName(),
+                          colour: Color("accent1"),
+                          fontSize: 17.5,
+                          fontWeight: .bold)
+                
                 if channelType == .personal {
-                    FixedText(text: "@" + getName(),
-                              colour: Color("accent1"),
-                              fontSize: 17.5,
-                              fontWeight: .bold)
-                    
                     FixedText(text: "(Me)",
                               colour: Color("orangeAccent1"),
                               fontSize: 11,
                               fontWeight: .bold,
                               padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
-                } else if channelType == .RU {
-                    FixedText(text: "@" + getName(),
-                              colour: Color("accent1"),
-                              fontSize: 17.5,
-                              fontWeight: .bold)
                 }
                 
                 if channelType == .RU {
@@ -83,15 +78,13 @@ struct ChatInterface: View {
             }
             
             MessageScrollView(messages: {
-                if channel.channelID == "personal" {
-                    return messageDC.personalMessages.reversed()
-                } else if let messages = messageDC.channelMessages[channel.channelID] {
+                if let messages = messageDC.channelMessages[channel.channelID] {
                     return messages.reversed()
                 } else {
                     Task {
                         try await messageDC.syncChannel(channelID: channel.channelID)
                     }
-                    
+
                     return [SMessage]()
                 }
             }())
@@ -102,7 +95,7 @@ struct ChatInterface: View {
             InputContainer(focusedField: _focusedField)
             .edgePadding(top: 5)
         }
-        .background(Color("background1"))
+        .background() { Color("background1") }
         .ignoresSafeArea(edges: .top)
         .environmentObject(chatState)
 

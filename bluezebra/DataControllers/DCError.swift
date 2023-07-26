@@ -15,4 +15,5 @@ enum DCError: Error {
     case typecastError
     case jsonError
     case persistenceError
+    case imageDataFailure
 }

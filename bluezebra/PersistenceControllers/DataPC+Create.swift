@@ -242,14 +242,14 @@ extension DataPC {
         return sMO
     }
     
-    public func createChannelDeletion(deletionID: String = UUID().uuidString,
+    public func createCD(deletionID: String = UUID().uuidString,
                                       channelType: String,
-                                      deletionDate: Date,
+                                      deletionDate: Date = DateU.shared.currDT,
                                       type: String,
                                       name: String,
                                       icon: String,
                                       nUsers: Int16,
-                                      toDeleteUserIDs: [String] = [String](),
+                                      toDeleteUserIDs: [String]? = nil,
                                       isOrigin: Bool) async throws -> SChannelDeletion {
         
         let sMO = try await self.backgroundContext.perform {
@@ -262,18 +262,22 @@ extension DataPC {
                 MO.name = name
                 MO.icon = icon
                 MO.nUsers = nUsers
-                MO.toDeleteUserIDs = toDeleteUserIDs.joined(separator: ",")
+                
+                if let toDeleteUserIDs = toDeleteUserIDs {
+                    MO.toDeleteUserIDs = toDeleteUserIDs.joined(separator: ",")
+                }
+                
                 MO.isOrigin = isOrigin
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDeletion: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCD: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDeletion: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCD: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -284,13 +288,15 @@ extension DataPC {
                               channelID: String,
                               userID: String,
                               type: String,
-                              date: Date,
-                              message: String,
+                              date: Date = DateU.shared.currDT,
                               isSender: Bool,
-                              sent: [String]? = [String](),
-                              delivered: [String]? = [String](),
-                              read: [String]? = [String](),
-                              remoteDeleted: [String]? = [String]()) async throws -> SMessage {
+                              message: String,
+                              resourceIDs: [String]? = nil,
+                              sent: [String]? = nil,
+                              delivered: [String]? = nil,
+                              read: [String]? = nil,
+                              localDeleted: Bool = false,
+                              remoteDeleted: [String]? = nil) async throws -> SMessage {
         
         let fetchedMO = try? await fetchMOAsync(entity: Message.self,
                                                 predicateProperty: "messageID",
@@ -307,11 +313,13 @@ extension DataPC {
                 MO.userID = userID
                 MO.type = type
                 MO.date = date
-                MO.message = message
                 MO.isSender = isSender
+                MO.message = message
+                if let resourceIDs = resourceIDs { MO.resourceIDs = resourceIDs.joined(separator: ",")}
                 if let sent = sent { MO.sent = sent.joined(separator: ",") }
                 if let delivered = delivered { MO.delivered = delivered.joined(separator: ",") }
                 if let read = read { MO.read = read.joined(separator: ",") }
+                MO.localDeleted = localDeleted
                 if let remoteDeleted = remoteDeleted { MO.remoteDeleted = remoteDeleted.joined(separator: ",") }
                 
                 try self.backgroundSave()

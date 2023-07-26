@@ -30,7 +30,11 @@ struct MessageContainer: View {
                           showReceipt: messageStatus != nil ? true : false,
                           messageStatus: messageStatus)
         case "image":
-            ImageContainer()
+            ImageContainer(message: message,
+                           showReceipt: messageStatus != nil ? true : false,
+                           messageStatus: messageStatus)
+            
+            
         default:
             Color.clear
         }

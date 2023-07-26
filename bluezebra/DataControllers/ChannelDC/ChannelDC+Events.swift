@@ -279,7 +279,7 @@ extension ChannelDC {
                 
                 Task {
                     do {
-                        let _ = try await DataPC.shared.createChannelDeletion(deletionID: CDPacket.deletionID,
+                        let _ = try await DataPC.shared.createCD(deletionID: CDPacket.deletionID,
                                                                               channelType: "user",
                                                                               deletionDate: deletionDate,
                                                                               type: type,

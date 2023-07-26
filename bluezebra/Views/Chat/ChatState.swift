@@ -12,6 +12,7 @@ class ChatState: ObservableObject {
     
     @Published var currChannel: SChannel
     @Published var currRU: SRemoteUser?
+    @Published var images = [String: Data]()
     
     init(currChannel: SChannel,
          currRU: SRemoteUser? = nil) {
@@ -36,6 +37,22 @@ class ChatState: ObservableObject {
                 return "sent"
             } else {
                 return "notSent"
+            }
+        }
+    }
+    
+    func fetchImages() async throws {
+        guard let messages = MessageDC.shared.channelMessages[currChannel.channelID] else { return }
+        
+        for message in messages {
+            if let resourceID = message.resourceIDs?.components(separatedBy: ",")[0],
+               images[resourceID] == nil {
+                let imageData = try? await DataPC.shared.fetchFile(fileName: resourceID,
+                                                                   dir: "images")
+                
+                DispatchQueue.main.async {
+                    self.images[resourceID] = imageData
+                }
             }
         }
     }

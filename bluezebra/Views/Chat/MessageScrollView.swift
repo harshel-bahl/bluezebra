@@ -12,6 +12,8 @@ struct MessageScrollView: View {
     
     @EnvironmentObject var chatState: ChatState
     
+    @ObservedObject var messageDC = MessageDC.shared
+    
     let messages: [SMessage]
     
     let BGColour: Color
@@ -26,8 +28,10 @@ struct MessageScrollView: View {
     
     let scrollAnimation: Animation
     let scrollOnUnfocus: Bool
+    let scrollOnSizeChange: Bool
     
     @State var keyboardHeight: CGFloat = 0
+    @State var scrollviewHeight: CGSize = .zero
     
     private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
         Publishers.Merge(
@@ -51,8 +55,7 @@ struct MessageScrollView: View {
          showDateHeaders: Bool = true,
          scrollAnimation: Animation = .easeInOut(duration: 0.05),
          scrollOnUnfocus: Bool = false,
-         contextMenu: [String]? = ["Delete Message"],
-         contextMenuActions: [(SMessage)->()]? = nil) {
+         scrollOnSizeChange: Bool = true) {
         self.messages = messages
         self.BGColour = BGColour
         self.dateFontSize = dateFontSize
@@ -63,46 +66,60 @@ struct MessageScrollView: View {
         self.showDateHeaders = showDateHeaders
         self.scrollAnimation = scrollAnimation
         self.scrollOnUnfocus = scrollOnUnfocus
+        self.scrollOnSizeChange = scrollOnSizeChange
     }
     
     var body: some View {
-        ZStack {
-            BGColour
-            
-            GeometryReader { geo in
-                ScrollViewReader { proxy in
-                    ScrollView(.vertical, showsIndicators: false) {
-                        LazyVStack(spacing: 0) {
-                            containers
+        ChildSizeReader(size: $scrollviewHeight) {
+            ZStack {
+                BGColour
+                
+                GeometryReader { geo in
+                    ScrollViewReader { proxy in
+                        ScrollView(.vertical, showsIndicators: true) {
+                            VStack(spacing: 0) {
+                                containers
+                            }
                         }
-                    }
-                    .onAppear {
-                        proxy.scrollTo(messages.last?.messageID)
-                    }
-                    .onChange(of: keyboardHeight, perform: { height in
-                        if height == 0 {
-                            if scrollOnUnfocus {
+                        .onAppear {
+                            proxy.scrollTo(messages.last?.messageID)
+                            
+                            Task() {
+                                try? await chatState.fetchImages()
+                            }
+                        }
+                        .onChange(of: keyboardHeight, perform: { height in
+                            if height == 0 {
+                                if scrollOnUnfocus {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation(scrollAnimation) {
+                                            proxy.scrollTo(messages.last?.messageID)
+                                        }
+                                    }
+                                }
+                            } else if height > 0 {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     withAnimation(scrollAnimation) {
                                         proxy.scrollTo(messages.last?.messageID)
                                     }
                                 }
                             }
-                        } else if height > 0 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        })
+                        .onChange(of: scrollviewHeight, perform: { scrollviewSize in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                                 withAnimation(scrollAnimation) {
                                     proxy.scrollTo(messages.last?.messageID)
                                 }
                             }
-                        }
-                    })
+                        })
+                    }
                 }
             }
+            .ignoresSafeArea()
+            .onReceive(keyboardHeightPublisher, perform: { height in
+                keyboardHeight = height
+            })
         }
-        .ignoresSafeArea()
-        .onReceive(keyboardHeightPublisher, perform: { height in
-            keyboardHeight = height
-        })
     }
     
     var containers: some View {

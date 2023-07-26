@@ -43,9 +43,9 @@ struct TextContainer: View {
          receiptSize: CGSize = .init(width: 7.5, height: 7.5),
          dateColour: [Color] = [.white, .black],
          dateFont: Font = .system(size: 12),
-         bubblePadding: EdgeInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5),
+         bubblePadding: EdgeInsets = .init(top: 7.5, leading: 7.5, bottom: 7.5, trailing: 7.5),
          BG: [Color] = [Color("accent1"), Color("accent3")],
-         cornerRadius: CGFloat = 10,
+         cornerRadius: CGFloat = 15,
          outerPadding: EdgeInsets = .init(top: 1, leading: 15, bottom: 1, trailing: 15),
          maxWidthProp: Double = 0.66,
          showContextMenu: Bool = true) {

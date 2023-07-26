@@ -13,9 +13,6 @@ class MessageDC: ObservableObject {
     
     static let shared = MessageDC()
     
-    /// personalMessages: personal channel messages
-    @Published var personalMessages = [SMessage]() 
-    
     /// channelMessages: [channelID: Messages]
     /// First message is the latest message
     @Published var channelMessages = [String: [SMessage]]()
@@ -60,8 +57,14 @@ class MessageDC: ObservableObject {
     ///
     func resetState() {
         DispatchQueue.main.async {
-            self.personalMessages = [SMessage]()
             self.channelMessages = [String: [SMessage]]()
+            self.unreadChannels = nil
         }
     }
+}
+
+enum MessageType: String {
+    case text = "text" // represents only text
+    case image = "image"
+    case file = "file"
 }

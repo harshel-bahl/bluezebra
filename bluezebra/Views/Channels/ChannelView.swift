@@ -17,34 +17,51 @@ struct ChannelView: View {
     @ObservedObject var messageDC = MessageDC.shared
     
     let channel: SChannel
-    let RU: SRemoteUser
+    let RU: SRemoteUser?
     @State var latestMessage: SMessage?
     
     @State var showChat = false
     
     @State var scale: CGFloat = 1
     
-    init(channel: SChannel,
-         RU: SRemoteUser) {
-        self.channel = channel
-        self.RU = RU
+    init?(channel: SChannel,
+         RU: SRemoteUser? = nil) {
+        
+        if channel.channelID != "personal" && RU != nil {
+            self.channel = channel
+            self.RU = RU
+        } else if channel.channelID == "personal" {
+            self.channel = channel
+            self.RU = nil
+        } else {
+            return nil
+        }
         
         if let latestMessage = messageDC.channelMessages[channel.channelID]?.first {
             self._latestMessage = State(wrappedValue: latestMessage)
+        } else {
+            latestMessage = nil
         }
     }
     
     var body: some View {
         NavigationLink {
-            ChatInterface(channelType: .RU,
-                          channel: self.channel,
-                          RU: self.RU)
+            
+            if channel.channelID != "personal" {
+                ChatInterface(channelType: .RU,
+                              channel: self.channel,
+                              RU: self.RU!)
+            } else {
+                ChatInterface(channelType: .personal,
+                              channel: channelDC.personalChannel!)
+            }
         } label: {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     VStack(spacing: 0) {
                         
-                        if let readReceipt = latestMessage?.read,
+                        if channel.channelID != "personal",
+                           let readReceipt = latestMessage?.read,
                            userDC.userData!.userID == readReceipt  {
                             SystemIcon(systemName: "circle.fill",
                                        size: .init(width: 7.5, height: 7.5),
@@ -55,14 +72,15 @@ struct ChannelView: View {
                     .edgePadding(trailing: 2.5)
                     
                     ZStack {
-                        EmojiIcon(avatar: RU.avatar,
+                        EmojiIcon(avatar: channel.channelID != "personal" ? RU!.avatar : userDC.userData!.avatar,
                                   size: .init(width: 45, height: 45),
                                   emojis: BZEmojiProvider1.shared.getAll(),
                                   buttonAction: { avatar in
                             
                         })
                         
-                        if let online = channelDC.onlineUsers[RU.userID],
+                        if channel.channelID != "personal",
+                           let online = channelDC.onlineUsers[RU!.userID],
                            online == true {
                             
                             PulsatingCircle(size: .init(width: 8, height: 8),
@@ -78,10 +96,18 @@ struct ChannelView: View {
                     
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
-                            FixedText(text: "@" + RU.username,
+                            FixedText(text: "@" + (channel.channelID != "personal" ? RU!.username : userDC.userData!.username),
                                       colour: Color("accent1"),
                                       fontSize: 17,
                                       fontWeight: .bold)
+                            
+                            if channel.channelID == "personal" {
+                                FixedText(text: "(Me)",
+                                          colour: Color("orangeAccent1"),
+                                          fontSize: 12,
+                                          fontWeight: .bold,
+                                          padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
+                            }
                             
                             Spacer()
                             
@@ -135,26 +161,21 @@ struct ChannelView: View {
                 })
                 
                 Button("Clear channel", action: {
-                    channelDC.deleteChannel(channel: channel,
-                                            remoteUser: RU) {_ in
-                        Task {
-                            try await channelDC.syncChannels()
-                        }
+                    Task {
+                        try await channelDC.clearChannelData(channelID: channel.channelID,
+                                                         RU: RU ?? nil)
                     }
-                    
                 })
                 
-                Button("Delete channel", action: {
-                    channelDC.deleteChannel(channel: channel,
-                                            remoteUser: RU,
-                                            type: "delete") {_ in
+                if channel.channelID != "personal" {
+                    Button("Delete channel", action: {
                         Task {
-                            try await channelDC.syncChannels()
+                            try await channelDC.deleteChannelData(channelID: channel.channelID,
+                                                                  RU: RU!)
                         }
-                    }
-                    
-                })
-                
+                        
+                    })
+                }
             }
         }
     }

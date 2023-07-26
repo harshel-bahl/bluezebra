@@ -30,10 +30,12 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="delivered" optional="YES" attributeType="String"/>
         <attribute name="isSender" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="localDeleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="messageID" optional="YES" attributeType="String"/>
         <attribute name="read" optional="YES" attributeType="String"/>
         <attribute name="remoteDeleted" optional="YES" attributeType="String"/>
+        <attribute name="resourceIDs" optional="YES" attributeType="String"/>
         <attribute name="sent" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <attribute name="userID" optional="YES" attributeType="String"/>

@@ -35,11 +35,11 @@ struct ChannelsList: View {
             
             ScrollView() {
                 LazyVStack(spacing: 0) {
-                    
-                    meChannel
-                    
-                    ForEach(channelDC.channels, id: \.channelID) { channel in
-                        if let RU = channelDC.RUs[channel.userID] {
+                    ForEach(channelList(), id: \.channelID) { channel in
+                        
+                        if channel.channelID == "personal" {
+                            ChannelView(channel: channel)
+                        } else if let RU = channelDC.RUs[channel.userID] {
                             ChannelView(channel: channel,
                                         RU: RU)
                         }
@@ -65,9 +65,9 @@ struct ChannelsList: View {
             SystemIcon(systemName: "arrow.uturn.backward.circle",
                        size: .init(width: 25, height: 25),
                        colour: Color("accent1"),
-                       BGColour: Color("background1"),
+                       BGColour: Color("accent4"),
                        applyClip: true,
-                       shadow: 1,
+                       shadow: 1.2,
             buttonAction: {
                 showDeletionLog.toggle()
             })
@@ -84,110 +84,21 @@ struct ChannelsList: View {
             SystemIcon(systemName: "plus.circle",
                        size: .init(width: 25, height: 25),
                        colour: Color("accent1"),
-                       BGColour: Color("background1"),
+                       BGColour: Color("accent4"),
                        applyClip: true,
-                       shadow: 1.15,
+                       shadow: 1.2,
             buttonAction: {
                 showCRView.toggle()
             })
         }
     }
     
-    var meChannel: some View {
-        ZStack {
-            NavigationLink {
-                ChatInterface(channelType: .personal,
-                              channel: channelDC.personalChannel!)
-            } label: {
-                VStack(spacing: 0) {
-                    HStack(spacing: 0) {
-                        
-                        Color.clear
-                        .frame(width: 15,
-                               height: 0)
-                        .padding(.trailing, 2.5)
-                        
-                        if let avatar = userDC.userData?.avatar {
-                            EmojiIcon(avatar: avatar,
-                                      size: .init(width: 45, height: 45),
-                                      emojis: BZEmojiProvider1.shared.getAll(),
-                                      buttonAction: { avatar in
-                                
-                            })
-                        }
-                        
-                        VStack(spacing: 0) {
-                            HStack(spacing: 0) {
-                                
-                                FixedText(text: "@" + userDC.userData!.username,
-                                          colour: Color("accent1"),
-                                          fontSize: 18,
-                                          fontWeight: .bold)
-                                
-                                FixedText(text: "(Me)",
-                                          colour: Color("orangeAccent1"),
-                                          fontSize: 12,
-                                          fontWeight: .bold,
-                                          padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
-                                
-                                Spacer()
-                                
-                                if let latestDate = messageDC.personalMessages.first?.date {
-                                    DateTimeShor(date: latestDate,
-                                                 fontSize: 16,
-                                                 colour: Color("text2"))
-                                } else {
-                                    FixedText(text: "-",
-                                              colour: Color("text2"),
-                                              fontSize: 16)
-                                }
-                                
-                                SystemIcon(systemName: "chevron.right",
-                                           size: .init(width: 8, height: 12.5),
-                                           colour: Color("accent1"),
-                                           padding: .init(top: 0,
-                                                          leading: 10,
-                                                          bottom: 0,
-                                                          trailing: 0))
-                            }
-                            .edgePadding(bottom: 5)
-                            
-                            
-                                FixedText(text: messageDC.personalMessages.first?.message ?? "Tap to chat!",
-                                          colour: Color("text2"),
-                                          fontSize: 16,
-                                          lineLimit: 2...2,
-                                          padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8),
-                                          multilineAlignment: .leading,
-                                          pushText: .leading)
-                        }
-                        .edgePadding(leading: 12.5)
-                    }
-                    .edgePadding(top: 15,
-                                 bottom: 13.5,
-                                 leading: 7.5,
-                                 trailing: 15)
-                    
-                    HStack(spacing: 0) {
-                        Spacer()
-                        
-                        VStack(spacing: 0) {
-                            Divider()
-                                .frame(width: SP.screenWidth - 7.5 - 15 - 2.5 - 45 - 12.5)
-                        }
-                    }
-                }
-                .contextMenu() {
-                    Button("Clear Media", action: {
-                        
-                    })
-                    
-                    Button("Clear Channel", action: {
-                        
-                    })
-                }
-            }
-        }
+    func channelList() -> [SChannel] {
+        var channelList = channelDC.channels
+        
+        channelList.insert(channelDC.personalChannel!, at: 0)
+        
+        return channelList
     }
 }
 

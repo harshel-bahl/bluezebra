@@ -16,7 +16,7 @@ struct SChannelDeletion {
     var name: String
     var icon: String
     var nUsers: Int16
-    var toDeleteUserIDs: String
+    var toDeleteUserIDs: String?
     var isOrigin: Bool
     var remoteDeletedDate: Date?
 }
@@ -42,8 +42,7 @@ extension ChannelDeletion: ToSafeObject {
               let deletionDate = self.deletionDate,
               let type = self.type,
               let name = self.name,
-              let icon = self.icon,
-              let toDeleteUserIDs = self.toDeleteUserIDs else {
+              let icon = self.icon else {
             throw PError.safeMapError
         }
         
@@ -54,7 +53,7 @@ extension ChannelDeletion: ToSafeObject {
                                 name: name,
                                 icon: icon,
                                 nUsers: self.nUsers,
-                                toDeleteUserIDs: toDeleteUserIDs,
+                                toDeleteUserIDs: self.toDeleteUserIDs,
                                 isOrigin: self.isOrigin,
                                 remoteDeletedDate: self.remoteDeletedDate)
     }
