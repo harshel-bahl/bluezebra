@@ -12,13 +12,17 @@ extension MessageDC {
     
     /// Local Setup Functions
     ///
-    func checkAndCreateDirs(dirs: [String] = ["images", "files"]) throws {
-        for dir in dirs {
-            let dirCheck = DataPC.shared.checkDir(dir: dir)
-            
-            if !dirCheck {
-                print("CLIENT \(DateU.shared.logTS) -- MessageDC.checkAndCreateDirs: Directory not found (\(dir))")
-                try DataPC.shared.createDir(dir: dir)
+    func checkChannelDirs(dirs: [String] = ["images", "files"]) async throws {
+        for channelID in self.channelMessages.keys {
+            for dir in dirs {
+                let dirCheck = DataPC.shared.checkDir(dir: dir,
+                                                      intermidDirs: [channelID])
+                
+                if !dirCheck {
+                    print("CLIENT \(DateU.shared.logTS) -- MessageDC.checkChannelDirs: Directory not found - (\(channelID)/\(dir))")
+                    try await DataPC.shared.createDir(dir: dir,
+                                                      intermidDirs: [channelID])
+                }
             }
         }
     }
@@ -93,18 +97,19 @@ extension MessageDC {
                             date: Date = DateU.shared.currDT,
                             isSender: Bool = true,
                             message: String,
-                            selectedImages: [IdentifiableImage],
+                            selectedImages: [UIImage],
                             fileType: String = ".jpg") async throws -> SMessage {
         
         var resourceIDs = [String]()
         
-        for iImage in selectedImages {
-            let resourceID = iImage.id.uuidString + fileType
+        for image in selectedImages {
+            let resourceID = UUID().uuidString + fileType
             
             resourceIDs.append(resourceID)
             
-            try await self.storeImage(image: iImage.image,
-                                name: resourceID)
+            try await self.storeImage(image: image,
+                                      name: resourceID,
+                                      channelID: channelID)
         }
         
         let SMO = try await DataPC.shared.createMessage(channelID: channelID,
@@ -153,20 +158,33 @@ extension MessageDC {
     ///
     func storeImage(image: UIImage,
                     name: String = UUID().uuidString,
-                    compressionQuality: Double = 0.8) async throws {
+                    channelID: String,
+                    compressionQuality: Double = 0.65,
+                    fileType: String = ".jpg") async throws {
         
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
             throw DCError.imageDataFailure
         }
         
         try await DataPC.shared.storeFile(data: imageData,
-                                    name: name,
-                                    dir: "images")
+                                          fileName: name.hasSuffix(fileType) ? name : name + fileType,
+                                          intermidDirs: [channelID, "images"])
     }
     
-    func fetchImage(imageName: String) async throws -> UIImage {
+    func fetchThumbnailImage(imageName: String,
+                             channelID: String,
+                             maxDimension: CGFloat = 100) async throws -> UIImage {
+        let thumbnail = try await DataPC.shared.scaledImage(imageName: imageName,
+                                                            intermidDirs: [channelID, "images"],
+                                                            maxDimension: maxDimension)
+        return thumbnail
+    }
+    
+    func fetchImage(imageName: String,
+                    channelID: String) async throws -> UIImage {
+        
         let imageData = try await DataPC.shared.fetchFile(fileName: imageName,
-                                                    dir: "images")
+                                                          intermidDirs: [channelID, "images"])
         
         guard let uiImage = UIImage(data: imageData) else {
             throw DCError.imageDataFailure

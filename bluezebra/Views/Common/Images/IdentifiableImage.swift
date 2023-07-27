@@ -10,6 +10,7 @@ import SwiftUI
 
 struct IdentifiableImage: Identifiable {
     let id = UUID()
-    let image: UIImage
-    let imageThumbnail: UIImage
+    let thumbnail: UIImage?
+    let image: UIImage?
+    let url: URL?
 }

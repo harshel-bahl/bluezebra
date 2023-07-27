@@ -77,7 +77,7 @@ struct MessageScrollView: View {
                 GeometryReader { geo in
                     ScrollViewReader { proxy in
                         ScrollView(.vertical, showsIndicators: true) {
-                            VStack(spacing: 0) {
+                            LazyVStack(spacing: 0) {
                                 containers
                             }
                         }

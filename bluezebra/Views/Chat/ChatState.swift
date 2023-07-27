@@ -47,12 +47,12 @@ class ChatState: ObservableObject {
         for message in messages {
             if let resourceID = message.resourceIDs?.components(separatedBy: ",")[0],
                images[resourceID] == nil {
-                let imageData = try? await DataPC.shared.fetchFile(fileName: resourceID,
-                                                                   dir: "images")
-                
-                DispatchQueue.main.async {
-                    self.images[resourceID] = imageData
-                }
+//                let imageData = try? await DataPC.shared.fetchFile(fileName: resourceID,
+//                                                                   dir: "images")
+//
+//                DispatchQueue.main.async {
+//                    self.images[resourceID] = imageData
+//                }
             }
         }
     }

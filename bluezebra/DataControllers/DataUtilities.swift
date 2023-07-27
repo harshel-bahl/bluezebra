@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import ImageIO
+import SwiftUI
 
 class DataU {
     
@@ -38,6 +40,14 @@ class DataU {
         let dataPacket = try JSONDecoder().decode(T.self, from: data)
         return dataPacket
     }
+    
+    func calcDataSize(data: Data) -> String {
+        let bcf = ByteCountFormatter()
+        bcf.allowedUnits = [.useMB]
+        bcf.countStyle = .file
+        let string = bcf.string(fromByteCount: Int64(data.count))
+        return string
+    }
 }
 
 extension Thread {
@@ -45,4 +55,5 @@ extension Thread {
         print("\r⚡️: \(Thread.current)\r" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")\r")
     }
 }
+
 

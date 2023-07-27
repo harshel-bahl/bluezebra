@@ -87,40 +87,42 @@ struct InputContainer: View {
                     ScrollView(.horizontal,
                                showsIndicators: false) {
                         LazyHStack(spacing: 2.5) {
-                            ForEach(selectedImages, id: \.id) { image in
+                            ForEach(selectedImages, id: \.id) { iImage in
                                 
-                                BZImage(uiImage: image.imageThumbnail,
-                                        aspectRatio: .fill,
-                                        height: imagePreviewSize.height,
-                                        width: imagePreviewSize.width,
-                                        cornerRadius: imagePreviewCR)
-                                .allowsHitTesting(false)
-                                .overlay {
-                                    VStack(spacing: 0) {
-                                        HStack(spacing: 0) {
-                                            Spacer()
-                                            
-                                            SystemIcon(systemName: "xmark.circle",
-                                                       size: .init(width: 22.5, height: 22.5),
-                                                       colour: Color("accent1"),
-                                                       padding: .init(top: 5, leading: 0, bottom: 0, trailing: 5),
-                                                       BGColour: Color("accent4"),
-                                                       applyClip: true,
-                                                       shadow: 1,
-                                                       buttonAction: {
-                                                withAnimation {
-                                                    if let index = self.selectedImages.firstIndex(where: { $0.id == image.id }) {
-                                                        self.selectedImages.remove(at: index)
+                                if let thumbnail = iImage.thumbnail {
+                                    
+                                    BZImage(uiImage: thumbnail,
+                                            aspectRatio: .fill,
+                                            height: imagePreviewSize.height,
+                                            width: imagePreviewSize.width,
+                                            cornerRadius: imagePreviewCR)
+                                    .allowsHitTesting(false)
+                                    .overlay {
+                                        VStack(spacing: 0) {
+                                            HStack(spacing: 0) {
+                                                Spacer()
+                                                
+                                                SystemIcon(systemName: "xmark.circle",
+                                                           size: .init(width: 20, height: 20),
+                                                           colour: Color("accent1"),
+                                                           padding: .init(top: 5, leading: 0, bottom: 0, trailing: 5),
+                                                           BGColour: Color("accent4"),
+                                                           applyClip: true,
+                                                           shadow: 1,
+                                                           buttonAction: {
+                                                    withAnimation {
+                                                        if let index = self.selectedImages.firstIndex(where: { $0.id == iImage.id }) {
+                                                            self.selectedImages.remove(at: index)
+                                                        }
                                                     }
-                                                }
-                                            })
-                                            .contentShape(Rectangle())
+                                                })
+                                                .contentShape(Rectangle())
+                                            }
+                                            
+                                            Spacer()
                                         }
-                                        
-                                        Spacer()
                                     }
                                 }
-                                
                             }
                         }
                     }
@@ -129,7 +131,7 @@ struct InputContainer: View {
                 
                 HStack(alignment: .bottom, spacing: spacing) {
                     
-                    fileButton
+                    //                    fileButton
                     
                     cameraButton
                     
@@ -160,12 +162,12 @@ struct InputContainer: View {
                     var iImages = [IdentifiableImage]()
                     
                     for image in media {
-                        if let imageData = await image.getData(),
-                           let uiImage = UIImage(data: imageData),
-                           let imageThumbnail = await image.getThumbnailData(),
-                           let uiThumbnail = UIImage(data: imageThumbnail) {
-                            iImages.append(IdentifiableImage(image: uiImage,
-                                                            imageThumbnail: uiThumbnail))
+                        if let url = await image.getURL() {
+                            let thumbnail = try await DataPC.shared.scaledImage(from: url,
+                                                                                maxDimension: 150)
+                            iImages.append(IdentifiableImage(thumbnail: thumbnail,
+                                                             image: nil,
+                                                             url: url))
                         }
                     }
                     
@@ -261,10 +263,19 @@ struct InputContainer: View {
             
         } else if let selectedImages = selectedImages {
             
+            var images = [UIImage]()
+            
+            for image in selectedImages {
+                guard let url = image.url else { throw DCError.imageDataFailure }
+                let imageData = try Data(contentsOf: url)
+                guard let uiImage = UIImage(data: imageData) else { throw DCError.imageDataFailure }
+                images.append(uiImage)
+            }
+            
             let SMessage = try await messageDC.createImageMessage(channelID: chatState.currChannel.channelID,
                                                                   userID: chatState.currChannel.userID,
                                                                   message: self.message,
-                                                                  selectedImages: selectedImages)
+                                                                  selectedImages: images)
             
             messageDC.addMessage(channelID: chatState.currChannel.channelID,
                                  message: SMessage)

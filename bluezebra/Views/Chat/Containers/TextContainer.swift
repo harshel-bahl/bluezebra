@@ -88,9 +88,9 @@ struct TextContainer: View {
                 
                 if message.isSender {
                     if showReceipt {
-                        if messageStatus == "notSent" || messageStatus == "sent" {
+                        if messageStatus == "sent" {
                             Circle()
-                                .fill(messageStatus == "sent" ? .yellow : .red)
+                                .fill(.yellow)
                                 .frame(width: receiptSize?.width, height: receiptSize?.height)
                         } else if messageStatus == "delivered" || messageStatus == "read" {
                             Circle()
@@ -139,7 +139,7 @@ struct TextContainer: View {
         }
         .padding(bubblePadding)
         .background(message.isSender ? BG[0] : BG[1])
-        .cornerRadius(cornerRadius)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         
         .if(showContextMenu == true, transform: { view in
             view

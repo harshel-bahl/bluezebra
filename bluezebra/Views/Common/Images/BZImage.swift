@@ -36,7 +36,7 @@ struct BZImage: View {
             .aspectRatio(contentMode: aspectRatio)
             .frame(width: self.width, height: self.height)
             .background { BG }
-            .cornerRadius(cornerRadius ?? 0)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius ?? 0))
     }
 }
 

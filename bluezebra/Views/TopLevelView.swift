@@ -82,8 +82,8 @@ struct TopLevelView: View {
                 
                 remoteConnection()
                 
-                try messageDC.checkAndCreateDirs()
                 try await messageDC.syncMessageDC()
+                try await messageDC.checkChannelDirs()
             } catch {
                 fetchedUser = true
                 
