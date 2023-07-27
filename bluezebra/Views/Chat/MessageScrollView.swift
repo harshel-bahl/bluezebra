@@ -149,6 +149,7 @@ struct MessageScrollView: View {
             MessageContainer(message: message,
                              messageStatus: messageStatus)
                 .id(message.messageID)
+                .padding(.bottom, messages.last?.messageID == message.messageID ? 5 : 0)
         }
     }
     

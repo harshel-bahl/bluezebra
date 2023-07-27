@@ -12,21 +12,21 @@ struct BZImage: View {
     let uiImage: UIImage
     
     let aspectRatio: ContentMode
-    let height: CGFloat?
     let width: CGFloat?
+    let height: CGFloat?
     let BG: Color?
     let cornerRadius: CGFloat?
     
     init(uiImage: UIImage,
          aspectRatio: ContentMode = .fit,
-         height: CGFloat? = nil,
          width: CGFloat? = nil,
+         height: CGFloat? = nil,
          BG: Color? = nil,
          cornerRadius: CGFloat? = nil) {
         self.uiImage = uiImage
         self.aspectRatio = aspectRatio
-        self.height = height
         self.width = width
+        self.height = height
         self.BG = BG
         self.cornerRadius = cornerRadius
     }

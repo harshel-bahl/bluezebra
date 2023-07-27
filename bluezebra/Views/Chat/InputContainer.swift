@@ -93,8 +93,8 @@ struct InputContainer: View {
                                     
                                     BZImage(uiImage: thumbnail,
                                             aspectRatio: .fill,
-                                            height: imagePreviewSize.height,
                                             width: imagePreviewSize.width,
+                                            height: imagePreviewSize.height,
                                             cornerRadius: imagePreviewCR)
                                     .allowsHitTesting(false)
                                     .overlay {

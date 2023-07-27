@@ -15,97 +15,131 @@ struct ImageContainer: View {
     
     let message: SMessage
     
-    let imageHeight: CGFloat
-    let imageWidthProp: Double
-    let imageTextPadding: CGFloat
+    let fetchMaxDimension: CGFloat
+    let imageMaxHeight: CGFloat
+    let soleImageMaxWidth: Double
+    let imageWithTextMaxWidth: Double
+    let imageMinWidth: CGFloat
+    let imageMinHeight: CGFloat
     
-    let textColour: [Color]
-    let textFont: Font
+    let textColour: Color
+    let textSize: CGFloat
+    let lineLimit: ClosedRange<Int>
     
-    let showReceipt: Bool
     let messageStatus: String?
     let receiptSize: CGSize?
     
-    let dateColour: [Color]
+    let dateColour: Color
     let dateFont: Font
     
+    let imageWithTextSpacing: CGFloat
+    let messageWithTextPadding: EdgeInsets
     let bubblePadding: EdgeInsets
     let BG: [Color]
+    let placeholderBG: Color
     let cornerRadius: CGFloat
     let outerPadding: EdgeInsets
-    let maxWidthProp: Double
     
     let showContextMenu: Bool
-    
-    @State var messageTextWidth: CGFloat = 0
-    @State var timeTextWidth: CGFloat = 0
     
     @State var image: UIImage?
     
     init(message: SMessage,
-         imageHeight: CGFloat = 250,
-         imageWidthProp: Double = 0.66,
-         imageTextPadding: Double = 7.5,
-         textColour: [Color] = [.white, .black],
-         textFont: Font = .system(size: 17.5),
-         showReceipt: Bool = false,
+         fetchMaxDimension: CGFloat = 250,
+         imageMaxHeight: CGFloat = 325,
+         soleImageMaxWidth: CGFloat = 280,
+         imageWithTextMaxWidth: CGFloat = 300,
+         imageMinWidth: CGFloat = 225,
+         imageMinHeight: CGFloat = 200,
+         textColour: Color = .white,
+         textSize: CGFloat = 17.5,
+         lineLimit: ClosedRange<Int> = 0...3,
          messageStatus: String? = nil,
          receiptSize: CGSize = .init(width: 7.5, height: 7.5),
-         dateColour: [Color] = [.white, .black],
+         dateColour: Color = .white,
          dateFont: Font = .system(size: 12.5),
+         imageWithTextSpacing: Double = 7.5,
+         messageWithTextPadding: EdgeInsets = EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5),
          bubblePadding: EdgeInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5),
          BG: [Color] = [Color("accent1"), Color("accent3")],
+         placeholderBG: Color = Color("accent5"),
          cornerRadius: CGFloat = 15,
-         outerPadding: EdgeInsets = .init(top: 1, leading: 15, bottom: 1, trailing: 15),
-         maxWidthProp: Double = 0.66,
+         outerPadding: EdgeInsets = .init(top: 1, leading: 10, bottom: 1, trailing: 10),
          showContextMenu: Bool = true) {
         self.message = message
-        self.imageHeight = imageHeight
-        self.imageWidthProp = imageWidthProp
-        self.imageTextPadding = imageTextPadding
+        self.fetchMaxDimension = fetchMaxDimension
+        self.imageMaxHeight = imageMaxHeight
+        self.soleImageMaxWidth = soleImageMaxWidth
+        self.imageWithTextMaxWidth = imageWithTextMaxWidth
+        self.imageMinWidth = imageMinWidth
+        self.imageMinHeight = imageMinHeight
         self.textColour = textColour
-        self.textFont = textFont
-        self.showReceipt = showReceipt
+        self.textSize = textSize
+        self.lineLimit = lineLimit
         self.messageStatus = messageStatus
         self.receiptSize = receiptSize
         self.dateColour = dateColour
         self.dateFont = dateFont
+        self.imageWithTextSpacing = imageWithTextSpacing
+        self.messageWithTextPadding = messageWithTextPadding
         self.bubblePadding = bubblePadding
         self.BG = BG
+        self.placeholderBG = placeholderBG
         self.cornerRadius = cornerRadius
         self.outerPadding = outerPadding
-        self.maxWidthProp = maxWidthProp
         self.showContextMenu = showContextMenu
     }
     
     var body: some View {
-        basicMessage
+        imageMessage
     }
     
-    var basicMessage: some View {
+    var imageMessage: some View {
         ZStack {
-            
             if message.message == "" {
                 soleImage
+                    .background(message.isSender ? BG[0] : BG[1])
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                
+                    .if(showContextMenu == true, transform: { view in
+                        view
+                            .contextMenu {
+                                Button("Delete Message", action: {
+                                    messageDC.deleteMessage(messageID: message.messageID)
+                                })
+                            }
+                    })
+                        
+                        .frame(width: soleImageMaxWidth, alignment: message.isSender ? .trailing : .leading)
+                        .padding(outerPadding)
+                        .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
             } else {
                 imageWithMessage
+                    .background(message.isSender ? BG[0] : BG[1])
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                
+                    .if(showContextMenu == true, transform: { view in
+                        view
+                            .contextMenu {
+                                Button("Delete Message", action: {
+                                    messageDC.deleteMessage(messageID: message.messageID)
+                                })
+                            }
+                    })
+                        
+                        .frame(width: imageWithTextMaxWidth, alignment: message.isSender ? .trailing : .leading)
+                        .padding(outerPadding)
+                        .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
             }
         }
-        .background(message.isSender ? BG[0] : BG[1])
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-        
-        .if(showContextMenu == true, transform: { view in
-            view
-                .contextMenu {
-                    Button("Delete Message", action: {
-                        messageDC.deleteMessage(messageID: message.messageID)
-                    })
-                }
-        })
-            
-            .frame(width: SP.screenWidth*maxWidthProp, alignment: message.isSender ? .trailing : .leading)
-            .padding(outerPadding)
-            .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
+        .onAppear {
+            Task {
+                let resourceID = message.resourceIDs?.components(separatedBy: ",")[0]
+                self.image = try await DataPC.shared.scaledImage(imageName: resourceID,
+                                                                 intermidDirs: [chatState.currChannel.channelID, "images"],
+                                                                 maxDimension: fetchMaxDimension)
+            }
+        }
     }
     
     var soleImage: some View {
@@ -113,13 +147,12 @@ struct ImageContainer: View {
             if let image = self.image {
                 BZImage(uiImage: image,
                         aspectRatio: .fill,
-                        height: imageHeight,
-                        width: SP.screenWidth*imageWidthProp)
+                        width: calculateSize(image: image).width,
+                        height: calculateSize(image: image).height)
+            } else {
+                placeholderBG
             }
         }
-        .frame(width: SP.screenWidth*imageWidthProp,
-               height: imageHeight)
-        .background { Color("accent5") }
         .overlay {
             VStack(spacing: 0) {
                 Spacer()
@@ -132,89 +165,84 @@ struct ImageContainer: View {
                     .padding(bubblePadding)
             }
         }
-        .onAppear {
-            Task {
-                let resourceID = message.resourceIDs?.components(separatedBy: ",")[0]
-                self.image = try await DataPC.shared.scaledImage(imageName: resourceID,
-                                                                 intermidDirs: [chatState.currChannel.channelID, "images"],
-                                                                 maxDimension: 200)
-            }
-        }
     }
     
     var imageWithMessage: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: imageWithTextSpacing) {
             ZStack {
                 if let image = self.image {
                     BZImage(uiImage: image,
                             aspectRatio: .fill,
-                            height: imageHeight,
-                            width: SP.screenWidth*maxWidthProp - bubblePadding.leading - bubblePadding.trailing,
+                            width: calculateSize(image: image).width,
+                            height: calculateSize(image: image).height,
                             cornerRadius: cornerRadius)
                 } else {
-                    Color("accent5")
+                    placeholderBG
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .edgePadding(bottom: imageTextPadding)
             
             FixedText(text: message.message,
-                      colour: message.isSender ? textColour[0] : textColour[1],
-                      fontSize: 17.5,
-                      lineLimit: 0...2,
-                      padding: .init(top: 7.5, leading: 5, bottom: 7.5, trailing: 5),
+                      colour: textColour,
+                      fontSize: textSize,
+                      lineLimit: lineLimit,
+                      padding: messageWithTextPadding,
                       multilineAlignment: .leading,
                       pushText: .leading)
-            .background(message.isSender ? BG[0].brightness(-0.1) : BG[1].brightness(-0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 7.5))
-            .edgePadding(bottom: imageTextPadding)
             
             metaDataStack
         }
         .padding(bubblePadding)
-        .onAppear {
-            Task {
-                let resourceID = message.resourceIDs?.components(separatedBy: ",")[0]
-                self.image = try await DataPC.shared.scaledImage(imageName: resourceID,
-                                                                 intermidDirs: [chatState.currChannel.channelID, "images"],
-                                                                 maxDimension: 200)
+    }
+    
+    func calculateSize(image: UIImage) -> CGSize {
+        if message.message == "" { // sole image
+            if image.size.width > image.size.height { // horizontal image
+                return CGSize(width: soleImageMaxWidth,
+                              height: max(image.size.height, imageMinHeight))
+            } else { // vertical image
+                return CGSize(width: max(image.size.width, imageMinWidth),
+                              height: imageMaxHeight)
+            }
+        } else { // image with text
+            if image.size.width > image.size.height { // horizontal image
+                return CGSize(width: imageWithTextMaxWidth - bubblePadding.leading - bubblePadding.trailing,
+                              height: max(image.size.height, imageMinHeight))
+            } else { // vertical image
+                return CGSize(width: max(image.size.width, imageMinWidth),
+                              height: imageMaxHeight)
             }
         }
     }
     
     var metaDataStack: some View {
         HStack(alignment: .bottom, spacing: 0) {
-
             if message.isSender {
-                if showReceipt {
-                    if messageStatus == "sent" {
-                        Circle()
-                            .fill(.yellow)
-                            .frame(width: receiptSize?.width, height: receiptSize?.height)
-                    } else if messageStatus == "delivered" || messageStatus == "read" {
-                        Circle()
-                            .fill(messageStatus == "read" ? .green : .gray)
-                            .frame(width: receiptSize?.width, height: receiptSize?.height)
-                        
-                        Circle()
-                            .fill(messageStatus == "read" ? .green : .gray)
-                            .frame(width: receiptSize?.width, height: receiptSize?.height)
-                            .edgePadding(leading: 2)
-                    }
+                if messageStatus == "sent" {
+                    Circle()
+                        .fill(.yellow)
+                        .frame(width: receiptSize?.width, height: receiptSize?.height)
+                } else if messageStatus == "delivered" || messageStatus == "read" {
+                    Circle()
+                        .fill(messageStatus == "read" ? .green : .gray)
+                        .frame(width: receiptSize?.width, height: receiptSize?.height)
+                    
+                    Circle()
+                        .fill(messageStatus == "read" ? .green : .gray)
+                        .frame(width: receiptSize?.width, height: receiptSize?.height)
+                        .edgePadding(leading: 2)
                 }
-
+                
                 Spacer(minLength: 15)
-
+                
                 Text(DateU.shared.timeHm(date: message.date))
                     .font(dateFont)
-                    .foregroundColor(dateColour[0])
-                    .fixedSize()
+                    .foregroundColor(dateColour)
             } else {
                 Text(DateU.shared.timeHm(date: message.date))
                     .font(dateFont)
-                    .foregroundColor(dateColour[0])
-                    .fixedSize()
-
+                    .foregroundColor(dateColour)
+                
                 Spacer(minLength: 15)
             }
         }

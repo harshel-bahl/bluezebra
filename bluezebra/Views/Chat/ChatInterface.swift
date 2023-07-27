@@ -93,7 +93,6 @@ struct ChatInterface: View {
             }
             
             InputContainer(focusedField: _focusedField)
-            .edgePadding(top: 5)
         }
         .background() { Color("background1") }
         .ignoresSafeArea(edges: .top)

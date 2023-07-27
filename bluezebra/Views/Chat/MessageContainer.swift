@@ -27,11 +27,9 @@ struct MessageContainer: View {
         switch message.type {
         case "text":
             TextContainer(message: message,
-                          showReceipt: messageStatus != nil ? true : false,
                           messageStatus: messageStatus)
         case "image":
             ImageContainer(message: message,
-                           showReceipt: messageStatus != nil ? true : false,
                            messageStatus: messageStatus)
             
             
