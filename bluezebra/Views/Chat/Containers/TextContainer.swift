@@ -10,6 +10,7 @@ import SwiftUI
 struct TextContainer: View {
     
     @EnvironmentObject var SP: ScreenProperties
+    @EnvironmentObject var chatState: ChatState
     @ObservedObject var messageDC = MessageDC.shared
     
     let message: SMessage
@@ -142,7 +143,16 @@ struct TextContainer: View {
             view
                 .contextMenu {
                     Button("Delete Message", action: {
-                        messageDC.deleteMessage(messageID: message.messageID)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            Task {
+                                if chatState.currChannel.channelID == "personal" {
+                                    try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+                                                                         message: message)
+                                } else {
+                                    
+                                }
+                            }
+                        }
                     })
                 }
         })

@@ -134,8 +134,8 @@ struct ImageContainer: View {
         }
         .onAppear {
             Task {
-                let resourceID = message.resourceIDs?.components(separatedBy: ",")[0]
-                self.image = try await DataPC.shared.scaledImage(imageName: resourceID,
+                let imageID = message.imageIDs?.components(separatedBy: ",")[0]
+                self.image = try await DataPC.shared.scaledImage(imageName: imageID,
                                                                  intermidDirs: [chatState.currChannel.channelID, "images"],
                                                                  maxDimension: fetchMaxDimension)
             }

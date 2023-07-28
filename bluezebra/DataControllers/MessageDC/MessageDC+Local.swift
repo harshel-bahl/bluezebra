@@ -100,12 +100,12 @@ extension MessageDC {
                             selectedImages: [UIImage],
                             fileType: String = ".jpg") async throws -> SMessage {
         
-        var resourceIDs = [String]()
+        var imageIDs = [String]()
         
         for image in selectedImages {
             let resourceID = UUID().uuidString + fileType
             
-            resourceIDs.append(resourceID)
+            imageIDs.append(resourceID)
             
             try await self.storeImage(image: image,
                                       name: resourceID,
@@ -118,7 +118,7 @@ extension MessageDC {
                                                         date: date,
                                                         isSender: isSender,
                                                         message: message,
-                                                        resourceIDs: resourceIDs)
+                                                        imageIDs: imageIDs)
         
         return SMO
     }
@@ -238,6 +238,30 @@ extension MessageDC {
     
     /// Local Delete Functions
     ///
+    func messageDeletion(channelID: String,
+                         message: SMessage) async throws {
+        
+        let SMessage = try await DataPC.shared.updateMO(entity: Message.self,
+                                                        predicateProperty: "messageID",
+                                                        predicateValue: message.messageID,
+                                                        property: ["type", "message", "imageIDs", "fileIDs", "localDeleted"],
+                                                        value: ["deleted", "", "", "", true])
+        
+        if let messages = self.channelMessages[channelID],
+           let index = messages.firstIndex(where: { $0.messageID == message.messageID }) {
+            DispatchQueue.main.async {
+                    self.channelMessages[channelID]?[index] = SMessage
+            }
+        }
+        
+        if let imageIDs = message.imageIDs?.components(separatedBy: ",") {
+            for imageID in imageIDs {
+                try await DataPC.shared.removeFile(fileName: imageID,
+                                                   intermidDirs: [channelID, "images"])
+            }
+        }
+    }
+    
     func deleteMessage(channelID: String,
                        messageID: String) async throws {
         
@@ -256,6 +280,12 @@ extension MessageDC {
         try await DataPC.shared.fetchDeleteMOsAsync(entity: Message.self,
                                                     predicateProperty: "channelID",
                                                     predicateValue: channelID)
+        
+        try await DataPC.shared.clearDir(dir: "images",
+                                         intermidDirs: [channelID])
+        
+        try await DataPC.shared.clearDir(dir: "files",
+                                         intermidDirs: [channelID])
     }
     
     func deleteChannelMessages(channelID: String) async throws {

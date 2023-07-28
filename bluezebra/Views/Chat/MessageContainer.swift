@@ -32,6 +32,8 @@ struct MessageContainer: View {
             ImageContainer(message: message,
                            messageStatus: messageStatus)
             
+        case "deleted":
+            DeletedContainer(message: message)
             
         default:
             Color.clear

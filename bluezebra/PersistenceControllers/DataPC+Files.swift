@@ -59,7 +59,7 @@ extension DataPC {
                                             withIntermediateDirectories: true,
                                             attributes: nil)
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.createDir: SUCCESS (\(dirURL))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.createDir: SUCCESS (\(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.createDir: FAILED (\(error))")
             throw PError.fileSystemFailure
@@ -202,7 +202,7 @@ extension DataPC {
                 count += 1
             }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.clearDir: SUCCESS (removed: \(count), dirURL: \(dirURL))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.clearDir: SUCCESS (removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.clearDir: FAILED (\(error))")
             throw PError.fileSystemFailure
@@ -229,7 +229,7 @@ extension DataPC {
         
         do {
             try fileManager.removeItem(at: dirURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeDir: SUCCESS (\(dirURL))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeDir: SUCCESS (\(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.removeDir: FAILED (\(error))")
             throw PError.fileSystemFailure
@@ -289,7 +289,7 @@ extension DataPC {
         
         do {
             try data.write(to: fileURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.storeFile: SUCCESS")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.storeFile: SUCCESS (url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName))")
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.storeFile: FAILED (\(error))")
             throw PError.fileStoreFailure
@@ -343,7 +343,7 @@ extension DataPC {
         
         do {
             try fileManager.removeItem(at: fileURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeFile: SUCCESS (\(fileName))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeFile: SUCCESS (url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName))")
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.removeFile: FAILED (\(fileName))")
             throw PError.fileSystemFailure

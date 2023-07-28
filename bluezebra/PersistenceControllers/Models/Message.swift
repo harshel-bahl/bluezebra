@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-struct SMessage {
+struct SMessage: Equatable {
     var messageID: String = UUID().uuidString
     var channelID: String
     var userID: String
@@ -16,7 +16,8 @@ struct SMessage {
     var date: Date
     var isSender: Bool
     var message: String
-    var resourceIDs: String?
+    var imageIDs: String?
+    var fileIDs: String?
     var sent: String?
     var delivered: String?
     var read: String?
@@ -32,7 +33,8 @@ class Message: NSManagedObject {
     @NSManaged var date: Date?
     @NSManaged var isSender: Bool
     @NSManaged var message: String?
-    @NSManaged var resourceIDs: String?
+    @NSManaged var imageIDs: String?
+    @NSManaged var fileIDs: String?
     @NSManaged var sent: String?
     @NSManaged var delivered: String?
     @NSManaged var read: String?
@@ -59,7 +61,8 @@ extension Message: ToSafeObject {
                         date: date,
                         isSender: self.isSender,
                         message: message,
-                        resourceIDs: self.resourceIDs,
+                        imageIDs: self.imageIDs,
+                        fileIDs: self.fileIDs,
                         sent: self.sent,
                         delivered: self.delivered,
                         read: self.read,

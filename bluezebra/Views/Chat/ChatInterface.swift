@@ -77,27 +77,16 @@ struct ChatInterface: View {
                 Spacer()
             }
             
-            MessageScrollView(messages: {
-                if let messages = messageDC.channelMessages[channel.channelID] {
-                    return messages.reversed()
-                } else {
-                    Task {
-                        try await messageDC.syncChannel(channelID: channel.channelID)
-                    }
-
-                    return [SMessage]()
+            MessageScrollView()
+                .onTapGesture {
+                    focusedField = nil
                 }
-            }())
-            .onTapGesture {
-                focusedField = nil
-            }
             
             InputContainer(focusedField: _focusedField)
         }
         .background() { Color("background1") }
         .ignoresSafeArea(edges: .top)
         .environmentObject(chatState)
-
     }
     
     func getAvatar() -> String {
@@ -117,7 +106,6 @@ struct ChatInterface: View {
             return RU!.username
         }
     }
-    
     
 }
 

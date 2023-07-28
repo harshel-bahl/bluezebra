@@ -14,7 +14,7 @@ struct MessageScrollView: View {
     
     @ObservedObject var messageDC = MessageDC.shared
     
-    let messages: [SMessage]
+    @State var messages: [SMessage]?
     
     let BGColour: Color
     
@@ -45,8 +45,7 @@ struct MessageScrollView: View {
         ).eraseToAnyPublisher()
     }
     
-    init(messages: [SMessage],
-         BGColour: Color = Color("background1"),
+    init(BGColour: Color = Color("background1"),
          dateFontSize: CGFloat = 16,
          dateFontColour: Color = Color("text1"),
          dateBG: Color = Color("background5"),
@@ -56,7 +55,6 @@ struct MessageScrollView: View {
          scrollAnimation: Animation = .easeInOut(duration: 0.05),
          scrollOnUnfocus: Bool = false,
          scrollOnSizeChange: Bool = true) {
-        self.messages = messages
         self.BGColour = BGColour
         self.dateFontSize = dateFontSize
         self.dateFontColour = dateFontColour
@@ -82,33 +80,40 @@ struct MessageScrollView: View {
                             }
                         }
                         .onAppear {
-                            proxy.scrollTo(messages.last?.messageID)
+                            proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
                             
-                            Task() {
-                                try? await chatState.fetchImages()
-                            }
+//                            Task() {
+//                                try? await chatState.fetchImages()
+//                            }
                         }
                         .onChange(of: keyboardHeight, perform: { height in
                             if height == 0 {
                                 if scrollOnUnfocus {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                         withAnimation(scrollAnimation) {
-                                            proxy.scrollTo(messages.last?.messageID)
+                                            proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
                                         }
                                     }
                                 }
                             } else if height > 0 {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     withAnimation(scrollAnimation) {
-                                        proxy.scrollTo(messages.last?.messageID)
+                                        proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
                                     }
                                 }
                             }
                         })
                         .onChange(of: scrollviewHeight, perform: { scrollviewSize in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 withAnimation(scrollAnimation) {
-                                    proxy.scrollTo(messages.last?.messageID)
+                                    proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
+                                }
+                            }
+                        })
+                        .onChange(of: messages, perform: { messages in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation(scrollAnimation) {
+                                    proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
                                 }
                             }
                         })
@@ -120,36 +125,49 @@ struct MessageScrollView: View {
                 keyboardHeight = height
             })
         }
+        .onAppear() {
+            if let messages = messageDC.channelMessages[chatState.currChannel.channelID] {
+                self.messages = messages.reversed()
+            }
+        }
+        .onChange(of: messageDC.channelMessages[chatState.currChannel.channelID], perform: { messages in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self.messages = messages?.reversed()
+            }
+        })
     }
     
+    @ViewBuilder
     var containers: some View {
-        ForEach(messages, id: \.messageID) { message in
-            
-            if showDateHeaders {
-                let showDateHeader = shouldShowDateHeader(
-                    messages: messages,
-                    thisMessage: message
-                )
+        if let messages = messages {
+            ForEach(messages, id: \.messageID) { message in
                 
-                if let showDateHeader = showDateHeader,
-                   showDateHeader {
-                    DateDMY(date: message.date,
-                            fontSize: dateFontSize,
-                            colour: dateFontColour)
-                    .padding(dateBorderPadding)
-                    .background() { dateBG }
-                    .cornerRadius(5)
-                    .padding(messages.first?.messageID == message.messageID ?
-                             EdgeInsets(top: 10, leading: 0, bottom: 15, trailing: 0) : datePadding)
+                if showDateHeaders {
+                    let showDateHeader = shouldShowDateHeader(
+                        messages: messages,
+                        thisMessage: message
+                    )
+                    
+                    if let showDateHeader = showDateHeader,
+                       showDateHeader {
+                        DateDMY(date: message.date,
+                                fontSize: dateFontSize,
+                                colour: dateFontColour)
+                        .padding(dateBorderPadding)
+                        .background() { dateBG }
+                        .cornerRadius(5)
+                        .padding(messages.first?.messageID == message.messageID ?
+                                 EdgeInsets(top: 10, leading: 0, bottom: 15, trailing: 0) : datePadding)
+                    }
                 }
-            }
-            
-            let messageStatus = chatState.computeReceipt(message: message)
-            
-            MessageContainer(message: message,
-                             messageStatus: messageStatus)
+                
+                let messageStatus = chatState.computeReceipt(message: message)
+                
+                MessageContainer(message: message,
+                                 messageStatus: messageStatus)
                 .id(message.messageID)
                 .padding(.bottom, messages.last?.messageID == message.messageID ? 5 : 0)
+            }
         }
     }
     

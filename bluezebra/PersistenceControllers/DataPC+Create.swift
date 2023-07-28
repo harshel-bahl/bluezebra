@@ -291,7 +291,8 @@ extension DataPC {
                               date: Date = DateU.shared.currDT,
                               isSender: Bool,
                               message: String,
-                              resourceIDs: [String]? = nil,
+                              imageIDs: [String]? = nil,
+                              fileIDs: [String]? = nil,
                               sent: [String]? = nil,
                               delivered: [String]? = nil,
                               read: [String]? = nil,
@@ -315,7 +316,8 @@ extension DataPC {
                 MO.date = date
                 MO.isSender = isSender
                 MO.message = message
-                if let resourceIDs = resourceIDs { MO.resourceIDs = resourceIDs.joined(separator: ",")}
+                if let imageIDs = imageIDs { MO.imageIDs = imageIDs.joined(separator: ",") }
+                if let fileIDs = fileIDs { MO.fileIDs = fileIDs.joined(separator: ",") }
                 if let sent = sent { MO.sent = sent.joined(separator: ",") }
                 if let delivered = delivered { MO.delivered = delivered.joined(separator: ",") }
                 if let read = read { MO.read = read.joined(separator: ",") }

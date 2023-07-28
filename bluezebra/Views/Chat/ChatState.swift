@@ -45,8 +45,8 @@ class ChatState: ObservableObject {
         guard let messages = MessageDC.shared.channelMessages[currChannel.channelID] else { return }
         
         for message in messages {
-            if let resourceID = message.resourceIDs?.components(separatedBy: ",")[0],
-               images[resourceID] == nil {
+            if let imageID = message.imageIDs?.components(separatedBy: ",")[0],
+               images[imageID] == nil {
 //                let imageData = try? await DataPC.shared.fetchFile(fileName: resourceID,
 //                                                                   dir: "images")
 //

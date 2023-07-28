@@ -36,12 +36,6 @@ struct ChannelView: View {
         } else {
             return nil
         }
-        
-        if let latestMessage = messageDC.channelMessages[channel.channelID]?.first {
-            self._latestMessage = State(wrappedValue: latestMessage)
-        } else {
-            latestMessage = nil
-        }
     }
     
     var body: some View {
@@ -131,7 +125,19 @@ struct ChannelView: View {
                         }
                         .edgePadding(bottom: 5)
                         
-                        FixedText(text: latestMessage?.message ?? "Tap to chat!",
+                        FixedText(text: {
+                            if let latestMessage = self.latestMessage {
+                                if channel.channelID == "personal" && latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                    return "📷 Sent something"
+                                } else if latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                    return "📷 Sent you something!"
+                                } else {
+                                    return latestMessage.message
+                                }
+                            } else {
+                                return "Tap to chat!"
+                            }
+                        }(),
                                   colour: Color("text2"),
                                   fontSize: 15,
                                   lineLimit: 2...2,
@@ -155,6 +161,14 @@ struct ChannelView: View {
                     }
                 }
             }
+            .onAppear() {
+                if let latestMessage = messageDC.channelMessages[channel.channelID]?.first {
+                    self.latestMessage = latestMessage
+                }
+            }
+            .onChange(of: messageDC.channelMessages[channel.channelID]?.first, perform: { latestMessage in
+                self.latestMessage = latestMessage
+            })
             .contextMenu() {
                 Button("Clear media", action: {
                     
