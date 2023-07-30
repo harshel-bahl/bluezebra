@@ -9,11 +9,15 @@ import SwiftUI
 
 struct DeletionLog: View {
     
-    var channelType: String
+    @State var channelType: String
     
     @EnvironmentObject var SP: ScreenProperties
     
     @ObservedObject var channelDC = ChannelDC.shared
+    
+    init(channelType: String) {
+        self._channelType = State(wrappedValue: channelType)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -34,9 +38,9 @@ struct DeletionLog: View {
                 
                 Color("background1")
                 
-                ScrollView {
+                ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(spacing: 0) {
-                        ForEach(filterCDs(channelType: channelType), id: \.deletionID) { CD in
+                        ForEach(self.filterCDs(channelType: channelType), id: \.deletionID) { CD in
                             DeletionRow(CD: CD)
                         }
                     }
@@ -47,7 +51,8 @@ struct DeletionLog: View {
     }
     
     func filterCDs(channelType: String) -> [SChannelDeletion] {
-        return channelDC.CDs.filter({ $0.channelType == channelType })
+        let CDs = channelDC.CDs.filter({ $0.channelType == channelType })
+        return CDs
     }
 }
 

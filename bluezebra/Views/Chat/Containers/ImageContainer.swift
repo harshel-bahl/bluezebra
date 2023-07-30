@@ -105,7 +105,16 @@ struct ImageContainer: View {
                         view
                             .contextMenu {
                                 Button("Delete Message", action: {
-                                    messageDC.deleteMessage(messageID: message.messageID)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        Task {
+                                            if chatState.currChannel.channelID == "personal" {
+                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+                                                                                     message: message)
+                                            } else {
+                                                
+                                            }
+                                        }
+                                    }
                                 })
                             }
                     })
@@ -122,7 +131,16 @@ struct ImageContainer: View {
                         view
                             .contextMenu {
                                 Button("Delete Message", action: {
-                                    messageDC.deleteMessage(messageID: message.messageID)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        Task {
+                                            if chatState.currChannel.channelID == "personal" {
+                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+                                                                                     message: message)
+                                            } else {
+                                                
+                                            }
+                                        }
+                                    }
                                 })
                             }
                     })
@@ -209,7 +227,7 @@ struct ImageContainer: View {
                 return CGSize(width: imageWithTextMaxWidth - bubblePadding.leading - bubblePadding.trailing,
                               height: max(image.size.height, imageMinHeight))
             } else { // vertical image
-                return CGSize(width: max(image.size.width, imageMinWidth),
+                return CGSize(width: imageWithTextMaxWidth,
                               height: imageMaxHeight)
             }
         }

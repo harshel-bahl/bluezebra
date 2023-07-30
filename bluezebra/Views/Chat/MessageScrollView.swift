@@ -14,7 +14,7 @@ struct MessageScrollView: View {
     
     @ObservedObject var messageDC = MessageDC.shared
     
-    @State var messages: [SMessage]?
+//    @State var messages: [SMessage]?
     
     let BGColour: Color
     
@@ -80,7 +80,7 @@ struct MessageScrollView: View {
                             }
                         }
                         .onAppear {
-                            proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
+                            proxy.scrollTo(getMessages()?.last?.messageID, anchor: .bottom)
                             
 //                            Task() {
 //                                try? await chatState.fetchImages()
@@ -91,14 +91,14 @@ struct MessageScrollView: View {
                                 if scrollOnUnfocus {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                         withAnimation(scrollAnimation) {
-                                            proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
+                                            proxy.scrollTo(getMessages()?.last?.messageID, anchor: .bottom)
                                         }
                                     }
                                 }
                             } else if height > 0 {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     withAnimation(scrollAnimation) {
-                                        proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
+                                        proxy.scrollTo(getMessages()?.last?.messageID, anchor: .bottom)
                                     }
                                 }
                             }
@@ -106,11 +106,11 @@ struct MessageScrollView: View {
                         .onChange(of: scrollviewHeight, perform: { scrollviewSize in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 withAnimation(scrollAnimation) {
-                                    proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
+                                    proxy.scrollTo(getMessages()?.last?.messageID, anchor: .bottom)
                                 }
                             }
                         })
-                        .onChange(of: messages, perform: { messages in
+                        .onChange(of: getMessages(), perform: { messages in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 withAnimation(scrollAnimation) {
                                     proxy.scrollTo(messages?.last?.messageID, anchor: .bottom)
@@ -125,21 +125,11 @@ struct MessageScrollView: View {
                 keyboardHeight = height
             })
         }
-        .onAppear() {
-            if let messages = messageDC.channelMessages[chatState.currChannel.channelID] {
-                self.messages = messages.reversed()
-            }
-        }
-        .onChange(of: messageDC.channelMessages[chatState.currChannel.channelID], perform: { messages in
-            withAnimation(.easeInOut(duration: 0.3)) {
-                self.messages = messages?.reversed()
-            }
-        })
     }
     
     @ViewBuilder
     var containers: some View {
-        if let messages = messages {
+        if let messages = getMessages() {
             ForEach(messages, id: \.messageID) { message in
                 
                 if showDateHeaders {
@@ -168,6 +158,14 @@ struct MessageScrollView: View {
                 .id(message.messageID)
                 .padding(.bottom, messages.last?.messageID == message.messageID ? 5 : 0)
             }
+        }
+    }
+    
+    func getMessages() -> [SMessage]? {
+        if let messages = messageDC.channelMessages[chatState.currChannel.channelID]?.reversed() {
+            return Array(messages)
+        } else {
+            return nil
         }
     }
     

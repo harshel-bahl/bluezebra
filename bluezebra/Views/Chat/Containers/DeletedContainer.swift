@@ -31,7 +31,7 @@ struct DeletedContainer: View {
     let outerPadding: EdgeInsets
     
     init(message: SMessage,
-         deletedReceiptIcon: String = "xmark.bin.circle",
+         deletedReceiptIcon: String = "trash.circle",
          completedDeletionIcon: String = "checkmark.circle",
          receiptSize: CGSize = .init(width: 30, height: 30),
          receiptColour: Color = .white,

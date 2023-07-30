@@ -250,7 +250,9 @@ extension MessageDC {
         if let messages = self.channelMessages[channelID],
            let index = messages.firstIndex(where: { $0.messageID == message.messageID }) {
             DispatchQueue.main.async {
+                withAnimation(.easeOut(duration: 0.75)) {
                     self.channelMessages[channelID]?[index] = SMessage
+                }
             }
         }
         

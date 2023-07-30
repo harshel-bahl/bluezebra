@@ -54,7 +54,7 @@ struct ChannelsList: View {
         }
                        .sheetModifier(isPresented: $showDeletionLog,
                                       BG: Color("background3")) {
-                           DeletionLog(channelType: "user")
+                           DeletionLog(channelType: "personal")
                        }
     }
     

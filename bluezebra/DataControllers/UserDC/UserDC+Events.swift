@@ -27,12 +27,12 @@ extension UserDC {
                 self.socketCallback(data: data,
                                     functionName: "checkUsername",
                                     failureCompletion: completion) { data in
-                    guard let data = data as? Bool else {
+                    guard let result = data as? Bool else {
                         completion(.failure(.typecastError))
                         return
                     }
                     
-                    completion(.success(data))
+                    completion(.success(result))
                 }
             }
     }
