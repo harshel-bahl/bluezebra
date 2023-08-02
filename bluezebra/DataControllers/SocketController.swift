@@ -68,8 +68,13 @@ class SocketController: NSObject, ObservableObject {
     
     func userConnection() {
         if self.connected && !UserDC.shared.userOnline && UserDC.shared.userData != nil {
-            UserDC.shared.connectUser() {_ in
-                self.startupNetworking()
+            Task {
+                do {
+                    try await UserDC.shared.connectUser()
+                    self.startupNetworking()
+                } catch {
+                    
+                }
             }
         }
     }

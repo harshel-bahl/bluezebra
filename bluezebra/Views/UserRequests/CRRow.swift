@@ -63,10 +63,10 @@ struct CRRow: View {
                    size: .init(width: 25, height: 25),
                    colour: Color("accent1"),
         buttonAction: {
-            channelDC.sendCRResult(CR: self.CR,
-                                   result: result) { result in
-                
-            }
+//            channelDC.sendCRResult(CR: self.CR,
+//                                   result: result) { result in
+//                
+//            }
         })
     }
 }

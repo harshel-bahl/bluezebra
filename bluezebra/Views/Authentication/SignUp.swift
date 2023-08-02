@@ -13,6 +13,7 @@ struct SignUp: View {
     @EnvironmentObject var SP: ScreenProperties
     
     @ObservedObject var userDC = UserDC.shared
+    @ObservedObject var channelDC = ChannelDC.shared
     
     @State var selectedEmoji: Emoji?
     @State var  showEmojiPicker = false
@@ -256,13 +257,15 @@ struct SignUp: View {
                           replaceStartingOnCommit: true,
                           debouncedAction: { username in
             
-            userDC.checkUsername(username: username) { result in
-                switch result {
-                case .success(let result):
+            Task {
+                do {
+                    let result = try await userDC.checkUsername(username: username)
+                    
                     withAnimation(.easeInOut(duration: 0.25)) {
                         self.checkedUsername = result
                     }
-                case .failure(_): break
+                } catch {
+                    
                 }
             }
         },
@@ -364,20 +367,22 @@ struct SignUp: View {
                           BGColour: Color("accent1"),
                           padding: 17.5,
                           action: {
-                    userDC.createUser(username: self.username,
-                                      pin: pin,
-                                      avatar: selectedEmoji!.name) { result in
-                        
-                        createdUser = true
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now()+2.75) {
-                            switch result {
-                            case .success(let userData):
+                    
+                    Task {
+                        do {
+                            let (userData, userSettings, personalChannel) = try await userDC.createUser(username: self.username,
+                                                                                                        pin: pin,
+                                                                                                        avatar: selectedEmoji!.name)
+                            self.createdUser = true
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now()+2.75) {
                                 userDC.userData = userData
+                                userDC.userSettings = userSettings
+                                channelDC.personalChannel = personalChannel
                                 userDC.loggedIn = true
-                            case .failure(_):
-                                self.failure = true
                             }
+                        } catch {
+                            self.failure = true
                         }
                     }
                 })

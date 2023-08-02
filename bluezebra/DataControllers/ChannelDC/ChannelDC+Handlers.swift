@@ -62,43 +62,54 @@ extension ChannelDC {
     func receivedCR() {
         SocketController.shared.clientSocket.on("receivedCR") { [weak self] (data, ack) in
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCR: triggered")
-            
-            guard let self = self,
-                  let data = data.first else { return }
-            
-            Task {
-                do {
-                    
-                    guard let packet = try? self.jsonDecodeFromData(packet: CRPacket.self,
-                                                                    data: data) else { throw DCError.jsonError }
-                    
-                    let channelPacket = packet.channel
-                    let RUPacket = packet.remoteUser
-                    
-                    guard let date = DateU.shared.dateFromString(packet.date),
-                          let creationDate = DateU.shared.dateFromString(RUPacket.creationDate) else { return }
-                    
-                    let SCR = try await DataPC.shared.createChannelRequest(channelID: channelPacket.channelID,
-                                                                         userID: RUPacket.userID,
-                                                                         date: date,
-                                                                         isSender: false)
-                    self.syncCR(CR: SCR)
-                    
-                    let SRU = try? await DataPC.shared.createRemoteUser(userID: RUPacket.userID,
-                                                                        username: RUPacket.username,
-                                                                        avatar: RUPacket.avatar,
-                                                                        creationDate: creationDate)
-                    if let SRU = SRU { self.syncRU(RU: SRU) }
-                    
-                    let sChannel = try await DataPC.shared.createChannel(channelID: channelPacket.channelID,
-                                                                         userID: RUPacket.userID,
-                                                                         creationDate: date)
-                    try await self.syncChannels()
-                    
-                    ack.with(true)
-                } catch {
-                    ack.with(false)
+            do {
+                guard let self = self,
+                      let data = data.first else { throw DCError.nilError }
+                
+                guard let packet = try? DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
+                                                                        data: data) else { throw DCError.jsonError }
+                
+                let channelPacket = packet.channel
+                let RUPacket = packet.remoteUser
+                
+                guard let date = DateU.shared.dateFromString(packet.date),
+                      let creationDate = DateU.shared.dateFromString(RUPacket.creationDate) else { throw DCError.typecastError }
+                
+                Task {
+                    do {
+                        let SCR = try await DataPC.shared.createCR(channelID: channelPacket.channelID,
+                                                                   userID: RUPacket.userID,
+                                                                   date: date,
+                                                                   isSender: false)
+                        
+                        let SRU = try? await DataPC.shared.createRU(userID: RUPacket.userID,
+                                                                    username: RUPacket.username,
+                                                                    avatar: RUPacket.avatar,
+                                                                    creationDate: creationDate)
+                        
+                        let _ = try await DataPC.shared.createChannel(channelID: channelPacket.channelID,
+                                                                             userID: RUPacket.userID,
+                                                                             creationDate: date)
+                        
+                        self.syncCR(CR: SCR)
+                        if let SRU = SRU { self.syncRU(RU: SRU) }
+                        ack.with(NSNull())
+                    } catch {
+                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: ChannelRequest.self,
+                                                                     predicateProperty: "channelID",
+                                                                     predicateValue: channelPacket.channelID)
+                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: Channel.self,
+                                                                     predicateProperty: "channelID",
+                                                                     predicateValue: channelPacket.channelID)
+                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: RemoteUser.self,
+                                                                     predicateProperty: "userID",
+                                                                     predicateValue: RUPacket.userID)
+                        ack.with(false)
+                    }
                 }
+            } catch {
+                print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCR: FAILED \(error)")
+                ack.with(false)
             }
         }
     }
@@ -164,7 +175,7 @@ extension ChannelDC {
             
             guard let self = self,
                   let data = data.first,
-                  let CDPacket = try? self.jsonDecodeFromData(packet: CDPacket.self,
+                  let CDPacket = try? DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
                                                               data: data),
                   let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
             

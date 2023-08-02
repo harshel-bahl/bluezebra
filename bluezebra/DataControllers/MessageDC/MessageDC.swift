@@ -37,8 +37,6 @@ class MessageDC: ObservableObject {
                     } else {
                         completion(nil)
                     }
-                } else if (data.first as? Bool)==false {
-                    throw DCError.serverFailure
                 } else if let result = data.first as? String, result==SocketAckStatus.noAck {
                     throw DCError.timeOut
                 } else {
@@ -59,6 +57,8 @@ class MessageDC: ObservableObject {
         DispatchQueue.main.async {
             self.channelMessages = [String: [SMessage]]()
             self.unreadChannels = nil
+            
+            print("CLIENT \(DateU.shared.logTS) -- MessageDC.resetState: SUCCESS")
         }
     }
 }

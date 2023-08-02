@@ -12,6 +12,9 @@ struct AccountTab: View {
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     
+    @State var resetFailure = false
+    @State var deletionFailure = false
+    
     var body: some View {
         VStack {
             
@@ -29,21 +32,32 @@ struct AccountTab: View {
                 Spacer()
             }
             
-//            ButtonTemp(label: "Reset Accout",
-//                       backgroundColour: Color.orange,
-//                       foregroundColour: Color("text1")) {
-//                Task {
-//                    try? await userDC.resetUserData()
-//                }
-//            }
-//
+            
+            ButtonAni(label: "Reset Account",
+                      fontSize: 18,
+                      foregroundColour: Color.white,
+                      BGColour: Color.red,
+                      action: {
+                Task {
+                    do {
+                        try await userDC.resetUserData()
+                    } catch {
+                        resetFailure = true
+                    }
+                }
+            })
+
             ButtonAni(label: "Delete Account",
                       fontSize: 18,
                       foregroundColour: Color.white,
                       BGColour: Color.red,
                       action: {
                 Task {
-                    try? await userDC.hardReset()
+                    do {
+                        try await userDC.deleteUser()
+                    } catch {
+                        deletionFailure = true
+                    }
                 }
             })
         }

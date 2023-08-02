@@ -14,11 +14,7 @@ struct ProfileHome: View {
     
     @EnvironmentObject var SP: ScreenProperties
     
-    @State var selectedEmoji: Emoji?
-    @State var displayEmojiPicker = false
-    
     var profileTabs: [String] = ["Account",
-                                 "Chats",
                                  "Authentication",
                                  "Encryption",
                                  "Notifications",
@@ -26,99 +22,214 @@ struct ProfileHome: View {
     
     var body: some View {
         
-        GeometryReader { geometry in
-            ZStack {
-                
-                Color("background1")
-                
+        VStack(spacing: 0) {
+            
+            banner
+                .edgePadding(top: 10,
+                             bottom: 10,
+                             leading: 20,
+                             trailing: 20)
+            
+            Divider()
+            
+            ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 0) {
                     
-                    banner
-                        .padding(.leading, SP.screenWidth*0.05)
-                        .padding(.trailing, SP.screenWidth*0.05)
-                        .padding(.bottom, 10)
-                        .padding(.top, 12.5)
+                    HStack(spacing: 0) {
+                        
+                        Spacer()
+                        
+                        EmojiIcon(avatar: userDC.userData!.avatar,
+                                  size: .init(width: 90, height: 90),
+                                  emojis: BZEmojiProvider1.shared.getAll())
+                        
+                        Spacer()
+                    }
+                    .edgePadding(bottom: 15)
+                    
+                    FixedText(text: "@" + userDC.userData!.username,
+                              colour: Color("accent1"),
+                              fontSize: 22.5,
+                              fontWeight: .bold)
+                    .edgePadding(bottom: 25)
+                    
+                    HStack(spacing: 0) {
+                        FixedText(text: "Status: ",
+                                  colour: Color("text2"),
+                                  fontSize: 15)
+                        .edgePadding(trailing: 5)
+                        
+                        if userDC.userOnline {
+                            PulsatingCircle(size: .init(width: 9, height: 9),
+                                            colour: Color.green,
+                                            scaleRatio: 0.75,
+                                            animationSpeed: 1.25,
+                                            text: "connected",
+                                            textColour: Color("text2"),
+                                            fontSize: 15,
+                                            padding: 5)
+                        } else {
+                            PulsatingCircle(size: .init(width: 8, height: 8),
+                                            colour: Color.red,
+                                            scaleRatio: 0.75,
+                                            animationSpeed: 1.25,
+                                            text: "connected",
+                                            textColour: Color("text2"),
+                                            fontSize: 15,
+                                            padding: 5)
+                        }
+                        
+                        Spacer()
+                    }
+                    .edgePadding(bottom: 12.5,
+                                 leading: 15)
+                    
+                    HStack(spacing: 0) {
+                        FixedText(text: "Last Online: ",
+                                  colour: Color("text2"),
+                                  fontSize: 15)
+                        .edgePadding(trailing: 5)
+                        
+                        if let lastOnline = userDC.userData!.lastOnline {
+                            DateTimeLong(date: lastOnline,
+                                         fontSize: 15,
+                                         colour: Color("text2"))
+                        } else {
+                            FixedText(text: "-",
+                                      colour: Color("text2"),
+                                      fontSize: 15)
+                        }
+                        
+                        Spacer()
+                    }
+                    .edgePadding(bottom: 17.5,
+                                 leading: 15)
                     
                     Divider()
                     
-                    ScrollView {
+                    NavigationLink(destination: {
+                        receiveProfileTab(tab: "Account")
+                    }, label: {
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
-                                
-                                avatarButton
-                                    .padding(.trailing, 22.5)
-                                
-                                if let username = userDC.userData?.username {
-                                    Text("@" + username)
-                                        .font(.title2)
-                                        .foregroundColor(Color("blueAccent1"))
-                                }
+                                FixedText(text: "Account",
+                                          colour: Color("text1"),
+                                          fontSize: 17)
                                 
                                 Spacer()
+                                
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 12.5, height: 12.5),
+                                           colour: Color("accent1"))
                             }
-                            .padding(.bottom, SP.safeAreaHeight*0.033)
+                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
                             
-                            HStack(spacing: 0) {
-                                
-                                
-                                Text("Last Online: ")
-                                    .font(.subheadline)
-                                    .fontWeight(.regular)
-                                    .foregroundColor(Color("text2"))
-                                
-                                if let lastOnline = userDC.userData?.lastOnline {
-//                                    DateTimeLabel(date: lastOnline,
-//                                                  font: .subheadline,
-//                                                  colour: Color("text2"),
-//                                                  mode: 1)
-                                } else {
-                                    Text("-")
-                                        .font(.subheadline)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(Color("text2"))
-                                }
-                                
-                                Spacer()
-                            }
-                            .padding(.bottom, SP.safeAreaHeight*0.02)
                             
                             Divider()
-                            
-                            ForEach(profileTabs, id: \.self) { tab in
-                                
-                                NavigationLink(destination: {
-                                    receiveProfileTab(tab: tab)
-                                }, label: {
-                                    VStack(spacing: 0) {
-                                        HStack(spacing: 0) {
-                                            Text(tab)
-                                                .font(.headline)
-                                                .foregroundColor(Color("text1"))
-                                            
-                                            Spacer()
-                                            
-                                            Image(systemName: "chevron.right")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 10, height: 10)
-                                        }
-                                        
-                                        .padding()
-                                        
-                                        Divider()
-                                    }
-                                })
-                            }
                         }
-                        .padding(.horizontal, SP.screenWidth*0.075)
-                        .padding(.vertical, SP.safeAreaHeight*0.025)
-                        .background(Color("background3"))
-                        .cornerRadius(10)
-                        .padding(.horizontal, SP.screenWidth*0.05)
-                        .padding(.top, SP.safeAreaHeight*0.025)
-                    }
+                    })
+                    
+                    NavigationLink(destination: {
+                        receiveProfileTab(tab: "Authentication")
+                    }, label: {
+                        VStack(spacing: 0) {
+                            HStack(spacing: 0) {
+                                FixedText(text: "Authentication",
+                                          colour: Color("text1"),
+                                          fontSize: 17)
+                                
+                                Spacer()
+                                
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 12.5, height: 12.5),
+                                           colour: Color("accent1"))
+                            }
+                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
+                            
+                            
+                            Divider()
+                        }
+                    })
+                    
+                    NavigationLink(destination: {
+                        receiveProfileTab(tab: "Encryption")
+                    }, label: {
+                        VStack(spacing: 0) {
+                            HStack(spacing: 0) {
+                                FixedText(text: "Encryption",
+                                          colour: Color("text1"),
+                                          fontSize: 17)
+                                
+                                Spacer()
+                                
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 12.5, height: 12.5),
+                                           colour: Color("accent1"))
+                            }
+                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
+                            
+                            
+                            Divider()
+                        }
+                    })
+                    
+                    NavigationLink(destination: {
+                        receiveProfileTab(tab: "Notifications")
+                    }, label: {
+                        VStack(spacing: 0) {
+                            HStack(spacing: 0) {
+                                FixedText(text: "Notifications",
+                                          colour: Color("text1"),
+                                          fontSize: 17)
+                                
+                                Spacer()
+                                
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 12.5, height: 12.5),
+                                           colour: Color("accent1"))
+                            }
+                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
+                            
+                            
+                            Divider()
+                        }
+                    })
+                    
+                    NavigationLink(destination: {
+                        receiveProfileTab(tab: "Privacy Policy")
+                    }, label: {
+                        VStack(spacing: 0) {
+                            HStack(spacing: 0) {
+                                FixedText(text: "Privacy Policy",
+                                          colour: Color("text1"),
+                                          fontSize: 17)
+                                
+                                Spacer()
+                                
+                                SystemIcon(systemName: "chevron.right",
+                                           size: .init(width: 12.5, height: 12.5),
+                                           colour: Color("accent1"))
+                            }
+                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
+                            
+                            
+                            Divider()
+                        }
+                    })
+                    
                 }
+                .edgePadding(top: 20,
+                             bottom: 20,
+                             leading: 20,
+                             trailing: 20)
+                .background(Color("background3"))
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .edgePadding(top: 20,
+                             bottom: 20,
+                             leading: 20,
+                             trailing: 20)
             }
+            .frame(maxHeight: .infinity)
         }
     }
     
@@ -127,36 +238,14 @@ struct ProfileHome: View {
             
             Spacer()
             
-            Text("Profile")
-                .font(.system(size: 16))
-                .fontWeight(.bold)
-                .foregroundColor(Color("text1"))
-                .offset(x: -2.5)
+            FixedText(text: "Profile",
+                      colour: Color("text1"),
+                      fontSize: 16,
+                      fontWeight: .bold)
             
             Spacer()
         }
         .frame(height: 25)
-    }
-    
-    var avatarButton: some View {
-        Text("")
-//        if let avatar = userDC.userData?.avatar,
-//           let emoji = BZEmojiProvider1.shared.getEmojiByName(name: avatar) {
-//            return AnyView(Text(emoji.value)
-//                .font(.system(size: SP.safeAreaHeight*0.06))
-//                .frame(width: SP.safeAreaHeight*0.06,
-//                       height: SP.safeAreaHeight*0.06)
-//                .onTapGesture {
-//                    // navigate to user profile
-//                })
-//        } else {
-//            return AnyView(Image(systemName: "person.crop.circle.fill")
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .frame(width: SP.safeAreaHeight*0.06,
-//                       height: SP.safeAreaHeight*0.06)
-//                .foregroundColor(Color("blueAccent1")))
-//        }
     }
     
     func receiveProfileTab(tab: String) -> some View {
@@ -165,8 +254,6 @@ struct ProfileHome: View {
         switch(tab) {
         case "Account":
             view = AnyView(AccountTab())
-        case "Chats":
-            view = AnyView(ChatsTab())
         case "Authentication":
             view = AnyView(AuthenticationTab())
         case "Encryption":

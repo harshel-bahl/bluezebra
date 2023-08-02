@@ -25,7 +25,6 @@
 		345EEF5929F4682800861DB9 /* MessagePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5829F4682800861DB9 /* MessagePacket.swift */; };
 		3463275D29935C3D00FACB50 /* ChannelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463275C29935C3D00FACB50 /* ChannelView.swift */; };
 		34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632762299B7CCA00FACB50 /* NotificationsTab.swift */; };
-		34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632764299B7CD600FACB50 /* ChatsTab.swift */; };
 		346879CB298858AF002F3B5E /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 346879CA298858AF002F3B5E /* SocketIO */; };
 		346879CD2988596B002F3B5E /* SocketController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346879CC2988596B002F3B5E /* SocketController.swift */; };
 		346C302D29EACFBF0075107E /* DataPC+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C302C29EACFBF0075107E /* DataPC+Create.swift */; };
@@ -159,7 +158,6 @@
 		345EEF5829F4682800861DB9 /* MessagePacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePacket.swift; sourceTree = "<group>"; };
 		3463275C29935C3D00FACB50 /* ChannelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelView.swift; sourceTree = "<group>"; };
 		34632762299B7CCA00FACB50 /* NotificationsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTab.swift; sourceTree = "<group>"; };
-		34632764299B7CD600FACB50 /* ChatsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsTab.swift; sourceTree = "<group>"; };
 		346879CC2988596B002F3B5E /* SocketController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketController.swift; sourceTree = "<group>"; };
 		346879CE29886F12002F3B5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		346C302C29EACFBF0075107E /* DataPC+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Create.swift"; sourceTree = "<group>"; };
@@ -379,7 +377,6 @@
 			isa = PBXGroup;
 			children = (
 				34790A33299ACA8F00D51854 /* AccountTab.swift */,
-				34632764299B7CD600FACB50 /* ChatsTab.swift */,
 				F065C6122A2E8D84007E1D9F /* AuthenticationTab.swift */,
 				F065C6142A2E8D9A007E1D9F /* EncryptionTab.swift */,
 				34632762299B7CCA00FACB50 /* NotificationsTab.swift */,
@@ -840,7 +837,6 @@
 				345EEF5729F4175B00861DB9 /* MessageDC+Events.swift in Sources */,
 				34C839F729CFE6110093C48B /* CRRow.swift in Sources */,
 				F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */,
-				34632765299B7CD600FACB50 /* ChatsTab.swift in Sources */,
 				F0AE43CD2A659AB300A1E181 /* ImageContainer.swift in Sources */,
 				F04AEC3D2A2CBE7500276FF4 /* TextFieldObserver.swift in Sources */,
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,

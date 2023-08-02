@@ -9,11 +9,15 @@ import Foundation
 
 enum DCError: Error {
     case failed
+    case serverError(message: String)
     case timeOut
-    case serverFailure
     case disconnected
     case typecastError
+    case nilError
     case jsonError
-    case persistenceError
     case imageDataFailure
+    case remoteDataNil
+    case multipleRemoteDataInstances
+    case invalidRequest
+    
 }

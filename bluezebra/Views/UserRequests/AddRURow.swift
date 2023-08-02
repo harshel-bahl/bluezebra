@@ -57,13 +57,14 @@ struct AddRURow: View {
                        size: .init(width: 25, height: 25),
                        colour: Color("accent1"),
                        buttonAction: {
-                channelDC.sendCR(remoteUser: RU) { result in
-                    switch result {
-                    case .success():
+                Task {
+                    do {
+                        try await channelDC.sendCR(RU: RU)
+                        
                         withAnimation() {
                             self.requestSent = true
                         }
-                    case .failure(_):
+                    } catch {
                         withAnimation {
                             self.requestFailure = true
                         }

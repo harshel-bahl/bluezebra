@@ -108,14 +108,14 @@ struct CRView: View {
                           replaceStartingOnCommit: true,
                           debouncedAction: { username in
             
-            channelDC.fetchRUs(username: username) { result in
-                switch result {
-                case .success(let packets):
-                    fetchedUsers = packets
-                case .failure(_): break
+            Task {
+                do {
+                    let RUPackets = try await channelDC.fetchRUs(username: username)
+                    self.fetchedUsers = RUPackets
+                } catch {
+                    
                 }
             }
-            
         },
                           debounceFor: 0.4)
         .focused($focusField, equals: "username")

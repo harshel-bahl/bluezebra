@@ -12,54 +12,50 @@ extension DataPC {
     
     /// Creation Persistence Functions
     /// Write operations on background thread
-    public func createUser(userID: String = UUID().uuidString,
+    public func createUser(userID: String,
                            username: String,
                            creationDate: Date,
                            pin: String,
                            avatar: String,
-                           lastOnline: Date? = nil,
-                           completion: @escaping (Result<SUser, PError>)->()) {
+                           lastOnline: Date? = nil) async throws -> SUser {
         
-        self.backgroundContext.perform {
-            let fetchRequest = NSFetchRequest<User>(entityName: "User")
-            
+        let checkMO = try await self.fetchMOAsync(entity: User.self,
+                                                  allowNil: true)
+        
+        if checkMO != nil { throw PError.recordExists }
+        
+        let SMO = try await self.backgroundContext.perform {
             do {
-                let MOs = try self.backgroundContext.fetch(fetchRequest)
+                let MO = User(context: self.backgroundContext)
+                MO.userID = userID
+                MO.username = username
+                MO.creationDate = creationDate
+                MO.pin = pin
+                MO.avatar = avatar
+                MO.lastOnline = lastOnline
                 
-                if (MOs.isEmpty==true) {
-                    
-                    let MO = User(context: self.backgroundContext)
-                    MO.userID = userID
-                    MO.username = username
-                    MO.creationDate = creationDate
-                    MO.pin = pin
-                    MO.avatar = avatar
-                    MO.lastOnline = lastOnline
-
-                    try self.backgroundSave()
-                    print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: SUCCESS")
-                    
-                    let sMO = try MO.safeObject()
-                    
-                    DispatchQueue.main.async {
-                        completion(.success(sMO))
-                    }
-                } else {
-                    throw PError.recordExists
-                }
+                try self.backgroundSave()
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: SUCCESS")
+                
+                let SMO = try MO.safeObject()
+                
+                return SMO
             } catch {
                 print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: FAILED (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
+                throw error as? PError ?? .failed
             }
         }
+        return SMO
     }
     
-    public func createSettings(biometricSetup: Bool,
-                               completion: @escaping (Result<SSettings, PError>)->()) {
-        self.backgroundContext.perform {
+    public func createSettings(biometricSetup: Bool = false) async throws -> SSettings {
+        
+        let checkMO = try await self.fetchMOAsync(entity: Settings.self,
+                                                  allowNil: true)
+        
+        if checkMO != nil { throw PError.recordExists }
+        
+        let SMO = try await self.backgroundContext.perform {
             do {
                 let MO = Settings(context: self.backgroundContext)
                 MO.biometricSetup = biometricSetup
@@ -67,32 +63,28 @@ extension DataPC {
                 try self.backgroundSave()
                 print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: SUCCESS")
                 
-                let sMO = try MO.safeObject()
+                let SMO = try MO.safeObject()
                 
-                DispatchQueue.main.async {
-                    completion(.success(sMO))
-                }
+                return SMO
             } catch {
                 print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: FAILED (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
+                throw error as? PError ?? .failed
             }
         }
+        return SMO
     }
     
-    public func createRemoteUser(userID: String,
+    public func createRU(userID: String,
                                  username: String,
                                  avatar: String,
                                  creationDate: Date,
                                  lastOnline: Date? = nil,
                                  blocked: Bool = false) async throws -> SRemoteUser {
         
-        let fetchedMO = try? await fetchMOAsync(entity: RemoteUser.self,
+        let fetchedMO = try await fetchMOAsync(entity: RemoteUser.self,
                                                 predicateProperty: "userID",
                                                 predicateValue: userID,
-                                                silentFail: true)
+                                                allowNil: true)
         
         if fetchedMO != nil { throw PError.recordExists}
         
@@ -108,13 +100,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRemoteUser: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRU: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRemoteUser: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRU: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -168,16 +160,15 @@ extension DataPC {
 //        return sMO
 //    }
     
-    public func createChannelRequest(channelID: String = UUID().uuidString,
-                                     userID: String,
-                                     date: Date,
-                                     isSender: Bool) async throws -> SChannelRequest {
+    public func createCR(channelID: String = UUID().uuidString,
+                         userID: String,
+                         date: Date,
+                         isSender: Bool) async throws -> SChannelRequest {
         
-        let customPredicate = NSPredicate(format: "userID == %@", userID)
-        
-        let fetchedMO = try? await fetchMOAsync(entity: ChannelRequest.self,
-                                                customPredicate: customPredicate,
-                                                silentFail: true)
+        let fetchedMO = try await fetchMOAsync(entity: ChannelRequest.self,
+                                               predicateProperty: "userID",
+                                               predicateValue: userID,
+                                               allowNil: true)
         
         if fetchedMO != nil { throw PError.recordExists }
         
@@ -191,13 +182,13 @@ extension DataPC {
                 
                 try self.backgroundSave()
                 
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelRequest: SUCCESS")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCR: SUCCESS")
                 
                 let sMO = try MO.safeObject()
                 
                 return sMO
             } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelRequest: FAILED (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCR: FAILED (\(error))")
                 throw error as? PError ?? .failed
             }
         }
@@ -212,9 +203,9 @@ extension DataPC {
         
         let customPredicate = NSPredicate(format: "userID == %@", userID)
         
-        let fetchedMO = try? await fetchMOAsync(entity: Channel.self,
+        let fetchedMO = try await fetchMOAsync(entity: Channel.self,
                                                 customPredicate: customPredicate,
-                                                silentFail: true)
+                                                allowNil: true)
         
         if fetchedMO != nil { throw PError.recordExists }
         
@@ -299,10 +290,10 @@ extension DataPC {
                               localDeleted: Bool = false,
                               remoteDeleted: [String]? = nil) async throws -> SMessage {
         
-        let fetchedMO = try? await fetchMOAsync(entity: Message.self,
+        let fetchedMO = try await fetchMOAsync(entity: Message.self,
                                                 predicateProperty: "messageID",
                                                 predicateValue: messageID,
-                                                silentFail: true)
+                                                allowNil: true)
         
         if fetchedMO != nil { throw PError.recordExists}
         

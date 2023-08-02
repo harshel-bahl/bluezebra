@@ -255,10 +255,10 @@ struct InputContainer: View {
             let SMessage = try await messageDC.createTextMessage(channelID: chatState.currChannel.channelID,
                                                                  userID: chatState.currChannel.userID,
                                                                  message: self.message)
-            
+
             messageDC.addMessage(channelID: chatState.currChannel.channelID,
                                  message: SMessage)
-            
+
             self.message.removeAll()
             
         } else if let selectedImages = selectedImages {

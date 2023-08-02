@@ -21,11 +21,13 @@ extension DataPC {
                                           predicateProperty: String? = nil,
                                           predicateValue: T2? = "",
                                           customPredicate: NSPredicate? = nil,
-                                          silentFail: Bool = false) async throws -> T1 {
-        var contextQueue = self.backgroundContext
+                                          allowNil: Bool = false) async throws -> T1? {
+        let contextQueue: NSManagedObjectContext
         
         if queue=="main" {
             contextQueue = self.mainContext
+        } else {
+            contextQueue = self.backgroundContext
         }
         
         let entityName = String(describing: entity)
@@ -45,15 +47,24 @@ extension DataPC {
             }
             
             if MOs.count > 1 { throw PError.multipleRecords }
-            guard let MO = MOs.first else { throw PError.noRecordExists }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: SUCCESS (entity: \(entityName))")
+            let MO: T1?
+            
+            if !allowNil {
+                guard let firstMO = MOs.first else { throw PError.noRecordExists }
+                MO = firstMO
+            } else {
+                MO = MOs.first
+            }
+            
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOAsync: SUCCESS (entity: \(entityName))")
             
             return MO
         } catch {
-            if !silentFail {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+            if !allowNil {
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOAsync: FAILED (entity: \(entityName)) (\(error))")
             }
+            
             throw PError.failed
         }
     }
@@ -102,12 +113,12 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: SUCCESS (entity: \(entityName))")
+            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOsAsync: SUCCESS (entity: \(entityName))")
             
             return MOs
         } catch {
             if !silentFail {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMO: FAILED (entity: \(entityName)) (\(error))")
+                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOsAsync: FAILED (entity: \(entityName)) (\(error))")
             }
             throw PError.failed
         }
@@ -146,11 +157,11 @@ extension DataPC {
             if MOs.count > 1 { throw PError.multipleRecords }
             guard let MO = MOs.first else { throw PError.noRecordExists }
             
+            let SMO = try MO.safeObject()
+            
             print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: SUCCESS (entity: \(entityName))")
             
-            let sMO = try MO.safeObject()
-            
-            return sMO
+            return SMO
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: FAILED (entity: \(entityName)) (\(error))")
             throw PError.failed
@@ -189,7 +200,7 @@ extension DataPC {
         }
         
         if let fetchLimit = fetchLimit {
-            fetchRequest.fetchLimit=fetchLimit
+            fetchRequest.fetchLimit = fetchLimit
         }
         
         if let sortKey = sortKey {
@@ -203,11 +214,11 @@ extension DataPC {
             
             print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
             
-            let sMOs = try MOs.map {
+            let SMOs = try MOs.map {
                 return try $0.safeObject()
             }
             
-            return sMOs
+            return SMOs
         } catch {
             print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: FAILED (entity: \(entityName)) (\(error))")
             throw PError.failed

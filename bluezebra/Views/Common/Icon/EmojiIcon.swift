@@ -15,12 +15,12 @@ struct EmojiIcon: View {
     
     let emojis: [Emoji]
     
-    let buttonAction: ((String)->())?
+    let buttonAction: ((String)->Void)?
     
     init(avatar: String,
          size: CGSize,
          emojis: [Emoji],
-         buttonAction: @escaping (String) -> ()) {
+         buttonAction: ((String) -> Void)? = nil) {
         self.avatar = avatar
         self.size = size
         self.emojis = emojis

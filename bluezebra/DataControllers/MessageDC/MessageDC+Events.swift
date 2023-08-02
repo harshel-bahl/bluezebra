@@ -31,7 +31,7 @@ extension MessageDC {
                                           date: DateU.shared.currSDT,
                                           message: message)
         
-        guard let jsonPacket = try? DataU.shared.jsonEncode(messagePacket),
+        guard let jsonPacket = try? DataU.shared.jsonEncode(data: messagePacket),
               let date = DateU.shared.dateFromString(messagePacket.date) else { return }
         
         SocketController.shared.clientSocket.emitWithAck("sendMessage", ["userID": remoteUserID,

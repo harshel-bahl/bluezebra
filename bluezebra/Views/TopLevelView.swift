@@ -101,7 +101,7 @@ struct TopLevelView: View {
     func prepareShutdown() {
         if userDC.userOnline {
             Task {
-                await userDC.disconnectUser()
+                try await userDC.disconnectUser()
             }
         }
     }

@@ -91,6 +91,7 @@ struct ChannelsList: View {
                 showCRView.toggle()
             })
         }
+        .frame(height: 25)
     }
     
     func channelList() -> [SChannel] {

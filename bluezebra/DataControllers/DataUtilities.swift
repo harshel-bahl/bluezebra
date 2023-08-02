@@ -13,14 +13,7 @@ class DataU {
     
     static let shared = DataU()
     
-    let jsonEncode = { (data: Codable) throws -> Data in
-        let jsonEncoder = JSONEncoder()
-        let data = try jsonEncoder.encode(data)
-        return data
-       
-    }
-    
-    let jsonDecode = { (data: Codable) throws -> Data in
+    func jsonEncode(data: Codable) throws -> Data {
         let jsonEncoder = JSONEncoder()
         let data = try jsonEncoder.encode(data)
         return data

@@ -77,8 +77,6 @@ class ChannelDC: ObservableObject {
                 } else {
                     completion(nil)
                 }
-            } else if (data.first as? Bool)==false {
-                throw DCError.serverFailure
             } else if let result = data.first as? String, result==SocketAckStatus.noAck {
                 throw DCError.timeOut
             } else {
@@ -93,21 +91,6 @@ class ChannelDC: ObservableObject {
         }
     }
     
-    func jsonDecodeFromObject<T: Codable>(packet: T.Type,
-                                          data: Any) throws -> T {
-        guard let data = try? JSONSerialization.data(withJSONObject: data as Any, options: []) else { throw DCError.typecastError }
-        let dataPacket = try JSONDecoder().decode(T.self, from: data)
-        return dataPacket
-    }
-    
-    func jsonDecodeFromData<T: Codable>(packet: T.Type,
-                                        data: Any) throws -> T {
-        
-        guard let data = data as? Data else { throw DCError.typecastError }
-        let dataPacket = try JSONDecoder().decode(T.self, from: data)
-        return dataPacket
-    }
-    
     /// ChannelDC reset function
     ///
     func resetState() {
@@ -120,6 +103,8 @@ class ChannelDC: ObservableObject {
             
             self.CRs = [SChannelRequest]()
             self.CDs = [SChannelDeletion]()
+            
+            print("CLIENT \(DateU.shared.logTS) -- ChannelDC.resetState: SUCCESS")
         }
     }
 }

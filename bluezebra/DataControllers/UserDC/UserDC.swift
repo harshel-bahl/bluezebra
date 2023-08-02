@@ -30,41 +30,16 @@ class UserDC: ObservableObject {
         self.addSocketHandlers()
     }
     
-    func socketCallback<T>(data: [Any],
-                           functionName: String,
-                           failureCompletion: @escaping (Result<T, DCError>)->(),
-                           completion: @escaping (Any?)->()) {
-        DispatchQueue.main.async {
-            do {
-                if (data.first as? Bool)==true {
-                    print("SERVER \(DateU.shared.logTS) -- UserDC.\(functionName): SUCCESS")
-                    
-                    if data.count > 1 {
-                        completion(data[1])
-                    } else {
-                        completion(nil)
-                    }
-                } else if (data.first as? Bool)==false {
-                    throw DCError.serverFailure
-                } else if let result = data.first as? String, result==SocketAckStatus.noAck {
-                    throw DCError.timeOut
-                } else {
-                    throw DCError.failed
-                }
-            } catch {
-                print("SERVER \(DateU.shared.logTS) -- UserDC.\(functionName): FAILED (\(error))")
-                failureCompletion(.failure(error as? DCError ?? .failed))
-            }
-        }
-    }
-    
     /// Reset User Data Controller Functions
     ///
     func resetState() {
         DispatchQueue.main.async {
             if self.userData != nil { self.userData = nil }
+            if self.userSettings != nil { self.userSettings = nil }
             if self.loggedIn != false { self.loggedIn = false }
             if self.userOnline != false { self.userOnline = false }
+            
+            print("CLIENT \(DateU.shared.logTS) -- UserDC.resetState: SUCCESS")
         }
     }
 }

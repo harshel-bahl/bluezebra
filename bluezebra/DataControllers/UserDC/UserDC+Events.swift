@@ -10,203 +10,217 @@ import SocketIO
 
 extension UserDC {
     
-    /// Server-Local Functions
-    ///
-    func checkUsername(username: String,
-                       completion: @escaping (Result<Bool, DCError>)->()) {
+    /// checkUsername
+    /// 
+    func checkUsername(username: String) async throws -> Bool {
+        
         guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.checkUsername: FAILED (disconnected)")
-            completion(.failure(.disconnected))
-            return
+            print("SERVER \(DateU.shared.logTS) -- UserDC.checkUsername: FAILED (disconnected)")
+            throw DCError.disconnected
         }
         
-        SocketController.shared.clientSocket.emitWithAck("checkUsername", username)
-            .timingOut(after: 1) { [weak self] data in
-                guard let self = self else { return }
-                
-                self.socketCallback(data: data,
-                                    functionName: "checkUsername",
-                                    failureCompletion: completion) { data in
-                    guard let result = data as? Bool else {
-                        completion(.failure(.typecastError))
-                        return
+        let result = try await withCheckedThrowingContinuation() { continuation in
+            SocketController.shared.clientSocket.emitWithAck("checkUsername", username)
+                .timingOut(after: 1) { data in
+                    do {
+                        if let queryStatus = data.first as? String,
+                           queryStatus == SocketAckStatus.noAck {
+                            throw DCError.timeOut
+                        } else if let queryStatus = data.first as? String {
+                            throw DCError.serverError(message: queryStatus)
+                        } else if let _ = data.first as? NSNull,
+                                  data.indices.contains(1),
+                                  let result = data[1] as? Bool {
+                            print("SERVER \(DateU.shared.logTS) -- UserDC.checkUsername: SUCCESS (username: \(username), result: \(result))")
+                            continuation.resume(returning: result)
+                        } else {
+                            throw DCError.failed
+                        }
+                    } catch {
+                        print("SERVER \(DateU.shared.logTS) -- UserDC.checkUsername: FAILED \(error)")
+                        continuation.resume(throwing: error)
                     }
-                    
-                    completion(.success(result))
                 }
-            }
+        }
+        
+        return result
     }
     
-    func createUser(username: String,
+    func createUser(userID: String = UUID().uuidString,
+                    username: String,
                     pin: String,
                     avatar: String,
-                    completion: @escaping (Result<SUser, DCError>)->()) {
+                    creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
         
         guard SocketController.shared.connected else {
             print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: FAILED (disconnected)")
-            completion(.failure(.disconnected))
-            return
+            throw DCError.disconnected
         }
         
-        let date = DateU.shared.currDT
-        let dateString = DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)
-        
-        let userPacket = UserPacket(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
-                                    avatar: avatar,
-                                    creationDate: dateString)
-        
-        guard let packet = try? DataU.shared.jsonEncode(userPacket) else {
-            print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: FAILED (jsonError)")
-            completion(.failure(.jsonError))
-            return
-        }
-        
-        SocketController.shared.clientSocket.emitWithAck("createUser", ["packet": packet])
-            .timingOut(after: 1, callback: { [weak self] data in
-                guard let self = self else { return }
+        do {
+            let userData = try await DataPC.shared.createUser(userID: userID,
+                                                              username: username.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                              creationDate: creationDate,
+                                                              pin: pin,
+                                                              avatar: avatar)
+            
+            let userSettings = try await DataPC.shared.createSettings()
+            
+            let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
+                                                                        active: true,
+                                                                        userID: userData.userID,
+                                                                        creationDate: creationDate)
+            
+            let packet = try DataU.shared.jsonEncode(data: UserPacket(userID: userData.userID,
+                                                                      username: userData.username,
+                                                                      avatar: userData.avatar,
+                                                                      creationDate: DateU.shared.stringFromDate(creationDate, TimeZone(identifier: "UTC")!)))
+            
+            try await withCheckedThrowingContinuation { continuation in
                 
-                self.socketCallback(data: data,
-                                    functionName: "createUser",
-                                    failureCompletion: completion) { _ in
-                    
-                    DataPC.shared.createUser(userID: userPacket.userID,
-                                             username: userPacket.username,
-                                             creationDate: date,
-                                             pin: pin,
-                                             avatar: userPacket.avatar) { result in
-                        switch result {
-                        case .success(let userData):
-                            DataPC.shared.createSettings(biometricSetup: false) { result in
-                                switch result {
-                                case .success(let userSettings):
-                                    DispatchQueue.main.async {
-                                        self.userSettings = userSettings
-                                        completion(.success(userData))
-                                    }
-                                case .failure(_): break
-                                }
+                SocketController.shared.clientSocket.emitWithAck("createUser", ["packet": packet])
+                    .timingOut(after: 1) { data in
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.timeOut
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverError(message: queryStatus)
+                            } else if let _ = data.first as? NSNull {
+                                print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: SUCCESS (username: \(username))")
+                                continuation.resume(returning: ())
+                            } else {
+                                throw DCError.failed
                             }
-                            
-                            Task {
-                                let personalChannel = try? await DataPC.shared.createChannel(channelID: "personal",
-                                                                                             active: true,
-                                                                                             userID: userPacket.userID,
-                                                                                             creationDate: date)
-                                DispatchQueue.main.async {
-                                    ChannelDC.shared.personalChannel = personalChannel
-                                }
-                            }
-                        case .failure(_):
-                            completion(.failure(.failed))
+                        } catch {
+                            print("SERVER \(DateU.shared.logTS) -- UserDC.createUser: FAILED \(error)")
+                            continuation.resume(throwing: error)
                         }
                     }
-                }
-            })
+            }
+            
+            return (userData, userSettings, personalChannel)
+        } catch {
+            try? await DataPC.shared.fetchDeleteMOAsync(entity: User.self)
+            try? await DataPC.shared.fetchDeleteMOAsync(entity: Settings.self)
+            try? await DataPC.shared.fetchDeleteMOsAsync(entity: Channel.self,
+                                                        predicateProperty: "channelID",
+                                                        predicateValue: "personal")
+            throw error
+        }
     }
     
-    /// deleteUser
-    /// "hard" represents deletion of all data on user-side, and all user-trace on remote users-side
-    func deleteUser(completion: @escaping (Result<Void, DCError>)->()) {
+    func deleteUser() async throws {
         
         guard SocketController.shared.connected else {
             print("SERVER \(DateU.shared.logTS) -- UserDC.deleteUser: FAILED (disconnected)")
-            completion(.failure(.disconnected))
-            return
+            throw DCError.disconnected
         }
         
-        // send deleteUserTrace notifications to all remote users connected to user
         let RUIDs = ChannelDC.shared.RUs.values.map {
             return $0.userID
         }
         
-        guard let userID = self.userData?.userID else { return }
+        guard let userID = self.userData?.userID else {
+            throw DCError.nilError
+        }
         
-        SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userIDs": RUIDs,
-                                                                        "userID": userID])
-        .timingOut(after: 1) { [weak self] data in
-            guard let self = self else { return }
+        let packet = try DataU.shared.jsonEncode(data: userID)
+        
+        try await withCheckedThrowingContinuation() { continuation in
             
-            self.socketCallback(data: data,
-                                functionName: "deleteUser",
-                                failureCompletion: completion) { _ in
-                
-                Task {
-                    do {
-                        try await self.hardReset()
-                        completion(.success(()))
-                    } catch {
-                        completion(.failure(.failed))
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    func connectUser(completion: @escaping (Result<Void, DCError>)->()) {
-        
-        guard SocketController.shared.connected else {
-            print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED (disconnected)")
-            completion(.failure(.disconnected))
-            return
-        }
-        
-        guard let userID = self.userData?.userID else { return }
-        
-        let userIDs = ChannelDC.shared.channels.map {
-            return $0.userID
-        }
-        
-        SocketController.shared.clientSocket.emitWithAck("connectUser", ["userIDs": userIDs,
-                                                                         "userID": userID])
-        .timingOut(after: 1, callback: { [weak self] data in
-            DispatchQueue.main.async {
+            SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userID": userID,
+                                                                            "RUIDs": RUIDs,
+                                                                            "packet": packet])
+            .timingOut(after: 1) { data in
                 do {
-                    if (data.first as? Bool)==true {
-                        print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: SUCCESS")
-                        self?.userOnline = true
-                        completion(.success(()))
-                    } else if (data.first as? Bool)==false {
-                        throw DCError.serverFailure
-                    } else if let result = data.first as? String, result==SocketAckStatus.noAck {
+                    if let queryStatus = data.first as? String,
+                       queryStatus == SocketAckStatus.noAck {
                         throw DCError.timeOut
+                    } else if let queryStatus = data.first as? String {
+                        throw DCError.serverError(message: queryStatus)
+                    } else if let _ = data.first as? NSNull {
+                        print("SERVER \(DateU.shared.logTS) -- UserDC.deleteUser: SUCCESS")
+                        continuation.resume(returning: ())
                     } else {
                         throw DCError.failed
                     }
                 } catch {
-                    print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED (\(error))")
-                    completion(.failure(error as? DCError ?? .failed))
+                    print("SERVER \(DateU.shared.logTS) -- UserDC.deleteUser: FAILED \(error)")
+                    continuation.resume(throwing: error)
                 }
             }
-        })
+        }
+        
+        try await self.hardReset()
     }
     
-    func disconnectUser() async {
+    func connectUser() async throws {
+        
+        guard SocketController.shared.connected else {
+            print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED (disconnected)")
+            throw DCError.disconnected
+        }
+        
+        guard let userID = self.userData?.userID else { throw DCError.nilError }
+        
+        let RUIDs = ChannelDC.shared.channels.map {
+            return $0.userID
+        }
+        
+        try await withCheckedThrowingContinuation() { continuation in
+            SocketController.shared.clientSocket.emitWithAck("connectUser", ["userID": userID,
+                                                                             "RUIDs": RUIDs])
+            .timingOut(after: 1, callback: { data in
+                do {
+                    if let queryStatus = data.first as? String,
+                       queryStatus == SocketAckStatus.noAck {
+                        throw DCError.timeOut
+                    } else if let queryStatus = data.first as? String {
+                        throw DCError.serverError(message: queryStatus)
+                    } else if let _ = data.first as? NSNull {
+                        print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: SUCCESS")
+                        continuation.resume(returning: ())
+                    } else {
+                        throw DCError.failed
+                    }
+                } catch {
+                    print("SERVER \(DateU.shared.logTS) -- UserDC.connectUser: FAILED \(error)")
+                    continuation.resume(throwing: error)
+                }
+            })
+        }
+        
+        DispatchQueue.main.async {
+            self.userOnline = true
+        }
+    }
+    
+    func disconnectUser() async throws {
         
         let date = DateU.shared.currDT
         let dateString = DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)
         
-        guard let userData = self.userData else { return }
-        let userID = userData.userID
+        guard let userID = self.userData?.userID else { throw DCError.nilError }
         
-        guard let sUser = try? await DataPC.shared.updateMO(entity: User.self,
-                                                            property: ["lastOnline"],
-                                                            value: [date]) else { return }
+        let SMO = try await DataPC.shared.updateMO(entity: User.self,
+                                                           property: ["lastOnline"],
+                                                           value: [date])
         DispatchQueue.main.async {
-            self.userData = sUser
+            self.userData = SMO
         }
         
         guard SocketController.shared.connected else {
             print("SERVER \(DateU.shared.logTS) -- UserDC.disconnectUser: FAILED (disconnected)")
-            return
+            throw DCError.disconnected
         }
         
-        let userIDs = ChannelDC.shared.channels.map {
+        let RUIDs = ChannelDC.shared.channels.map {
             return $0.userID
         }
         
-        SocketController.shared.clientSocket.emit("disconnectUser", ["userIDs": userIDs,
-                                                                     "userID": userID,
+        SocketController.shared.clientSocket.emit("disconnectUser", ["userID": userID,
+                                                                     "RUIDs": RUIDs,
                                                                      "lastOnline": dateString])
     }
 }
