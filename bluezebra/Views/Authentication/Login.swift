@@ -27,7 +27,7 @@ struct Login: View {
             
             SafeAreaScreen(BGColour: Color("background4")) {
                 
-                if userDC.userSettings?.biometricSetup==true && faceIDFailed == false {
+                if userDC.userSettings!.biometricSetup=="active" && faceIDFailed == false {
                     
                     faceID
                     

@@ -18,6 +18,7 @@ struct SubmitTextField: View {
     var font: Font
     var fontWeight: Font.Weight?
     
+    let textFieldStyle: String
     var axis: Axis?
     var border: Color?
     var submitLabel: SubmitLabel?
@@ -38,6 +39,7 @@ struct SubmitTextField: View {
          foregroundColour: Color,
          font: Font,
          fontWeight: Font.Weight? = nil,
+         textFieldStyle: String = "rounded",
          axis: Axis? = nil,
          border: Color? = nil,
          submitLabel: SubmitLabel? = nil,
@@ -61,6 +63,7 @@ struct SubmitTextField: View {
         self.foregroundColour = foregroundColour
         self.font = font
         self.fontWeight = fontWeight
+        self.textFieldStyle = textFieldStyle
         self.axis = axis
         self.border = border
         self.submitLabel = submitLabel
@@ -134,7 +137,12 @@ struct SubmitTextField: View {
                         }
                     }
             })
-                .textFieldStyle(.roundedBorder)
+                .if(textFieldStyle == "rounded", transform: { view in
+                    view.textFieldStyle(.roundedBorder)
+                })
+                    .if(textFieldStyle == "plain", transform: { view in
+                        view.textFieldStyle(.plain)
+                    })
                 .scrollContentBackground(.hidden)
                 .autocorrectionDisabled(autocapitalisation==true ? false : true)
                 .disableAutocorrection(autocorrection==true ? false : true)

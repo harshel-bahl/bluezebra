@@ -9,16 +9,25 @@ import Foundation
 import CoreData
 
 struct SSettings {
-    let biometricSetup: Bool?
+    let pin: String
+    let biometricSetup: String?
 }
 
 class Settings: NSManagedObject {
-    @NSManaged var biometricSetup: Bool
+    @NSManaged var pin: String?
+    @NSManaged var biometricSetup: String?
 }
 
 extension Settings: ToSafeObject {
+    
     func safeObject() throws -> SSettings {
-        return SSettings(biometricSetup: self.biometricSetup)
+        
+        guard let pin = self.pin else {
+            throw PError.safeMapError
+        }
+        
+        return SSettings(pin: pin,
+                         biometricSetup: self.biometricSetup)
     }
 }
 

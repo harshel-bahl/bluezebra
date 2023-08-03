@@ -20,7 +20,6 @@ struct PinBoxes: View {
     let boxCR: CGFloat
     let boxBorder: Color
     let boxBorderLength: CGFloat
-    let boxShadow: CGFloat
     
     let outerBorder: Bool
     let padding: EdgeInsets
@@ -28,11 +27,8 @@ struct PinBoxes: View {
     let outerCR: CGFloat
     let outerShadow: CGFloat
     
-    let character: String
-    let characSize: CGFloat
+    let characSize: CGSize
     let characColour: Color
-    let characWeight: Font.Weight
-    let characOffset: CGFloat
     
     var focus: FocusState<String?>.Binding
     let focusValue: String
@@ -43,21 +39,17 @@ struct PinBoxes: View {
          pinLength: Int = 4,
          boxSize: CGSize = .init(width: 50, height: 50),
          boxSpacing: CGFloat = 25,
-         boxBG: Color = Color("background2"),
+         boxBG: Color = Color("background1"),
          boxCR: CGFloat = 5,
          boxBorder: Color = Color("accent1"),
          boxBorderLength: CGFloat = 0.5,
-         boxShadow: CGFloat = 0.5,
          outerBorder: Bool = true,
          padding: EdgeInsets = .init(top: 20, leading: 22.5, bottom: 20, trailing: 22.5),
-         outerBG: Color = Color("background2"),
+         outerBG: Color = Color("background1"),
          outerCR: CGFloat = 20,
          outerShadow: CGFloat = 2,
-         character: String = "*",
-         characSize: CGFloat = 47.5,
+         characSize: CGSize = .init(width: 12.5, height: 12.5),
          characColour: Color = Color("text1"),
-         characWeight: Font.Weight = .regular,
-         characOffset: CGFloat = 10,
          focus: FocusState<String?>.Binding,
          focusValue: String,
          commitAction: @escaping (String)->()) {
@@ -70,7 +62,6 @@ struct PinBoxes: View {
         self.boxCR = boxCR
         self.boxBorder = boxBorder
         self.boxBorderLength = boxBorderLength
-        self.boxShadow = boxShadow
         
         self.outerBorder = outerBorder
         self.padding = padding
@@ -78,11 +69,8 @@ struct PinBoxes: View {
         self.outerCR = outerCR
         self.outerShadow = outerShadow
         
-        self.character = character
         self.characSize = characSize
         self.characColour = characColour
-        self.characWeight = characWeight
-        self.characOffset = characOffset
         
         self.focus = focus
         self.focusValue = focusValue
@@ -129,11 +117,9 @@ struct PinBoxes: View {
     func pinBoxes(_ index: Int) -> some View {
         ZStack(alignment: .center) {
             if pin.count > index {
-                FixedText(text: character,
-                          colour: characColour,
-                          fontSize: characSize,
-                          fontWeight: characWeight)
-                .offset(y: characOffset)
+                Circle()
+                    .fill(characColour)
+                    .frame(width: characSize.width, height: characSize.height)
             }
         }
         .frame(width: boxSize.width, height: boxSize.height)
@@ -146,7 +132,6 @@ struct PinBoxes: View {
                 .stroke(boxBorder, lineWidth: status ? boxBorderLength*4 : boxBorderLength)
                 .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue)
         }
-        .shadow(radius: boxShadow)
     }
 }
 

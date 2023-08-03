@@ -9,12 +9,27 @@ import SwiftUI
 
 struct EncryptionTab: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 0) {
+            
+            NavBar(contentPadding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0),
+                   content1: {
+                HStack(alignment: .center, spacing: 0) {
+                    
+                    Spacer()
+                    
+                    FixedText(text: "Encryption",
+                              colour: Color("text1"),
+                              fontSize: 16,
+                              fontWeight: .bold)
+                    
+                    Spacer()
+                }
+                .frame(height: 25)
+            })
+            
+            Spacer()
+        }
+        .ignoresSafeArea(edges: .top)
     }
 }
 
-struct EncryptionTab_Previews: PreviewProvider {
-    static var previews: some View {
-        EncryptionTab()
-    }
-}

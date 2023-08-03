@@ -29,6 +29,7 @@ class User: NSManagedObject {
 extension User: ToSafeObject {
     
     func safeObject() throws -> SUser {
+        
         guard let userID = self.userID,
               let username = self.username,
               let pin = self.pin,

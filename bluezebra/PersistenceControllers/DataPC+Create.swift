@@ -15,7 +15,6 @@ extension DataPC {
     public func createUser(userID: String,
                            username: String,
                            creationDate: Date,
-                           pin: String,
                            avatar: String,
                            lastOnline: Date? = nil) async throws -> SUser {
         
@@ -30,7 +29,6 @@ extension DataPC {
                 MO.userID = userID
                 MO.username = username
                 MO.creationDate = creationDate
-                MO.pin = pin
                 MO.avatar = avatar
                 MO.lastOnline = lastOnline
                 
@@ -48,7 +46,8 @@ extension DataPC {
         return SMO
     }
     
-    public func createSettings(biometricSetup: Bool = false) async throws -> SSettings {
+    public func createSettings(pin: String,
+        biometricSetup: String? = nil) async throws -> SSettings {
         
         let checkMO = try await self.fetchMOAsync(entity: Settings.self,
                                                   allowNil: true)
@@ -58,6 +57,7 @@ extension DataPC {
         let SMO = try await self.backgroundContext.perform {
             do {
                 let MO = Settings(context: self.backgroundContext)
+                MO.pin = pin
                 MO.biometricSetup = biometricSetup
                 
                 try self.backgroundSave()

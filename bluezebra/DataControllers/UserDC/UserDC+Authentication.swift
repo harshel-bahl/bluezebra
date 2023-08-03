@@ -30,7 +30,7 @@ extension UserDC {
         let context = LAContext()
         var error: NSError?
         
-        if (context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) && self.userSettings?.biometricSetup==true) {
+        if (context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) && self.userSettings!.biometricSetup=="active") {
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
                                    localizedReason: "We need to unlock your data.") { success, authenticationError in
                 
@@ -90,9 +90,8 @@ extension UserDC {
     }
     
     func cancelBiometricAuthSetup() {
-        guard let userSettings = self.userSettings else { return }
         
-        if userSettings.biometricSetup != false {
+        if self.userSettings!.biometricSetup != "inactive" {
             Task {
                 guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
                                                                            property: ["biometricSetup"],

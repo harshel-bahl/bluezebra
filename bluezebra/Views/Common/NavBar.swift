@@ -40,6 +40,7 @@ struct NavBar<Content1: View, Content2: View>: View {
         self.showContent2 = showContent2
         self.content2 = content2
     }
+    
     var body: some View {
         VStack(spacing: 0) {
             

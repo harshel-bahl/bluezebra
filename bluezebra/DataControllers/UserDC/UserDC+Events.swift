@@ -61,10 +61,9 @@ extension UserDC {
             let userData = try await DataPC.shared.createUser(userID: userID,
                                                               username: username.trimmingCharacters(in: .whitespacesAndNewlines),
                                                               creationDate: creationDate,
-                                                              pin: pin,
                                                               avatar: avatar)
             
-            let userSettings = try await DataPC.shared.createSettings()
+            let userSettings = try await DataPC.shared.createSettings(pin: pin)
             
             let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
                                                                         active: true,

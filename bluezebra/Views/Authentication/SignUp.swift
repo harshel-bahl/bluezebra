@@ -15,11 +15,10 @@ struct SignUp: View {
     @ObservedObject var userDC = UserDC.shared
     @ObservedObject var channelDC = ChannelDC.shared
     
-    @State var selectedEmoji: Emoji?
-    @State var  showEmojiPicker = false
-    
     @State var username = ""
     @State var checkedUsername: Bool? = nil
+    
+    @State var selectedEmoji: Emoji?
     
     @State var pin: String = ""
     @State var firstPin: String = ""
@@ -31,7 +30,7 @@ struct SignUp: View {
     
     var body: some View {
         ZStack {
-            PaginatedScrollView(backgroundColour: Color("background4"),
+            PaginatedScrollView(backgroundColour: Color("background1"),
                                 content: [
                                     ViewKey(id: 1): { proxy in
                                         AnyView(
@@ -40,6 +39,11 @@ struct SignUp: View {
                                     }, ViewKey(id: 2): { proxy in
                                         AnyView(
                                             page2(proxy: proxy)
+                                        )
+                                    },
+                                    ViewKey(id: 3): { proxy in
+                                        AnyView(
+                                            page3(proxy: proxy)
                                         )
                                     }
                                 ])
@@ -52,203 +56,74 @@ struct SignUp: View {
         }
     }
     
+    
     func page1(proxy: ScrollViewProxy) -> some View {
         
-        EmojiPicker(showEmojiPicker: $showEmojiPicker,
-                    selectedEmoji: $selectedEmoji,
-                    sheetHeight: SP.screenHeight/2,
-                    emojiProvider: BZEmojiProvider1.shared) {
-            
-            VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    FixedText(text: "Create Profile",
-                              colour: Color("text1"),
-                              fontSize: 30,
-                              fontWeight: .bold)
-                    
-                    Spacer()
-                }
-                .edgePadding(top: 25,
-                             bottom: 15,
-                             leading: 20,
-                             trailing: 20)
-                
-                chooseAvatarBlock
-                    .edgePadding(top: 15,
-                                 bottom: 15,
-                                 leading: 20,
-                                 trailing: 20)
-                
-                ZStack {
-                    if let _ = selectedEmoji {
-                        chooseUsernameBlock(proxy: proxy)
-                            .edgePadding(top: 15,
-                                         leading: 20,
-                                         trailing: 20)
-                    }
-                }
-                .animation(.easeInOut(duration: 0.5).delay(0.15),
-                           value: selectedEmoji)
-                
-                Spacer()
-            }
-        }
-    }
-    
-    func page2(proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                FixedText(text: "Secure Account",
+                FixedText(text: "Choose your username",
                           colour: Color("text1"),
-                          fontSize: 30,
+                          fontSize: 28,
                           fontWeight: .bold)
                 
                 Spacer()
-                
-                SystemIcon(systemName: "arrow.up.circle",
-                           size: .init(width: 27.5, height: 27.5),
-                           colour: Color("orangeAccent1"),
-                           padding: .init(top: 0,
-                                          leading: 0,
-                                          bottom: 0,
-                                          trailing: 5),
-                           BGColour: .white,
-                           applyClip: true,
-                           shadow: 1,
-                           buttonAction: {
-                    
-                    focusField = nil
-                    
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        self.pin = ""
-                        self.firstPin = ""
-                        proxy.scrollTo(1, anchor: .top)
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.51) {
-                        focusField = "username"
-                    }
-                })
             }
-            .edgePadding(top: 25,
-                         bottom: 15,
+            .edgePadding(top: 30,
+                         bottom: 20,
                          leading: 20,
                          trailing: 20)
             
             
-            pinEntry
-                .edgePadding(top: 15,
-                             leading: 20,
-                             trailing: 20)
-            
-            signUpFlow
-                .edgePadding(top: 30)
-            
-            Spacer()
-        }
-    }
-    
-    var chooseAvatarBlock: some View {
-        ZStack {
-            VStack(spacing: 27.5) {
-                HStack(spacing: 0) {
-                    VariableText(text: "Choose an avatar",
-                                 colour: Color("text1"),
-                                 font: .headline,
-                                 fontWeight: .medium)
-                    
-                    Spacer()
-                }
+            VStack(spacing: 0) {
                 
-                avatarButton
-            }
-            .edgePadding(top: 17.5,
-                         bottom: 17.5,
-                         leading: 17.5,
-                         trailing: 17.5)
-        }
-        .background() { Color("background2") }
-        .borderModifier(lineWidth: 2,
-                        lineColour: Color("accent1"),
-                        cornerRadius: 20,
-                        shadowRadius: 1)
-    }
-    
-    @ViewBuilder
-    var avatarButton: some View {
-        if let selectedEmoji = selectedEmoji {
-            EmojiIcon(avatar: selectedEmoji.name,
-                      size: .init(width: 60, height: 60),
-                      emojis: BZEmojiProvider1.shared.getAll(),
-                      buttonAction: { avatar in
-                showEmojiPicker = true
-            })
-        } else {
-            SystemIcon(systemName: "person.crop.circle.fill",
-                       size: .init(width: 60, height: 60),
-                       colour: Color("accent1"),
-                       padding: nil,
-                       buttonAction: {
-                showEmojiPicker = true
-            })
-        }
-    }
-    
-    func chooseUsernameBlock(proxy: ScrollViewProxy) -> some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 0) {
-                    VariableText(text: "Choose a username",
-                                 colour: Color("text1"),
-                                 font: .headline,
-                                 fontWeight: .medium)
-                    
-                    Spacer()
-                }
-                
-                HStack(alignment: .center, spacing: 25) {
+                ZStack {
                     usernameTextField(proxy: proxy)
+                        .frame(width: 250)
                     
-                    ZStack {
-                        checkUsernameBadge
-                    }
-                    .frame(width: 25)
-                }
-                .edgePadding(top: 25)
-                
-                if let _ = checkedUsername,
-                   checkedUsername == false {
                     HStack(spacing: 0) {
-                        
+                        if let checkedUsername = checkedUsername,
+                           checkedUsername == true,
+                           username != "" {
+                            SystemIcon(systemName: "checkmark.seal.fill",
+                                       size: .init(width: 27.5, height: 27.5),
+                                       colour: Color("accent1"))
+                            .edgePadding(leading: 310)
+                        }
+                    }
+                }
+                .edgePadding(top: 25,
+                             bottom: 35)
+                
+                if let checkedUsername = checkedUsername,
+                   checkedUsername == false,
+                   username != "" {
+                    HStack(spacing: 0) {
                         Spacer()
                         
-                        Text("Username unavailable :(")
-                            .foregroundColor(Color("orangeAccent1"))
-                            .fontWeight(.regular)
-                        
+                        FixedText(text: "Username Unavailable :(",
+                                  colour: Color("accent6"),
+                                  fontSize: 17.5,
+                                  fontWeight: .regular)
+
                         Spacer()
                     }
-                    .edgePadding(top: 12.5)
                 }
             }
             .edgePadding(top: 17.5,
                          bottom: 17.5,
                          leading: 17.5,
                          trailing: 25)
+            
+            Spacer()
         }
-        .background() { Color("background2") }
-        .borderModifier(lineWidth: 2,
-                        lineColour: Color("accent1"),
-                        cornerRadius: 20,
-                        shadowRadius: 1)
-        
     }
     
     func usernameTextField(proxy: ScrollViewProxy) -> some View {
         DebounceTextField(text: $username,
                           startingText: "@",
-                          foregroundColour: Color("text3"),
-                          font: .headline,
+                          foregroundColour: Color("accent1"),
+                          font: .system(size: 25),
+                          textFieldStyle: "plain",
                           submitLabel: .go,
                           characterLimit: 13,
                           valuesToRemove: BZSetup.shared.removeUsernameValues,
@@ -274,86 +149,156 @@ struct SignUp: View {
             
             if let checkedUsername = checkedUsername,
                checkedUsername {
+                
+                focusField = nil
+                
                 withAnimation(.easeInOut(duration: 0.5)) {
                     proxy.scrollTo(2, anchor: .top)
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.51) {
-                    focusField = "pin"
                 }
             }
         })
         .focused($focusField, equals: "username")
+        .padding(12.5)
+        .background { Color("background3") }
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .overlay( RoundedRectangle(cornerRadius: 15) .stroke(Color("accent2")) )
         .onAppear() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 focusField = "username"
             }
         }
     }
     
-    @ViewBuilder
-    var checkUsernameBadge: some View {
-        if let _ = checkedUsername,
-           checkedUsername == true {
-            SystemIcon(systemName: "checkmark.seal.fill",
-                       size: .init(width: 25,
-                                   height: 25),
-                       colour: Color("accent1"))
-        } else if let _ = checkedUsername,
-                  checkedUsername == false {
-            SystemIcon(systemName: "exclamationmark.triangle.fill",
-                       size: .init(width: 25,
-                                   height: 25),
-                       colour: Color("orangeAccent1"))
+    func page2(proxy: ScrollViewProxy) -> some View {
+        
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                FixedText(text: "Choose your avatar",
+                          colour: Color("text1"),
+                          fontSize: 28,
+                          fontWeight: .bold)
+                
+                Spacer()
+                
+                SystemIcon(systemName: "arrow.up.circle",
+                           size: .init(width: 27.5, height: 27.5),
+                           colour: Color("accent1"),
+                           padding: .init(top: 0,
+                                          leading: 0,
+                                          bottom: 0,
+                                          trailing: 5),
+                           BGColour: Color("background1"),
+                           applyClip: true,
+                           shadow: 1,
+                           buttonAction: {
+                    
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo(1, anchor: .top)
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.51) {
+                        focusField = "username"
+                    }
+                })
+            }
+            .edgePadding(top: 30,
+                         bottom: 20,
+                         leading: 20,
+                         trailing: 20)
+            
+            EmojiGrid(emojis: BZEmojiProvider1.shared.getAll(),
+                      selectedEmoji: $selectedEmoji)
+            .edgePadding(top: 20, bottom: 25, leading: 0, trailing: 0)
+            .frame(height: SP.safeAreaHeight*0.725)
+            
+            if let _ = selectedEmoji {
+                
+                SimpleButton(label: "continue",
+                             fontSize: 18,
+                             fontWeight: .bold,
+                             buttonSize: .init(width: SP.screenWidth*0.75, height: 50),
+                             cornerRadius: 10,
+                             action: {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo(3, anchor: .top)
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        focusField = "pin"
+                    }
+                })
+            }
+            
+            Spacer()
         }
     }
     
-    var pinEntry: some View {
-        ZStack {
-            VStack(spacing: 17.5) {
-                HStack(spacing: 0) {
-                    VariableText(text: firstPin.count == 4 ? "Retype your pin" : "Create a pin",
-                                 colour: Color("text1"),
-                                 font: .headline,
-                                 fontWeight: .medium)
-                    
-                    Spacer(minLength: 0)
-                }
+    func page3(proxy: ScrollViewProxy) -> some View {
+        
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                FixedText(text: firstPin.count == 4 ? "Retype your pin" : "Create a pin",
+                          colour: Color("text1"),
+                          fontSize: 28,
+                          fontWeight: .bold)
                 
-                HStack(spacing: 0) {
-                    VariableText(text: "Pick something memorable! There's no other way to access your data",
-                                 colour: Color("text1"),
-                                 font: .subheadline)
-                    
-                    Spacer(minLength: 0)
-                }
+                Spacer()
                 
-                PinBoxes(pin: $pin,
-                         outerBorder: false,
-                         focus: $focusField,
-                         focusValue: "pin",
-                         commitAction: { pin in
-                    if firstPin == "" {
-                        withAnimation {
-                            firstPin = pin
-                            self.pin = ""
-                        }
-                    } else if !firstPin.isEmpty {
-                        focusField = nil
+                SystemIcon(systemName: "arrow.up.circle",
+                           size: .init(width: 27.5, height: 27.5),
+                           colour: Color("accent1"),
+                           padding: .init(top: 0,
+                                          leading: 0,
+                                          bottom: 0,
+                                          trailing: 5),
+                           BGColour: Color("background1"),
+                           applyClip: true,
+                           shadow: 1,
+                           buttonAction: {
+                    
+                    focusField = nil
+                    pin = ""
+                    firstPin = ""
+                    
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo(2, anchor: .top)
                     }
                 })
-                .edgePadding(top: 17.5)
             }
-            .edgePadding(top: 17.5,
-                         bottom: 17.5,
-                         leading: 17.5,
-                         trailing: 17.5)
+            .edgePadding(top: 30,
+                         bottom: 25,
+                         leading: 20,
+                         trailing: 20)
+            
+            
+            FixedText(text: "Pick something memorable! There's no other way to access your data",
+                      colour: Color("text1"),
+                      fontSize: 16,
+                      pushText: .leading)
+            .edgePadding(leading: 20,
+                         trailing: 20)
+            
+            PinBoxes(pin: $pin,
+                     outerBorder: true,
+                     focus: $focusField,
+                     focusValue: "pin",
+                     commitAction: { pin in
+                if firstPin == "" {
+                    withAnimation {
+                        firstPin = pin
+                        self.pin = ""
+                    }
+                } else if !firstPin.isEmpty {
+                    focusField = nil
+                }
+            })
+            .edgePadding(top: 40)
+            
+            signUpFlow
+                .edgePadding(top: 35)
+            
+            Spacer()
         }
-        .background() { Color("background2") }
-        .borderModifier(lineWidth: 2,
-                        lineColour: Color("accent1"),
-                        cornerRadius: 20,
-                        shadowRadius: 1)
     }
     
     @ViewBuilder
@@ -362,10 +307,11 @@ struct SignUp: View {
         VStack(spacing: 15) {
             if firstPin==pin && firstPin.count==4 && pin.count==4 {
                 ButtonAni(label: "Join BZ",
-                          fontSize: 16,
+                          fontSize: 18,
+                          fontWeight: .bold,
                           foregroundColour: Color.white,
+                          buttonSize: .init(width: SP.screenWidth*0.8, height: 50),
                           BGColour: Color("accent1"),
-                          padding: 17.5,
                           action: {
                     
                     Task {
@@ -387,16 +333,14 @@ struct SignUp: View {
                     }
                 })
             } else if firstPin != pin && firstPin.count==4 && pin.count==4 {
-                FixedText(text: "Pin doesn't match :(",
-                          colour: Color("orangeAccent1"),
-                          fontSize: 14)
-                
                 ButtonAni(label: "Retry Pin",
-                          fontSize: 16,
+                          fontSize: 18,
+                          fontWeight: .bold,
                           foregroundColour: Color.white,
-                          BGColour: Color("orangeAccent1"),
-                          padding: 17.5,
+                          buttonSize: .init(width: SP.screenWidth*0.75, height: 50),
+                          BGColour: Color("accent6"),
                           action: {
+                    focusField = "pin"
                     self.pin = ""
                     self.firstPin = ""
                 })

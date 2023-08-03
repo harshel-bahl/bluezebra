@@ -136,6 +136,8 @@
 		F0AE43DE2A6A1F9F00A1E181 /* IdentifiableImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */; };
 		F0AF8D6B2A6A5BED00B45249 /* DataPC+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */; };
 		F0AF8D6D2A6E01D800B45249 /* FileContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */; };
+		F0AF8D6F2A7B3BE300B45249 /* EmojiGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6E2A7B3BE300B45249 /* EmojiGrid.swift */; };
+		F0AF8D712A7B8AEE00B45249 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */; };
 		F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */; };
 /* End PBXBuildFile section */
 
@@ -266,6 +268,8 @@
 		F0AE43DD2A6A1F9F00A1E181 /* IdentifiableImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableImage.swift; sourceTree = "<group>"; };
 		F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Files.swift"; sourceTree = "<group>"; };
 		F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContainer.swift; sourceTree = "<group>"; };
+		F0AF8D6E2A7B3BE300B45249 /* EmojiGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiGrid.swift; sourceTree = "<group>"; };
+		F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -589,6 +593,7 @@
 			children = (
 				F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */,
 				F0AE43652A49EF7800A1E181 /* EmojiPicker.swift */,
+				F0AF8D6E2A7B3BE300B45249 /* EmojiGrid.swift */,
 			);
 			path = Icon;
 			sourceTree = "<group>";
@@ -611,6 +616,7 @@
 				F0AE43BB2A613AC100A1E181 /* SimpleImageSegment.swift */,
 				F0AE43B72A60E0FB00A1E181 /* TextSegmentView.swift */,
 				F0AE43B92A60E62B00A1E181 /* ImageSegmentView.swift */,
+				F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -762,6 +768,7 @@
 				34E1E08C29E25054007319C3 /* KeyboardAwareModifier.swift in Sources */,
 				3445BEBE297D946B0033269B /* AppDelegate.swift in Sources */,
 				3475AE9129EF9E18001882D4 /* CDPacket.swift in Sources */,
+				F0AF8D712A7B8AEE00B45249 /* SimpleButton.swift in Sources */,
 				349CE1F02969ECE500F8E4F9 /* ProfileHome.swift in Sources */,
 				345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */,
 				34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */,
@@ -842,6 +849,7 @@
 				34938E1A2967CFDC00EA95CF /* DataPC.swift in Sources */,
 				F0AE43CB2A64B67000A1E181 /* InputContainer.swift in Sources */,
 				F065C6172A2E8DAB007E1D9F /* PrivacyPolicyTab.swift in Sources */,
+				F0AF8D6F2A7B3BE300B45249 /* EmojiGrid.swift in Sources */,
 				349CE22C296FB15500F8E4F9 /* MessageDC.swift in Sources */,
 				F0AE43782A4B961E00A1E181 /* ScrollViewList.swift in Sources */,
 				3475AE9829EFB8DA001882D4 /* ChannelDC+Handlers.swift in Sources */,

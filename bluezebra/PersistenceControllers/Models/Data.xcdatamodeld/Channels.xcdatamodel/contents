@@ -50,7 +50,8 @@
         <attribute name="username" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Settings" representedClassName=".Settings" syncable="YES">
-        <attribute name="biometricSetup" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="biometricSetup" optional="YES" attributeType="String"/>
+        <attribute name="pin" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Team" representedClassName=".Team" syncable="YES">
         <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -68,7 +69,6 @@
         <attribute name="avatar" optional="YES" attributeType="String"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="pin" optional="YES" attributeType="String"/>
         <attribute name="userID" optional="YES" attributeType="String"/>
         <attribute name="username" optional="YES" attributeType="String"/>
     </entity>

@@ -16,9 +16,10 @@ struct ButtonAni: View {
     let imageName: String?
     let imageSize: CGSize?
     
+    let buttonSize: CGSize?
     let foregroundColour: Color
     let BGColour: Color
-    let padding: CGFloat
+    let padding: CGFloat?
     let cornerRadius: CGFloat
     let scale: CGFloat
     let shadow: CGFloat
@@ -31,8 +32,9 @@ struct ButtonAni: View {
          imageName: String? = nil,
          imageSize: CGSize? = nil,
          foregroundColour: Color,
+         buttonSize: CGSize? = .init(width: 200, height: 50),
          BGColour: Color,
-         padding: CGFloat = 20,
+         padding: CGFloat? = nil,
          cornerRadius: CGFloat = 10,
          scale: CGFloat = 0.9,
          shadow: CGFloat = 0,
@@ -43,6 +45,7 @@ struct ButtonAni: View {
         self.imageName = imageName
         self.imageSize = imageSize
         self.foregroundColour = foregroundColour
+        self.buttonSize = buttonSize
         self.BGColour = BGColour
         self.padding = padding
         self.cornerRadius = cornerRadius
@@ -75,6 +78,7 @@ struct ButtonAni: View {
         })
         .buttonStyle(ButtonStyle1(BGColour: BGColour,
                                   textColour: .black,
+                                  buttonSize: buttonSize,
                                   padding: padding,
                                   cornerRadius: cornerRadius,
                                   scale: self.scale,
@@ -87,7 +91,8 @@ struct ButtonStyle1: ButtonStyle {
     
     let BGColour: Color
     let textColour: Color
-    let padding: CGFloat
+    let buttonSize: CGSize?
+    let padding: CGFloat?
     let cornerRadius: CGFloat
     let scale: CGFloat
     let shadow: CGFloat
@@ -95,7 +100,11 @@ struct ButtonStyle1: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .foregroundColor(self.textColour)
-            .padding(self.padding)
+            .if(padding != nil, transform: { view in
+                view
+                    .padding(self.padding!)
+            })
+            .frame(width: buttonSize?.width, height: buttonSize?.height)
             .cornerRadius(self.cornerRadius)
             .background(RoundedRectangle(cornerRadius: self.cornerRadius)
                 .foregroundColor(configuration.isPressed ? self.BGColour.opacity(0.75) : self.BGColour))

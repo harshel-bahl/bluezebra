@@ -18,6 +18,7 @@ struct DebounceTextField: View {
     var font: Font
     var fontWeight: Font.Weight?
     
+    let textFieldStyle: String
     var axis: Axis?
     var border: Color?
     var submitLabel: SubmitLabel?
@@ -39,6 +40,7 @@ struct DebounceTextField: View {
          foregroundColour: Color,
          font: Font,
          fontWeight: Font.Weight? = nil,
+         textFieldStyle: String = "rounded",
          axis: Axis? = nil,
          border: Color? = nil,
          submitLabel: SubmitLabel? = nil,
@@ -64,6 +66,7 @@ struct DebounceTextField: View {
         self.foregroundColour = foregroundColour
         self.font = font
         self.fontWeight = fontWeight
+        self.textFieldStyle = textFieldStyle
         self.axis = axis
         self.border = border
         self.submitLabel = submitLabel
@@ -85,51 +88,56 @@ struct DebounceTextField: View {
                 view
                     .onReceive(textFieldObserver.$debouncedText, perform: { debouncedText in
                         var _debouncedText = debouncedText
-
+                        
                         if replaceStartingOnCommit,
                            let startingText = self.textFieldObserver.startingText {
                             _debouncedText = _debouncedText.replacingOccurrences(of: startingText, with: "")
                         }
-
+                        
                         if trimOnCommit {
                             _debouncedText = _debouncedText.trimmingCharacters(in: .whitespacesAndNewlines)
                         }
-
+                        
                         if _debouncedText != "",
                            let preprocessActions = preprocessActions,
                            let debouncedAction = debouncedAction {
-
+                            
                             let preprocessedText = preprocessActions(_debouncedText)
                             self.text = preprocessedText
                             debouncedAction(preprocessedText)
-
+                            
                         } else if _debouncedText != "",
                                   let debouncedAction = debouncedAction {
-
+                            
                             self.text = _debouncedText
                             debouncedAction(_debouncedText)
-
+                            
                         }
                     })
             })
-                .textFieldStyle(.roundedBorder)
-                .disableAutocorrection(autocorrection==true ? false : true)
-                .scrollContentBackground(.hidden)
-                .autocorrectionDisabled(autocapitalisation==true ? false : true)
-                .foregroundColor(foregroundColour)
-                .font(font)
-                .if(border != nil, transform: {
-                    view in view.border(border!)
+                .if(textFieldStyle == "rounded", transform: { view in
+                    view.textFieldStyle(.roundedBorder)
                 })
-                    .if(keyboardType != nil, transform: { view in
-                        view.keyboardType(keyboardType!)
+                    .if(textFieldStyle == "plain", transform: { view in
+                        view.textFieldStyle(.plain)
                     })
-                        .if(lineLimit != nil, transform: { view in
-                            view.lineLimit(lineLimit)
+                        .disableAutocorrection(autocorrection==true ? false : true)
+                        .scrollContentBackground(.hidden)
+                        .autocorrectionDisabled(autocapitalisation==true ? false : true)
+                        .foregroundColor(foregroundColour)
+                        .font(font)
+                        .if(border != nil, transform: {
+                            view in view.border(border!)
                         })
-                            .if(fontWeight != nil, transform: { view in
-                                view.fontWeight(fontWeight)
+                            .if(keyboardType != nil, transform: { view in
+                                view.keyboardType(keyboardType!)
                             })
+                                .if(lineLimit != nil, transform: { view in
+                                    view.lineLimit(lineLimit)
+                                })
+                                    .if(fontWeight != nil, transform: { view in
+                                        view.fontWeight(fontWeight)
+                                    })
     }
     
     @ViewBuilder var textField: some View {
