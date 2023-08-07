@@ -39,7 +39,7 @@ struct ProfileHome: View {
                         
                         Spacer()
                         
-                        EmojiIcon(avatar: userDC.userData!.avatar,
+                        EmojiIcon(avatar: userDC.userData?.avatar ?? "",
                                   size: .init(width: 90, height: 90),
                                   emojis: BZEmojiProvider1.shared.getAll())
                         
@@ -47,7 +47,7 @@ struct ProfileHome: View {
                     }
                     .edgePadding(bottom: 15)
                     
-                    FixedText(text: "@" + userDC.userData!.username,
+                    FixedText(text: "@" + (userDC.userData?.username ?? ""),
                               colour: Color("accent1"),
                               fontSize: 22.5,
                               fontWeight: .bold)
@@ -62,21 +62,21 @@ struct ProfileHome: View {
                         if userDC.userOnline {
                             PulsatingCircle(size: .init(width: 9, height: 9),
                                             colour: Color.green,
-                                            scaleRatio: 0.75,
+                                            scaleRatio: 0.6,
                                             animationSpeed: 1.25,
                                             text: "connected",
                                             textColour: Color("text2"),
                                             fontSize: 15,
-                                            padding: 5)
+                                            padding: 6)
                         } else {
-                            PulsatingCircle(size: .init(width: 8, height: 8),
+                            PulsatingCircle(size: .init(width: 9, height: 9),
                                             colour: Color.red,
-                                            scaleRatio: 0.75,
+                                            scaleRatio: 0.6,
                                             animationSpeed: 1.25,
-                                            text: "connected",
+                                            text: "disconnected",
                                             textColour: Color("text2"),
                                             fontSize: 15,
-                                            padding: 5)
+                                            padding: 6)
                         }
                         
                         Spacer()
@@ -88,9 +88,9 @@ struct ProfileHome: View {
                         FixedText(text: "Last Online: ",
                                   colour: Color("text2"),
                                   fontSize: 15)
-                        .edgePadding(trailing: 5)
+                        .edgePadding(trailing: 3)
                         
-                        if let lastOnline = userDC.userData!.lastOnline {
+                        if let lastOnline = userDC.userData?.lastOnline {
                             DateTimeLong(date: lastOnline,
                                          fontSize: 15,
                                          colour: Color("text2"))
@@ -122,7 +122,7 @@ struct ProfileHome: View {
                                            size: .init(width: 12.5, height: 12.5),
                                            colour: Color("accent1"))
                             }
-                            .edgePadding(top: 12.5, bottom: 12.5, leading: 15, trailing: 15)
+                            .edgePadding(top: 15, bottom: 15, leading: 15, trailing: 15)
                             
                             
                             Divider()

@@ -69,7 +69,6 @@
 		34E1E08729E2222D007319C3 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08629E2222D007319C3 /* Styles.swift */; };
 		34E1E08C29E25054007319C3 /* KeyboardAwareModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */; };
 		34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08E29E25092007319C3 /* EmojiModifier.swift */; };
-		34F886542A01E4C30096CBF1 /* TeamPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F886532A01E4C30096CBF1 /* TeamPacket.swift */; };
 		34F886562A01E4CB0096CBF1 /* ChannelPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F886552A01E4CB0096CBF1 /* ChannelPacket.swift */; };
 		F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425B2A48764700CFCD32 /* BorderOverlay.swift */; };
 		F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425D2A487B9B00CFCD32 /* FixedText.swift */; };
@@ -138,6 +137,8 @@
 		F0AF8D6D2A6E01D800B45249 /* FileContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */; };
 		F0AF8D6F2A7B3BE300B45249 /* EmojiGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D6E2A7B3BE300B45249 /* EmojiGrid.swift */; };
 		F0AF8D712A7B8AEE00B45249 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */; };
+		F0AF8D732A7FAED200B45249 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D722A7FAED200B45249 /* Event.swift */; };
+		F0AF8D762A808D6800B45249 /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F0AF8D752A808D6800B45249 /* ScreenshotPreventingSwiftUI */; };
 		F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */; };
 /* End PBXBuildFile section */
 
@@ -204,7 +205,6 @@
 		34E1E08629E2222D007319C3 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
 		34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAwareModifier.swift; sourceTree = "<group>"; };
 		34E1E08E29E25092007319C3 /* EmojiModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiModifier.swift; sourceTree = "<group>"; };
-		34F886532A01E4C30096CBF1 /* TeamPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPacket.swift; sourceTree = "<group>"; };
 		34F886552A01E4CB0096CBF1 /* ChannelPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPacket.swift; sourceTree = "<group>"; };
 		F00E425B2A48764700CFCD32 /* BorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderOverlay.swift; sourceTree = "<group>"; };
 		F00E425D2A487B9B00CFCD32 /* FixedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedText.swift; sourceTree = "<group>"; };
@@ -270,6 +270,7 @@
 		F0AF8D6C2A6E01D800B45249 /* FileContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContainer.swift; sourceTree = "<group>"; };
 		F0AF8D6E2A7B3BE300B45249 /* EmojiGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiGrid.swift; sourceTree = "<group>"; };
 		F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
+		F0AF8D722A7FAED200B45249 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -280,6 +281,7 @@
 			files = (
 				F09DFA8B2A484BE6008D4DB1 /* FilePicker in Frameworks */,
 				F09DFA882A4848F4008D4DB1 /* ExyteMediaPicker in Frameworks */,
+				F0AF8D762A808D6800B45249 /* ScreenshotPreventingSwiftUI in Frameworks */,
 				346879CB298858AF002F3B5E /* SocketIO in Frameworks */,
 				344D60EA2A112CA2005FCEA6 /* EmojiPicker in Frameworks */,
 				F0AE43D82A68E70200A1E181 /* Kingfisher in Frameworks */,
@@ -333,7 +335,6 @@
 			children = (
 				3475AE8E29EF9DB4001882D4 /* UserPacket.swift */,
 				F07059162A412BAC002571A4 /* RUPacket.swift */,
-				34F886532A01E4C30096CBF1 /* TeamPacket.swift */,
 				34F886552A01E4CB0096CBF1 /* ChannelPacket.swift */,
 				3475AE8C29EF9CD8001882D4 /* CRPacket.swift */,
 				3475AE9029EF9E18001882D4 /* CDPacket.swift */,
@@ -401,6 +402,7 @@
 				3489D5D229F84CC20074EF5E /* ChannelRequest.swift */,
 				3489D5D629F850630074EF5E /* ChannelDeletion.swift */,
 				3489D5E029F851F40074EF5E /* Message.swift */,
+				F0AF8D722A7FAED200B45249 /* Event.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -702,6 +704,7 @@
 				F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */,
 				F09DFA8A2A484BE6008D4DB1 /* FilePicker */,
 				F0AE43D72A68E70200A1E181 /* Kingfisher */,
+				F0AF8D752A808D6800B45249 /* ScreenshotPreventingSwiftUI */,
 			);
 			productName = BlueZebra;
 			productReference = 341065DB2962E1DA001644B0 /* bluezebra.app */;
@@ -737,6 +740,7 @@
 				F09DFA862A4848F4008D4DB1 /* XCRemoteSwiftPackageReference "ExyteMediaPicker" */,
 				F09DFA892A484BE6008D4DB1 /* XCRemoteSwiftPackageReference "FilePicker" */,
 				F0AE43D62A68E70200A1E181 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				F0AF8D742A808D6800B45249 /* XCRemoteSwiftPackageReference "ScreenshotPreventing-iOS" */,
 			);
 			productRefGroup = 341065DC2962E1DA001644B0 /* Products */;
 			projectDirPath = "";
@@ -788,6 +792,7 @@
 				34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */,
 				F0AE43DE2A6A1F9F00A1E181 /* IdentifiableImage.swift in Sources */,
 				3475AEA229EFBD4A001882D4 /* UserDC+Events.swift in Sources */,
+				F0AF8D732A7FAED200B45249 /* Event.swift in Sources */,
 				3489D5D329F84CC20074EF5E /* ChannelRequest.swift in Sources */,
 				3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */,
 				F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */,
@@ -858,7 +863,6 @@
 				3475AE9E29EFBCAC001882D4 /* UserDC+Handlers.swift in Sources */,
 				F0AE43BA2A60E62B00A1E181 /* ImageSegmentView.swift in Sources */,
 				34E1E08329E1FE8C007319C3 /* TextContainer.swift in Sources */,
-				34F886542A01E4C30096CBF1 /* TeamPacket.swift in Sources */,
 				F0AE43C72A6256A600A1E181 /* ChatInterface.swift in Sources */,
 				F065C6132A2E8D84007E1D9F /* AuthenticationTab.swift in Sources */,
 				34938E1C2967D2B000EA95CF /* ChannelDC.swift in Sources */,
@@ -1147,6 +1151,14 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		F0AF8D742A808D6800B45249 /* XCRemoteSwiftPackageReference "ScreenshotPreventing-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yoxisem544/ScreenshotPreventing-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1174,6 +1186,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F0AE43D62A68E70200A1E181 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		F0AF8D752A808D6800B45249 /* ScreenshotPreventingSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F0AF8D742A808D6800B45249 /* XCRemoteSwiftPackageReference "ScreenshotPreventing-iOS" */;
+			productName = ScreenshotPreventingSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 

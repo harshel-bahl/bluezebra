@@ -19,5 +19,4 @@ enum DCError: Error {
     case remoteDataNil
     case multipleRemoteDataInstances
     case invalidRequest
-    
 }

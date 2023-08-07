@@ -97,7 +97,7 @@ struct ChannelView: View {
                             
                             if channel.channelID == "personal" {
                                 FixedText(text: "(Me)",
-                                          colour: Color("orangeAccent1"),
+                                          colour: Color("accent6"),
                                           fontSize: 12,
                                           fontWeight: .bold,
                                           padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
@@ -177,7 +177,8 @@ struct ChannelView: View {
                 Button("Clear channel", action: {
                     Task {
                         try await channelDC.clearChannelData(channelID: channel.channelID,
-                                                         RU: RU ?? nil)
+                                                         RU: RU ?? nil,
+                                                             isOrigin: true)
                     }
                 })
                 
@@ -185,7 +186,8 @@ struct ChannelView: View {
                     Button("Delete channel", action: {
                         Task {
                             try await channelDC.deleteChannelData(channelID: channel.channelID,
-                                                                  RU: RU!)
+                                                                  RU: RU!,
+                                                                  isOrigin: true)
                         }
                         
                     })

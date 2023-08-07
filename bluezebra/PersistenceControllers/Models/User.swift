@@ -11,7 +11,6 @@ import CoreData
 struct SUser {
     let userID: String
     let username: String
-    let pin: String
     let creationDate: Date
     let avatar: String
     let lastOnline: Date?
@@ -20,7 +19,6 @@ struct SUser {
 class User: NSManagedObject {
     @NSManaged var userID: String?
     @NSManaged var username: String?
-    @NSManaged var pin: String?
     @NSManaged var creationDate: Date?
     @NSManaged var avatar: String?
     @NSManaged var lastOnline: Date?
@@ -32,7 +30,6 @@ extension User: ToSafeObject {
         
         guard let userID = self.userID,
               let username = self.username,
-              let pin = self.pin,
               let creationDate = self.creationDate,
               let avatar = self.avatar else {
             throw PError.safeMapError
@@ -40,7 +37,6 @@ extension User: ToSafeObject {
         
         return SUser(userID: userID,
                      username: username,
-                     pin: pin,
                      creationDate: creationDate,
                      avatar: avatar,
                      lastOnline: self.lastOnline)

@@ -281,28 +281,74 @@ extension ChannelDC {
     
     /// Local Event Functions
     ///
+    func deleteUserTrace(userID: String,
+                         deletionDate: Date = DateU.shared.currDT) async throws {
+        
+        let RU: SRemoteUser
+        
+        if let user = self.RUs[userID] {
+            RU = user
+        } else {
+            RU = try await DataPC.shared.fetchSMOAsync(entity: RemoteUser.self,
+                                                       predicateProperty: "userID",
+                                                       predicateValue: userID)
+        }
+        
+        try await DataPC.shared.fetchDeleteMOsAsync(entity: RemoteUser.self,
+                                                    predicateProperty: "userID",
+                                                    predicateValue: userID)
+        self.removeRU(userID: userID)
+        
+        let channel = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
+                                                            predicateProperty: "userID",
+                                                            predicateValue: userID)
+        
+        try await DataPC.shared.fetchDeleteMOsAsync(entity: Channel.self,
+                                                    predicateProperty: "userID",
+                                                    predicateValue: userID)
+        self.removeChannel(channelID: channel.channelID)
+        
+        try await MessageDC.shared.deleteChannelMessages(channelID: channel.channelID)
+        
+        let SCD = try await DataPC.shared.createCD(deletionID: UUID().uuidString,
+                                                   channelType: "RU",
+                                                   deletionDate: deletionDate,
+                                                   type: "delete",
+                                                   name: RU.username,
+                                                   icon: RU.avatar,
+                                                   nUsers: 1,
+                                                   isOrigin: false)
+        self.syncCD(CD: SCD)
+    }
+    
     func clearChannelData(channelID: String,
-                          RU: SRemoteUser? = nil) async throws -> SChannelDeletion {
+                          RU: SRemoteUser? = nil,
+                          deletionDate: Date = DateU.shared.currDT,
+                          isOrigin: Bool) async throws -> SChannelDeletion {
         
         if channelID == "personal" {
             try await MessageDC.shared.clearChannelMessages(channelID: channelID)
             
-            let SCD = try await DataPC.shared.createCD(channelType: "personal",
+            let SCD = try await DataPC.shared.createCD(deletionID: UUID().uuidString,
+                                                       channelType: "personal",
+                                                       deletionDate: deletionDate,
                                                        type: "clear",
                                                        name: UserDC.shared.userData!.username,
                                                        icon: UserDC.shared.userData!.avatar,
                                                        nUsers: 1,
-                                                       isOrigin: true)
+                                                       isOrigin: isOrigin)
             return SCD
         } else if let RU = RU {
             try await MessageDC.shared.clearChannelMessages(channelID: channelID)
             
-            let SCD = try await DataPC.shared.createCD(channelType: "RU",
+            let SCD = try await DataPC.shared.createCD(deletionID: UUID().uuidString,
+                                                       channelType: "RU",
+                                                       deletionDate: deletionDate,
                                                        type: "clear",
                                                        name: RU.username,
                                                        icon: RU.avatar,
                                                        nUsers: 1,
-                                                       isOrigin: true)
+                                                       isOrigin: isOrigin)
             return SCD
         } else {
             throw DCError.failed
@@ -310,17 +356,21 @@ extension ChannelDC {
     }
     
     func deleteChannelData(channelID: String,
-                           RU: SRemoteUser) async throws -> SChannelDeletion {
+                           RU: SRemoteUser,
+                           deletionDate: Date = DateU.shared.currDT,
+                           isOrigin: Bool) async throws -> SChannelDeletion {
         
         if channelID != "personal" {
             try await MessageDC.shared.deleteChannelMessages(channelID: channelID)
             
-            let SCD = try await DataPC.shared.createCD(channelType: "RU",
+            let SCD = try await DataPC.shared.createCD(deletionID: UUID().uuidString,
+                                                       channelType: "RU",
+                                                       deletionDate: deletionDate,
                                                        type: "delete",
                                                        name: RU.username,
                                                        icon: RU.avatar,
                                                        nUsers: 1,
-                                                       isOrigin: true)
+                                                       isOrigin: isOrigin)
             return SCD
         } else {
             throw DCError.failed

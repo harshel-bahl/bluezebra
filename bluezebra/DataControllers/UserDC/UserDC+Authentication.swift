@@ -14,7 +14,7 @@ extension UserDC {
     ///
     func pinAuth(pin: String,
                  completion: ((Result<Void, DCError>)->())? = nil) {
-        if (self.userData?.pin == pin) {
+        if (self.userSettings?.pin == pin) {
             print("CLIENT \(DateU.shared.logTS) -- UserDC.pinAuth: SUCCESS")
             if let completion = completion { completion(.success(())) }
         } else {
@@ -30,7 +30,7 @@ extension UserDC {
         let context = LAContext()
         var error: NSError?
         
-        if (context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) && self.userSettings!.biometricSetup=="active") {
+        if (context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) && self.userSettings?.biometricSetup=="active") {
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
                                    localizedReason: "We need to unlock your data.") { success, authenticationError in
                 
@@ -55,8 +55,6 @@ extension UserDC {
     
     func setupBiometricAuth() {
         
-        //guard let userSettings = self.userSettings else { return }
-        
         let context = LAContext()
         var error: NSError?
         
@@ -67,7 +65,7 @@ extension UserDC {
                     Task {
                         guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
                                                                                    property: ["biometricSetup"],
-                                                                                   value: [true]) else { return }
+                                                                                   value: ["active"]) else { return }
                         print("CLIENT \(DateU.shared.logTS) -- UserDC.setupBiometricAuth: SUCCESS")
                         DispatchQueue.main.async {
                             self.userSettings = userSettings
@@ -81,7 +79,7 @@ extension UserDC {
             Task {
                 guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
                                                                            property: ["biometricSetup"],
-                                                                           value: [false]) else { return }
+                                                                           value: ["inactive"]) else { return }
                 DispatchQueue.main.async {
                     self.userSettings = userSettings
                 }
@@ -95,7 +93,7 @@ extension UserDC {
             Task {
                 guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
                                                                            property: ["biometricSetup"],
-                                                                           value: [false]) else { return }
+                                                                           value: ["inactive"]) else { return }
                 print("CLIENT \(DateU.shared.logTS) -- UserDC.cancelBiometricAuthSetup: SUCCESS")
                 DispatchQueue.main.async {
                     self.userSettings = userSettings

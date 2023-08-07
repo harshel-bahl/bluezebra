@@ -91,7 +91,7 @@ struct SignUp: View {
                         }
                     }
                 }
-                .edgePadding(top: 25,
+                .edgePadding(top: 45,
                              bottom: 35)
                 
                 if let checkedUsername = checkedUsername,
@@ -158,7 +158,7 @@ struct SignUp: View {
             }
         })
         .focused($focusField, equals: "username")
-        .padding(12.5)
+        .padding(15)
         .background { Color("background3") }
         .clipShape(RoundedRectangle(cornerRadius: 15))
         .overlay( RoundedRectangle(cornerRadius: 15) .stroke(Color("accent2")) )
@@ -292,10 +292,10 @@ struct SignUp: View {
                     focusField = nil
                 }
             })
-            .edgePadding(top: 40)
+            .edgePadding(top: 50)
             
             signUpFlow
-                .edgePadding(top: 35)
+                .edgePadding(top: 50)
             
             Spacer()
         }

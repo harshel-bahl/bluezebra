@@ -60,7 +60,7 @@ struct ChatInterface: View {
                 
                 if channelType == .personal {
                     FixedText(text: "(Me)",
-                              colour: Color("orangeAccent1"),
+                              colour: Color("accent6"),
                               fontSize: 11,
                               fontWeight: .bold,
                               padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))

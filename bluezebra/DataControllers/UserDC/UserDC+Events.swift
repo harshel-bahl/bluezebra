@@ -11,7 +11,7 @@ import SocketIO
 extension UserDC {
     
     /// checkUsername
-    /// 
+    /// Request operation - sends request to server and waits for response
     func checkUsername(username: String) async throws -> Bool {
         
         guard SocketController.shared.connected else {
@@ -46,6 +46,11 @@ extension UserDC {
         return result
     }
     
+    /// createUser
+    /// Create operation
+    /// - Creates 3 objects to ensure error-free operations before request is sent
+    /// - Receives ack, if successful then objects remain
+    /// - Receives ack, if server failure or timeOut then obejcts are removed and error logged
     func createUser(userID: String = UUID().uuidString,
                     username: String,
                     pin: String,
@@ -109,6 +114,11 @@ extension UserDC {
         }
     }
     
+    /// deleteUser
+    /// Delete Operation
+    /// - Sends request to server
+    /// - On successful ack, local delete operations will occur
+    /// - On failure or timeOut, nothing happens
     func deleteUser() async throws {
         
         guard SocketController.shared.connected else {
@@ -116,7 +126,7 @@ extension UserDC {
             throw DCError.disconnected
         }
         
-        let RUIDs = ChannelDC.shared.RUs.values.map {
+        let RUIDs = ChannelDC.shared.channels.map {
             return $0.userID
         }
         
@@ -154,6 +164,8 @@ extension UserDC {
         try await self.hardReset()
     }
     
+    /// connectUser
+    /// 
     func connectUser() async throws {
         
         guard SocketController.shared.connected else {
@@ -175,6 +187,14 @@ extension UserDC {
                     if let queryStatus = data.first as? String,
                        queryStatus == SocketAckStatus.noAck {
                         throw DCError.timeOut
+                    } else if let queryStatus = data.first as? String,
+                              queryStatus == "user does not exist" {
+                        
+                        Task {
+                            try? await self.hardReset()
+                        }
+                        
+                        throw DCError.serverError(message: queryStatus)
                     } else if let queryStatus = data.first as? String {
                         throw DCError.serverError(message: queryStatus)
                     } else if let _ = data.first as? NSNull {
@@ -195,16 +215,15 @@ extension UserDC {
         }
     }
     
-    func disconnectUser() async throws {
-        
-        let date = DateU.shared.currDT
-        let dateString = DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)
+    /// disconnectUser
+    ///
+    func disconnectUser(datetime: Date = DateU.shared.currDT) async throws {
         
         guard let userID = self.userData?.userID else { throw DCError.nilError }
         
         let SMO = try await DataPC.shared.updateMO(entity: User.self,
                                                            property: ["lastOnline"],
-                                                           value: [date])
+                                                           value: [datetime])
         DispatchQueue.main.async {
             self.userData = SMO
         }
@@ -220,6 +239,6 @@ extension UserDC {
         
         SocketController.shared.clientSocket.emit("disconnectUser", ["userID": userID,
                                                                      "RUIDs": RUIDs,
-                                                                     "lastOnline": dateString])
+                                                                     "lastOnline": DateU.shared.stringFromDate(datetime, TimeZone(identifier: "UTC")!)])
     }
 }

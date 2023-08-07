@@ -82,7 +82,8 @@ extension MessageDC {
                            isSender: Bool = true,
                            message: String) async throws -> SMessage {
         
-        let SMO = try await DataPC.shared.createMessage(channelID: channelID,
+        let SMO = try await DataPC.shared.createMessage(messageID: UUID().uuidString,
+                                                        channelID: channelID,
                                                         userID: userID,
                                                         type: type,
                                                         date: date,
@@ -112,7 +113,8 @@ extension MessageDC {
                                       channelID: channelID)
         }
         
-        let SMO = try await DataPC.shared.createMessage(channelID: channelID,
+        let SMO = try await DataPC.shared.createMessage(messageID: UUID().uuidString,
+                                                        channelID: channelID,
                                                         userID: userID,
                                                         type: type,
                                                         date: date,

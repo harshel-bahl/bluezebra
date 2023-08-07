@@ -37,7 +37,7 @@ struct AccountTab: View {
             Form {
                 Section("Userdata") {
                     
-                    FixedText(text: "Username: " + userDC.userData!.username,
+                    FixedText(text: "Username: " + (userDC.userData?.username ?? ""),
                               colour: Color("text2"),
                               fontSize: 16)
                     
@@ -46,9 +46,11 @@ struct AccountTab: View {
                                   colour: Color("text2"),
                                   fontSize: 16)
                         
-                        DateTimeLong(date: userDC.userData!.creationDate,
-                                     fontSize: 16,
-                                     colour: Color("text2"))
+                        if let creationDate = userDC.userData?.creationDate {
+                            DateTimeLong(date: creationDate,
+                                         fontSize: 16,
+                                         colour: Color("text2"))
+                        }
                     }
                     
                     HStack(spacing: 0) {
@@ -56,7 +58,7 @@ struct AccountTab: View {
                                   colour: Color("text2"),
                                   fontSize: 16)
                         
-                        if let lastOnline = userDC.userData!.lastOnline {
+                        if let lastOnline = userDC.userData?.lastOnline {
                             DateTimeLong(date: lastOnline,
                                          fontSize: 16,
                                          colour: Color("text2"))
@@ -70,7 +72,7 @@ struct AccountTab: View {
                 
                 Section("Reset Channels") {
                     
-                    FixedText(text: "This action will reset delete all your channel messages. Notifications will be sent to all users you've interacted with to reset your channels.",
+                    FixedText(text: "This action will delete all your channel messages. Notifications will be sent to all users you've interacted with to reset your channels.",
                               colour: Color("text2"),
                               fontSize: 15)
                     
@@ -84,7 +86,7 @@ struct AccountTab: View {
                                   action: {
                             Task {
                                 do {
-                                    try await userDC.resetUserData()
+                                    try await channelDC.resetChannels()
                                 } catch {
                                     resetFailure = true
                                 }

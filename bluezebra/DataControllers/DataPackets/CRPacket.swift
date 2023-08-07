@@ -8,7 +8,8 @@
 import Foundation
 
 struct CRPacket: Codable {
+    var requestID: String
+    var date: String
     var channel: ChannelPacket
     var remoteUser: RUPacket
-    var date: String
 }

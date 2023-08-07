@@ -59,58 +59,91 @@ extension ChannelDC {
         }
     }
     
+    /// receivedCR
+    /// - Handles the creation of a CR
+    /// - Since the JSON packet needs to be decoded, if there is an error here or during failureEvent creation, then the sendCRFailure event cannot occur, so it isn't fired and the ack is allowed to timeOut to be dealt with on server
     func receivedCR() {
         SocketController.shared.clientSocket.on("receivedCR") { [weak self] (data, ack) in
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCR: triggered")
-            do {
-                guard let self = self,
-                      let data = data.first else { throw DCError.nilError }
-                
-                guard let packet = try? DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
-                                                                        data: data) else { throw DCError.jsonError }
-                
-                let channelPacket = packet.channel
-                let RUPacket = packet.remoteUser
-                
-                guard let date = DateU.shared.dateFromString(packet.date),
-                      let creationDate = DateU.shared.dateFromString(RUPacket.creationDate) else { throw DCError.typecastError }
-                
-                Task {
-                    do {
-                        let SCR = try await DataPC.shared.createCR(channelID: channelPacket.channelID,
-                                                                   userID: RUPacket.userID,
-                                                                   date: date,
-                                                                   isSender: false)
-                        
-                        let SRU = try? await DataPC.shared.createRU(userID: RUPacket.userID,
-                                                                    username: RUPacket.username,
-                                                                    avatar: RUPacket.avatar,
-                                                                    creationDate: creationDate)
-                        
-                        let _ = try await DataPC.shared.createChannel(channelID: channelPacket.channelID,
-                                                                             userID: RUPacket.userID,
-                                                                             creationDate: date)
-                        
-                        self.syncCR(CR: SCR)
-                        if let SRU = SRU { self.syncRU(RU: SRU) }
-                        ack.with(NSNull())
-                    } catch {
-                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: ChannelRequest.self,
-                                                                     predicateProperty: "channelID",
-                                                                     predicateValue: channelPacket.channelID)
-                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: Channel.self,
-                                                                     predicateProperty: "channelID",
-                                                                     predicateValue: channelPacket.channelID)
-                        try? await DataPC.shared.fetchDeleteMOsAsync(entity: RemoteUser.self,
-                                                                     predicateProperty: "userID",
-                                                                     predicateValue: RUPacket.userID)
-                        ack.with(false)
+            guard let self = self else { return }
+            
+            Task {
+                do {
+                    guard let data = data.first as? Data,
+                          let CRPacket = try? DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
+                                                                              data: data) else { throw DCError.jsonError }
+                    let channelPacket = CRPacket.channel
+                    let RUPacket = CRPacket.remoteUser
+                    
+                    guard let date = DateU.shared.dateFromString(CRPacket.date),
+                          let RUCreationDate = DateU.shared.dateFromString(RUPacket.creationDate) else { throw DCError.nilError }
+                    
+                    guard let failureJSONPacket = try? DataU.shared.dictionaryToJSONData(["requestID": CRPacket.requestID,
+                                                                                          "channelID": channelPacket.channelID,
+                                                                                          "userID": RUPacket.userID]) else { throw DCError.jsonError }
+                    
+                    let failureEvent = try await DataPC.shared.createEvent(eventID: UUID().uuidString,
+                                                                           eventName: "sendCRFailure",
+                                                                           date: DateU.shared.currDT,
+                                                                           userID: RUPacket.userID,
+                                                                           attempts: 0,
+                                                                           packet: failureJSONPacket)
+                    Task {
+                        do {
+                            try? await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
+                                                                        predicateProperty: "requestID",
+                                                                        predicateValue: CRPacket.requestID)
+                            
+                            try? await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
+                                                                        predicateProperty: "channelID",
+                                                                        predicateValue: channelPacket.channelID)
+                            
+                            try? await DataPC.shared.fetchDeleteMOsAsync(entity: RemoteUser.self,
+                                                                         predicateProperty: "userID",
+                                                                         predicateValue: RUPacket.userID)
+                            
+                            let SCR = try await DataPC.shared.createCR(requestID: CRPacket.requestID,
+                                                                       channelID: channelPacket.channelID,
+                                                                       userID: RUPacket.userID,
+                                                                       date: date,
+                                                                       isSender: false)
+                            
+                            let SRU = try await DataPC.shared.createRU(userID: RUPacket.userID,
+                                                                       username: RUPacket.username,
+                                                                       avatar: RUPacket.avatar,
+                                                                       creationDate: RUCreationDate)
+                            
+                            let _ = try await DataPC.shared.createChannel(channelID: channelPacket.channelID,
+                                                                          active: false,
+                                                                          userID: RUPacket.userID,
+                                                                          creationDate: DateU.shared.currDT)
+                            
+                            try await DataPC.shared.fetchDeleteMOAsync(entity: Event.self,
+                                                                       predicateProperty: "eventID",
+                                                                       predicateValue: failureEvent.eventID)
+                            self.syncCR(CR: SCR)
+                            self.syncRU(RU: SRU)
+                            
+                            ack.with(NSNull())
+                        } catch {
+                            print("CLIENT \(DateU.shared.logTS) -- ChannelDC.receivedCR: FAILED \(error)")
+                            try? await self.sendCRFailure(failureEvent: failureEvent)
+                            ack.with("CLIENT -- local persistence error")
+                        }
                     }
+                } catch {
+                    print("CLIENT \(DateU.shared.logTS) -- ChannelDC.receivedCR: FAILED \(error)")
                 }
-            } catch {
-                print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCR: FAILED \(error)")
-                ack.with(false)
             }
+        }
+    }
+        
+    
+    func receivedCRFailure() {
+        SocketController.shared.clientSocket.on("receivedCRFailure") { [weak self] (data, ack) in
+            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCRFailure: triggered")
+            
+            
         }
     }
     
@@ -175,8 +208,8 @@ extension ChannelDC {
             
             guard let self = self,
                   let data = data.first,
-                  let CDPacket = try? DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
-                                                              data: data),
+                  let CDPacket = try? DataU.shared.jsonDecodeFromObject(packet: CDPacket.self,
+                                                                      data: data),
                   let deletionDate = DateU.shared.dateFromString(CDPacket.deletionDate) else { return }
             
             Task {

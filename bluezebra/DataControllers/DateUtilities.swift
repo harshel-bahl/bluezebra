@@ -49,9 +49,9 @@ class DateU {
         return df.date(from: dateString)
     }
     
-    /// dateFromStringZ
+    /// dateFromStringTZ
     /// current datetime with timezone as UTC
-    func dateFromStringZ(_ dateString: String) -> Date? {
+    func dateFromStringTZ(_ dateString: String) -> Date? {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         df.timeZone = TimeZone(identifier: "UTC")

@@ -71,17 +71,13 @@ class SocketController: NSObject, ObservableObject {
             Task {
                 do {
                     try await UserDC.shared.connectUser()
-                    self.startupNetworking()
+                    
+                    // ChannelDC Startup Networking
+                    try await ChannelDC.shared.checkChannelUsers()
                 } catch {
                     
                 }
             }
-        }
-    }
-    
-    func startupNetworking() {
-        Task {
-            await ChannelDC.shared.checkOnlineUsers() {_ in}
         }
     }
     

@@ -41,12 +41,7 @@ extension UserDC {
         }
     }
     
-    func resetUserData() async throws {
-        try await DataPC.shared.resetUserData()
-        ChannelDC.shared.resetState()
-        MessageDC.shared.resetState()
-    }
-    
+    /// Reset Functions
     func hardReset() async throws {
         try await DataPC.shared.hardResetDataPC()
         self.resetState()
