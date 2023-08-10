@@ -58,11 +58,8 @@ extension DataPC {
             try fileManager.createDirectory(at: dirURL,
                                             withIntermediateDirectories: true,
                                             attributes: nil)
-            
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.createDir: SUCCESS (\(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.createDir: FAILED (\(error))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "createDir", err: error.localizedDescription)
         }
     }
     
@@ -84,11 +81,8 @@ extension DataPC {
                 try fileManager.createDirectory(at: dirURL,
                                                 withIntermediateDirectories: true)
             }
-            
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDir: SUCCESS (\(channelID))")
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannelDir: FAILED (\(error))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "createChannelDir", err: error.localizedDescription)
         }
     }
     
@@ -132,8 +126,7 @@ extension DataPC {
                 }
             }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.listDirContents: FAILED (\(dir))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "listDirContents", err: error.localizedDescription)
         }
     }
     
@@ -168,13 +161,13 @@ extension DataPC {
             
             return files
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.getDirContents: FAILED (\(dir))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "getDirContents", err: error.localizedDescription)
         }
     }
     
     func clearDir(dir: String,
-                  intermidDirs: [String]? = nil) async throws {
+                  intermidDirs: [String]? = nil,
+                  showLogs: Bool = false) async throws {
         let fileManager = FileManager.default
         
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -202,15 +195,17 @@ extension DataPC {
                 count += 1
             }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.clearDir: SUCCESS (removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
+            if showLogs {
+                print("SUCCESS \(DateU.shared.logTS) -- DataPC.clearDir removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
+            }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.clearDir: FAILED (\(error))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "clearDir", err: error.localizedDescription)
         }
     }
     
     func removeDir(dir: String,
-                   intermidDirs: [String]? = nil) async throws {
+                   intermidDirs: [String]? = nil,
+                   showLogs: Bool = false) async throws {
         let fileManager = FileManager.default
         
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -229,10 +224,10 @@ extension DataPC {
         
         do {
             try fileManager.removeItem(at: dirURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeDir: SUCCESS (\(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent))")
+            
+            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.removeDir dir: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)") }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeDir: FAILED (\(error))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "removeDir", err: error.localizedDescription)
         }
     }
     
@@ -261,18 +256,22 @@ extension DataPC {
             if let fileSize = fileAttributes[.size] as? Int64 {
                 return fileSize
             } else {
-                throw PError.typecastError
+                throw PError.typecastError(func: "getFileSize", err: "fileAttributes failed to convert to Int64")
             }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.getFileSize: FAILED (\(fileName))")
-            throw error
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.fileSystemFailure(func: "getFileSize", err: error.localizedDescription)
+            }
         }
     }
     
     func storeFile(data: Data,
                    fileName: String = UUID().uuidString,
                    intermidDirs: [String]? = nil,
-                   fileType: String? = nil) async throws {
+                   fileType: String? = nil,
+                   showLogs: Bool = false) async throws {
         let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         
         var fileURL = documentsDir
@@ -289,10 +288,12 @@ extension DataPC {
         
         do {
             try data.write(to: fileURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.storeFile: SUCCESS (url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName))")
+            
+            if showLogs {
+                print("SUCCESS \(DateU.shared.logTS) -- DataPC.storeFile url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
+            }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.storeFile: FAILED (\(error))")
-            throw PError.fileStoreFailure
+            throw PError.fileSystemFailure(func: "storeFile", err: error.localizedDescription)
         }
     }
     
@@ -314,16 +315,15 @@ extension DataPC {
         
         do {
             let file = try Data(contentsOf: fileURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchFile: SUCCESS")
             return file
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchFile: FAILED (\(error))")
-            throw PError.fetchFileFailure
+            throw PError.fileSystemFailure(func: "fetchFile", err: error.localizedDescription)
         }
     }
     
     func removeFile(fileName: String,
-                    intermidDirs: [String]? = nil) async throws {
+                    intermidDirs: [String]? = nil,
+                    showLogs: Bool = false) async throws {
         
         let fileManager = FileManager.default
         
@@ -343,10 +343,12 @@ extension DataPC {
         
         do {
             try fileManager.removeItem(at: fileURL)
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeFile: SUCCESS (url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName))")
+            
+            if showLogs {
+                print("SUCCESS \(DateU.shared.logTS) -- DataPC.removeFile url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
+            }
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.removeFile: FAILED (\(fileName))")
-            throw PError.fileSystemFailure
+            throw PError.fileSystemFailure(func: "removeFile", err: error.localizedDescription)
         }
     }
     
@@ -386,7 +388,7 @@ extension DataPC {
         
         guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, nil),
               let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary) else {
-            throw DCError.failed
+            throw PError.imageDataFailure(func: "scaledImage", err: "failed to create thumbnail for \(imageURL.lastPathComponent)")
         }
         
         return UIImage(cgImage: thumbnail)

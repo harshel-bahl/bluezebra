@@ -47,7 +47,6 @@
 		3489D5D529F84CDF0074EF5E /* RemoteUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5D429F84CDF0074EF5E /* RemoteUser.swift */; };
 		3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5D629F850630074EF5E /* ChannelDeletion.swift */; };
 		3489D5D929F850AF0074EF5E /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5D829F850AF0074EF5E /* Channel.swift */; };
-		3489D5DB29F850B70074EF5E /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5DA29F850B70074EF5E /* Team.swift */; };
 		3489D5E129F851F40074EF5E /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5E029F851F40074EF5E /* Message.swift */; };
 		3489D5E329F852320074EF5E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5E229F852320074EF5E /* User.swift */; };
 		3489D5E529F9D90C0074EF5E /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489D5E429F9D90C0074EF5E /* Settings.swift */; };
@@ -183,7 +182,6 @@
 		3489D5D429F84CDF0074EF5E /* RemoteUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUser.swift; sourceTree = "<group>"; };
 		3489D5D629F850630074EF5E /* ChannelDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDeletion.swift; sourceTree = "<group>"; };
 		3489D5D829F850AF0074EF5E /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
-		3489D5DA29F850B70074EF5E /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		3489D5E029F851F40074EF5E /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		3489D5E229F852320074EF5E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3489D5E429F9D90C0074EF5E /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -397,7 +395,6 @@
 				3489D5E229F852320074EF5E /* User.swift */,
 				3489D5E429F9D90C0074EF5E /* Settings.swift */,
 				3489D5D429F84CDF0074EF5E /* RemoteUser.swift */,
-				3489D5DA29F850B70074EF5E /* Team.swift */,
 				3489D5D829F850AF0074EF5E /* Channel.swift */,
 				3489D5D229F84CC20074EF5E /* ChannelRequest.swift */,
 				3489D5D629F850630074EF5E /* ChannelDeletion.swift */,
@@ -428,7 +425,6 @@
 		34938E1129675E5C00EA95CF /* DataControllers */ = {
 			isa = PBXGroup;
 			children = (
-				F09DFA832A46AE9D008D4DB1 /* AuthenticationDC */,
 				3475AE9329EFB82C001882D4 /* UserDC */,
 				3475AE9229EFB81F001882D4 /* ChannelDC */,
 				3475AE9429EFB834001882D4 /* MessageDC */,
@@ -558,13 +554,6 @@
 			children = (
 			);
 			path = RUProfile;
-			sourceTree = "<group>";
-		};
-		F09DFA832A46AE9D008D4DB1 /* AuthenticationDC */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = AuthenticationDC;
 			sourceTree = "<group>";
 		};
 		F0AE436B2A4B8ADD00A1E181 /* TextFields */ = {
@@ -824,7 +813,6 @@
 				346879CD2988596B002F3B5E /* SocketController.swift in Sources */,
 				346C303529EAD13A0075107E /* DataPC+Reset.swift in Sources */,
 				F0AE439E2A5385BA00A1E181 /* DateTimeShor.swift in Sources */,
-				3489D5DB29F850B70074EF5E /* Team.swift in Sources */,
 				34403EBD29924DAC00181C94 /* ScreenProperties.swift in Sources */,
 				F0AE437C2A4BA59F00A1E181 /* LoadingSpinner.swift in Sources */,
 				34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */,

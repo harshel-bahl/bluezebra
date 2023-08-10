@@ -64,7 +64,14 @@ struct AddRURow: View {
                         withAnimation() {
                             self.requestSent = true
                         }
+                        
+#if DEBUG
+                        DataU.shared.handleSuccess(function: "ChannelDC.sendCR", message: "username: \(RU.username)")
+#endif
                     } catch {
+#if DEBUG
+                        DataU.shared.handleFailure(function: "ChannelDC.sendCR", err: error, message: "username: \(RU.username)")
+#endif
                         withAnimation {
                             self.requestFailure = true
                         }

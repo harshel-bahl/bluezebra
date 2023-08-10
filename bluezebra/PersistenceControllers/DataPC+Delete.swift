@@ -12,12 +12,13 @@ extension DataPC {
     
     /// Generic Delete Functions
     ///
-    public func fetchDeleteMOAsync<T1: NSManagedObject,
+    public func fetchDeleteMO<T1: NSManagedObject,
                                    T2: CVarArg>(entity: T1.Type,
                                                 queue: String = "background",
                                                 predicateProperty: String? = nil,
                                                 predicateValue: T2? = "",
-                                                customPredicate: NSPredicate? = nil) async throws {
+                                                customPredicate: NSPredicate? = nil,
+                                                showLogs: Bool = false) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -35,123 +36,36 @@ extension DataPC {
             fetchRequest.predicate = customPredicate
         }
         
-        try await contextQueue.perform {
-            do {
+        do {
+            try await contextQueue.perform {
+                
                 let MOs = try contextQueue.fetch(fetchRequest)
                 
-                if MOs.count > 1 { throw PError.multipleRecords }
-                guard let MO = MOs.first else { throw PError.noRecordExists }
+                if MOs.count > 1 { throw PError.multipleRecords(func: "fetchDeleteMO", err: "entity: \(String(describing: entity))") }
+                guard let MO = MOs.first else { throw PError.noRecordExists(func: "fetchDeleteMO", err: "entity: \(String(describing: entity))") }
                 
                 contextQueue.delete(MO)
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOAsync: SUCCESS (entity: \(entityName))")
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOAsync: FAILED (entity: \(entityName)) (\(error))")
-                throw PError.failed
+                if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchDeleteMO entity: \(entityName)") }
             }
-        }
-    }
-    
-    public func fetchDeleteMOsAsync<T1: NSManagedObject,
-                                    T2: CVarArg>(entity: T1.Type,
-                                                 queue: String = "background",
-                                                 predicateProperty: String? = nil,
-                                                 predicateValue: T2? = "",
-                                                 customPredicate: NSPredicate? = nil) async throws {
-        var contextQueue = self.backgroundContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        try await contextQueue.perform {
-            do {
-                let MOs = try contextQueue.fetch(fetchRequest)
-                
-                for MO in MOs {
-                    contextQueue.delete(MO)
-                }
-                
-                try contextQueue.save()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
-                throw PError.failed
-            }
-        }
-    }
-    
-    public func fetchDeleteMO<T1: NSManagedObject,
-                              T2: CVarArg>(entity: T1.Type,
-                                           queue: String = "background",
-                                           predicateProperty: String? = nil,
-                                           predicateValue: T2? = "",
-                                           customPredicate: NSPredicate? = nil,
-                                           completion: @escaping (Result<Void, PError>)->()) {
-        var contextQueue = self.backgroundContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        contextQueue.perform {
-            do {
-                let MOs = try contextQueue.fetch(fetchRequest)
-                
-                if MOs.count > 1 { throw PError.multipleRecords }
-                guard let MO = MOs.first else { throw PError.noRecordExists }
-                
-                contextQueue.delete(MO)
-                
-                try contextQueue.save()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMO: SUCCESS (entity: \(entityName))")
-                
-                DispatchQueue.main.async {
-                    completion(.success(()))
-                }
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMO: FAILED (entity: \(entityName)) (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
+        } catch {
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchDeleteMO", err: error.localizedDescription)
             }
         }
     }
     
     public func fetchDeleteMOs<T1: NSManagedObject,
-                               T2: CVarArg>(entity: T1.Type,
-                                            queue: String = "background",
-                                            predicateProperty: String? = nil,
-                                            predicateValue: T2? = "",
-                                            customPredicate: NSPredicate? = nil,
-                                            completion: @escaping (Result<Void, PError>)->()) {
+                                    T2: CVarArg>(entity: T1.Type,
+                                                 queue: String = "background",
+                                                 predicateProperty: String? = nil,
+                                                 predicateValue: T2? = "",
+                                                 customPredicate: NSPredicate? = nil,
+                                                 showLogs: Bool = false) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -169,8 +83,8 @@ extension DataPC {
             fetchRequest.predicate = customPredicate
         }
         
-        contextQueue.perform {
-            do {
+        do {
+            try await contextQueue.perform {
                 let MOs = try contextQueue.fetch(fetchRequest)
                 
                 for MO in MOs {
@@ -179,17 +93,13 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: SUCCESS (entity: \(entityName)) (deleted: \(MOs.count))")
-                
-                DispatchQueue.main.async {
-                    completion(.success(()))
-                }
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs: FAILED (entity: \(entityName)) (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
+                if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs entity: \(entityName), deleted: \(MOs.count)") }
+            }
+        } catch {
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchDeleteMOs", err: error.localizedDescription)
             }
         }
     }

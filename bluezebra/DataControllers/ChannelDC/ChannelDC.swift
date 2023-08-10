@@ -64,47 +64,22 @@ class ChannelDC: ObservableObject {
         self.addSocketHandlers()
     }
     
-    func socketCallback<T>(data: [Any],
-                           functionName: String,
-                           failureCompletion: ((Result<T, DCError>)->())? = nil,
-                           completion: @escaping (Any?) ->()) {
-        do {
-            if (data.first as? Bool)==true {
-                print("SERVER \(DateU.shared.logTS) -- ChannelDC.\(functionName): SUCCESS")
-                
-                if data.count > 1 {
-                    completion(data[1])
-                } else {
-                    completion(nil)
-                }
-            } else if let result = data.first as? String, result==SocketAckStatus.noAck {
-                throw DCError.timeOut
-            } else {
-                throw DCError.failed
-            }
-        } catch {
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.\(functionName): FAILED (\(error))")
-            
-            if let failureCompletion = failureCompletion {
-                failureCompletion(.failure(error as? DCError ?? .failed))
-            }
-        }
-    }
-    
     /// ChannelDC reset function
     ///
-    func resetState() {
+    func resetState(keepPersonalChannel: Bool = false) {
         DispatchQueue.main.async {
             self.RUs = [String: SRemoteUser]()
             self.onlineUsers = [String: Bool]()
             
             self.channels = [SChannel]()
-            self.personalChannel = nil
+            if !keepPersonalChannel { self.personalChannel = nil }
             
             self.CRs = [SChannelRequest]()
             self.CDs = [SChannelDeletion]()
             
+            #if DEBUG
             print("CLIENT \(DateU.shared.logTS) -- ChannelDC.resetState: SUCCESS")
+            #endif
         }
     }
 }

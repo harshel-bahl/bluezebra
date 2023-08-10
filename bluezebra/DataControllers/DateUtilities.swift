@@ -41,22 +41,28 @@ class DateU {
     
     /// dateFromString
     /// current datetime with timezone as UTC
-    func dateFromString(_ dateString: String) -> Date? {
+    func dateFromString(_ dateString: String) throws -> Date {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(identifier: "UTC")
         df.locale = Locale(identifier: "en_US_POSIX")
-        return df.date(from: dateString)
+        
+        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(func: "dateFromStringTZ", err: "date: \(dateString)")}
+        
+        return date
     }
     
     /// dateFromStringTZ
     /// current datetime with timezone as UTC
-    func dateFromStringTZ(_ dateString: String) -> Date? {
+    func dateFromStringTZ(_ dateString: String) throws -> Date {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         df.timeZone = TimeZone(identifier: "UTC")
         df.locale = Locale(identifier: "en_US_POSIX")
-        return df.date(from: dateString)
+        
+        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(func: "dateFromStringTZ", err: "date: \(dateString)")}
+        
+        return date
     }
 
     /// stringFromDate

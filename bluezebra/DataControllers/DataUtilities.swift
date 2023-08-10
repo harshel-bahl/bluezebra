@@ -25,32 +25,54 @@ class DataU {
     /// Decodes a JSON data object into a data packet
     func jsonDecodeFromData<T: Codable>(packet: T.Type,
                                         data: Data) throws -> T {
-        let dataPacket = try JSONDecoder().decode(T.self, from: data)
-        return dataPacket
+        do {
+            let dataPacket = try JSONDecoder().decode(T.self, from: data)
+            return dataPacket
+        } catch {
+            throw DCError.jsonError(func: "jsonDecodeFromData", err: error.localizedDescription)
+        }
     }
     
     /// jsonDecodeFromObject
     /// Decodes a foundation object into a data packet
     func jsonDecodeFromObject<T: Codable>(packet: T.Type,
                                           data: Any) throws -> T {
-        guard let data = try? JSONSerialization.data(withJSONObject: data, options: []) else { throw DCError.typecastError }
-        let dataPacket = try JSONDecoder().decode(T.self, from: data)
-        return dataPacket
+        do {
+            let data = try JSONSerialization.data(withJSONObject: data, options: [])
+            let dataPacket = try JSONDecoder().decode(T.self, from: data)
+            return dataPacket
+        } catch {
+            throw DCError.jsonError(func: "jsonDecodeFromObject", err: error.localizedDescription)
+        }
     }
     
     /// dictionaryToJSONData
     ///
     func dictionaryToJSONData(_ dictionary: [String: Any]) throws -> Data {
-        let jsonData = try JSONSerialization.data(withJSONObject: dictionary, options: [])
-        return jsonData
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: dictionary, options: [])
+            return jsonData
+        } catch {
+            throw DCError.jsonError(func: "dictionaryToJSONData", err: error.localizedDescription)
+        }
     }
     
     /// jsonDataToDictionary
     ///
     func jsonDataToDictionary(_ jsonData: Data) throws -> [String: Any] {
-        let data = try JSONSerialization.jsonObject(with: jsonData, options: [])
-        guard let dictionary = data as? [String: Any] else { throw DCError.typecastError }
-        return dictionary
+        do {
+            let data = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            
+            guard let dictionary = data as? [String: Any] else { throw DCError.typecastError(func: "jsonDataToDictionary", err: "couldn't cast data to [String: Any] dictionary") }
+            
+            return dictionary
+        } catch {
+            if let error = error as? DCError {
+                throw error
+            } else {
+                throw DCError.jsonError(func: "jsonDataToDictionary", err: error.localizedDescription)
+            }
+        }
     }
     
     /// calcDataSize
@@ -61,6 +83,19 @@ class DataU {
         bcf.countStyle = .file
         let string = bcf.string(fromByteCount: Int64(data.count))
         return string
+    }
+    
+    func handleFailure(function: String,
+                       DT: String = DateU.shared.logTS,
+                       err: Error,
+                       message: String? = nil) {
+        print("FAILED \(DT) -- function: \(function), error: \(err), message: \(message ?? "-")")
+    }
+    
+    func handleSuccess(function: String,
+                       DT: String = DateU.shared.logTS,
+                       message: String? = nil) {
+        print("SUCCESS \(DT) -- function: \(function), message: \(message ?? "-")")
     }
 }
 

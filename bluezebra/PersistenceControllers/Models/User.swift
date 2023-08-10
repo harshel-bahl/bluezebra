@@ -32,7 +32,7 @@ extension User: ToSafeObject {
               let username = self.username,
               let creationDate = self.creationDate,
               let avatar = self.avatar else {
-            throw PError.safeMapError
+            throw PError.safeMapError(func: "User.safeObject")
         }
         
         return SUser(userID: userID,

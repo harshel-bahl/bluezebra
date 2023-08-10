@@ -263,19 +263,10 @@ struct InputContainer: View {
             
         } else if let selectedImages = selectedImages {
             
-            var images = [UIImage]()
-            
-            for image in selectedImages {
-                guard let url = image.url else { throw DCError.imageDataFailure }
-                let imageData = try Data(contentsOf: url)
-                guard let uiImage = UIImage(data: imageData) else { throw DCError.imageDataFailure }
-                images.append(uiImage)
-            }
-            
             let SMessage = try await messageDC.createImageMessage(channelID: chatState.currChannel.channelID,
                                                                   userID: chatState.currChannel.userID,
                                                                   message: self.message,
-                                                                  selectedImages: images)
+                                                                  selectedImages: selectedImages)
             
             messageDC.addMessage(channelID: chatState.currChannel.channelID,
                                  message: SMessage)

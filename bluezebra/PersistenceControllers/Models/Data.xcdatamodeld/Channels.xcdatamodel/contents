@@ -26,7 +26,7 @@
         <attribute name="requestID" optional="YES" attributeType="String"/>
         <attribute name="userID" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="Event" representedClassName=".ServerEvent" syncable="YES">
+    <entity name="Event" representedClassName=".Event" syncable="YES">
         <attribute name="attempts" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventID" optional="YES" attributeType="String"/>

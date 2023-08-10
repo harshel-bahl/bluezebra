@@ -30,7 +30,7 @@ extension Channel: ToSafeObject {
         guard let channelID = self.channelID,
               let userID = self.userID,
               let creationDate =  self.creationDate else {
-            throw PError.safeMapError
+            throw PError.safeMapError(func: "Channel.safeObject")
         }
         
         return SChannel(channelID: channelID,

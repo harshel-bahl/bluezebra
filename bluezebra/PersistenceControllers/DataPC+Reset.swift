@@ -13,15 +13,16 @@ extension DataPC {
     /// Reset DataPC Functions
     ///
     
-    public func hardResetDataPC() async throws {
-        try await self.fetchDeleteMOsAsync(entity: User.self)
-        try await self.fetchDeleteMOsAsync(entity: Settings.self)
-        try await self.fetchDeleteMOsAsync(entity: RemoteUser.self)
-        try await self.fetchDeleteMOsAsync(entity: Channel.self)
-        try await self.fetchDeleteMOsAsync(entity: ChannelRequest.self)
-        try await self.fetchDeleteMOsAsync(entity: ChannelDeletion.self)
-        try await self.fetchDeleteMOsAsync(entity: Message.self)
+    public func hardResetDataPC(showLogs: Bool = false) async throws {
+        try await self.fetchDeleteMOs(entity: User.self)
+        try await self.fetchDeleteMOs(entity: Settings.self)
+        try await self.fetchDeleteMOs(entity: RemoteUser.self)
+        try await self.fetchDeleteMOs(entity: Channel.self)
+        try await self.fetchDeleteMOs(entity: ChannelRequest.self)
+        try await self.fetchDeleteMOs(entity: ChannelDeletion.self)
+        try await self.fetchDeleteMOs(entity: Message.self)
+        try await self.fetchDeleteMOs(entity: Event.self)
         
-        print("CLIENT \(DateU.shared.logTS) -- DataPC.hardResetDataPC: SUCCESS")
+        if showLogs { print("CLIENT \(DateU.shared.logTS) -- DataPC.hardResetDataPC: SUCCESS") }
     }
 }

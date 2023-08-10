@@ -19,7 +19,10 @@ class SocketController: NSObject, ObservableObject {
     
     @Published var connected = false {
         didSet {
-            print("CLIENT \(DateU.shared.logTS) -- SocketController.connected: \(connected)")
+            #if DEBUG
+            print("SUCCESS \(DateU.shared.logTS) -- SocketController.connected: \(connected)")
+            #endif
+            
             if connected {
                 self.userConnection()
             }
@@ -36,7 +39,9 @@ class SocketController: NSObject, ObservableObject {
     
     func createConnectionHandlers() {
         clientSocket.on(clientEvent: .connect) { [weak self] data, ack in
-            print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): connected")
+            #if DEBUG
+            print("SUCCESS \(DateU.shared.logTS) -- clientSocket.on(clientEvent: .connect))")
+            #endif
             
             guard let self = self else { return }
             
@@ -44,7 +49,9 @@ class SocketController: NSObject, ObservableObject {
         }
         
         clientSocket.on(clientEvent: .disconnect) { [weak self] data, ack in
-            print("CLIENT \(DateU.shared.logTS) -- clientSocket.on(clientEvent): disconnected")
+            #if DEBUG
+            print("SUCCESS \(DateU.shared.logTS) -- clientSocket.on(clientEvent: .disconnect)")
+            #endif
             
             guard let self = self else { return }
             
@@ -53,8 +60,9 @@ class SocketController: NSObject, ObservableObject {
         }
         
         clientSocket.on(clientEvent: .error) { data, ack in
-            let errorString = (data[0] as? String)
-            print("socket error: \(errorString ?? "N/A")")
+            #if DEBUG
+            print("FAILED \(DateU.shared.logTS) -- clientSocket.on(clientEvent: .error): error: \((data[0] as? String) ?? "-")")
+            #endif
         }
     }
     
@@ -71,11 +79,13 @@ class SocketController: NSObject, ObservableObject {
             Task {
                 do {
                     try await UserDC.shared.connectUser()
-                    
+                  
                     // ChannelDC Startup Networking
                     try await ChannelDC.shared.checkChannelUsers()
                 } catch {
-                    
+                    #if DEBUG
+                    DataU.shared.handleFailure(function: "SocketController.userConnection", err: error)
+                    #endif
                 }
             }
         }

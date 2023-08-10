@@ -10,7 +10,6 @@ import CoreData
 
 struct SChannelRequest {
     var requestID: String
-    var channelID: String
     var userID: String
     var date: Date
     var isSender: Bool
@@ -18,7 +17,6 @@ struct SChannelRequest {
 
 class ChannelRequest: NSManagedObject {
     @NSManaged var requestID: String?
-    @NSManaged var channelID: String?
     @NSManaged var userID: String?
     @NSManaged var date: Date?
     @NSManaged var isSender: Bool
@@ -28,14 +26,12 @@ extension ChannelRequest: ToSafeObject {
     
     func safeObject() throws -> SChannelRequest {
         guard let requestID = self.requestID,
-              let channelID = self.channelID,
               let userID = self.userID,
               let date = self.date else {
-            throw PError.safeMapError
+            throw PError.safeMapError(func: "ChannelRequest.safeObject")
         }
         
         return SChannelRequest(requestID: requestID,
-                               channelID: channelID,
                                userID: userID,
                                date: date,
                                isSender: self.isSender)

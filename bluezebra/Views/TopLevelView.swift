@@ -41,6 +41,7 @@ struct TopLevelView: View {
                         
                     }
                 }
+                .onAppear { tab = "channels" }
                 
             } else if (userDC.userData != nil && userDC.loggedIn == true) {
                 
@@ -51,7 +52,15 @@ struct TopLevelView: View {
                         }
                         
                         if (userDC.userSettings?.biometricSetup == nil) {
-                            userDC.setupBiometricAuth()
+                            userDC.setupBiometricAuth() { result in
+                                switch result {
+                                case .success(): break
+                                case .failure(let err):
+                                    #if DEBUG
+                                    DataU.shared.handleFailure(function: "UserDC.setupBiometricAuth", err: err)
+                                    #endif
+                                }
+                            }
                         }
                     }
             }
@@ -122,7 +131,7 @@ struct TopLevelView: View {
                                           selectedColour: Color("accent1"),
                                           unselectedColour:  Color("accent5"),
                                           backgroundColour: Color("background3"),
-                                          betweenPadding: SP.screenWidth*0.18),
+                                          betweenPadding: 75),
                         tabContent: ["channels": {
             AnyView(
                 ChannelsList()

@@ -21,8 +21,8 @@ extension ChannelDC {
     
     func syncRUs(fetchLimit: Int? = nil) async throws {
         
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: RemoteUser.self,
-                                                           fetchLimit: fetchLimit)
+        let SMOs = try await DataPC.shared.fetchSMOs(entity: RemoteUser.self,
+                                                     fetchLimit: fetchLimit)
         
         DispatchQueue.main.async {
             for SMO in SMOs {
@@ -32,9 +32,9 @@ extension ChannelDC {
     }
     
     func syncPersonalChannel() async throws {
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
-                                                        predicateProperty: "channelID",
-                                                        predicateValue: "personal")
+        let SMO = try await DataPC.shared.fetchSMO(entity: Channel.self,
+                                                   predicateProperty: "channelID",
+                                                   predicateValue: "personal")
         DispatchQueue.main.async {
             self.personalChannel = SMO
         }
@@ -44,10 +44,10 @@ extension ChannelDC {
         
         let predicate = NSPredicate(format: "active == %@ AND channelID != %@", argumentArray: [true, "personal"])
         
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Channel.self,
-                                                          customPredicate: predicate,
-                                                          fetchLimit: fetchLimit,
-                                                          sortKey: "lastMessageDate")
+        let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
+                                                     customPredicate: predicate,
+                                                     fetchLimit: fetchLimit,
+                                                     sortKey: "lastMessageDate")
         
         let sortedSMOs = self.sortNilDates(channels: SMOs)
         
@@ -58,9 +58,9 @@ extension ChannelDC {
     
     func syncCRs(fetchLimit: Int? = nil) async throws {
         
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: ChannelRequest.self,
-                                                           fetchLimit: fetchLimit,
-                                                           sortKey: "date")
+        let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelRequest.self,
+                                                     fetchLimit: fetchLimit,
+                                                     sortKey: "date")
         
         DispatchQueue.main.async {
             self.CRs = SMOs
@@ -70,9 +70,9 @@ extension ChannelDC {
     
     func syncCDs(fetchLimit: Int? = nil) async throws {
         
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: ChannelDeletion.self,
-                                                          fetchLimit: fetchLimit,
-                                                          sortKey: "deletionDate")
+        let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelDeletion.self,
+                                                     fetchLimit: fetchLimit,
+                                                     sortKey: "deletionDate")
         
         DispatchQueue.main.async {
             self.CDs = SMOs
@@ -216,66 +216,66 @@ extension ChannelDC {
     func deleteRU(userID: String) async throws {
         self.removeRU(userID: userID)
         
-        try await DataPC.shared.fetchDeleteMOAsync(entity: RemoteUser.self,
-                                                   predicateProperty: "userID",
-                                                   predicateValue: userID)
+        try await DataPC.shared.fetchDeleteMO(entity: RemoteUser.self,
+                                              predicateProperty: "userID",
+                                              predicateValue: userID)
     }
     
     func deleteChannel(channelID: String) async throws {
         self.removeChannel(channelID: channelID)
         
-        try await DataPC.shared.fetchDeleteMOAsync(entity: Channel.self,
-                                                   predicateProperty: "channelID",
-                                                   predicateValue: channelID)
+        try await DataPC.shared.fetchDeleteMO(entity: Channel.self,
+                                              predicateProperty: "channelID",
+                                              predicateValue: channelID)
     }
     
     func deleteCR(channelID: String) async throws {
         self.removeCR(channelID: channelID)
         
-        try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelRequest.self,
-                                                   predicateProperty: "channelID",
-                                                   predicateValue: channelID)
+        try await DataPC.shared.fetchDeleteMO(entity: ChannelRequest.self,
+                                              predicateProperty: "channelID",
+                                              predicateValue: channelID)
     }
     
     func deleteCD(deletionID: String) async throws {
         self.removeCD(deletionID: deletionID)
         
-        try await DataPC.shared.fetchDeleteMOAsync(entity: ChannelDeletion.self,
-                                                   predicateProperty: "deletionID",
-                                                   predicateValue: deletionID)
+        try await DataPC.shared.fetchDeleteMO(entity: ChannelDeletion.self,
+                                              predicateProperty: "deletionID",
+                                              predicateValue: deletionID)
     }
     
     /// Local Fetch Functions
     ///
     func fetchRULocally(userID: String) async throws -> SRemoteUser {
         
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: RemoteUser.self,
-                                                        predicateProperty: "userID",
-                                                        predicateValue: userID)
+        let SMO = try await DataPC.shared.fetchSMO(entity: RemoteUser.self,
+                                                   predicateProperty: "userID",
+                                                   predicateValue: userID)
         return SMO
     }
     
     func fetchChannelLocally(channelID: String) async throws -> SChannel {
         
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
-                                                        predicateProperty: "channelID",
-                                                        predicateValue: channelID)
+        let SMO = try await DataPC.shared.fetchSMO(entity: Channel.self,
+                                                   predicateProperty: "channelID",
+                                                   predicateValue: channelID)
         return SMO
     }
     
     func fetchCRLocally(channelID: String) async throws -> SChannelRequest {
         
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: ChannelRequest.self,
-                                                        predicateProperty: "channelID",
-                                                        predicateValue: channelID)
+        let SMO = try await DataPC.shared.fetchSMO(entity: ChannelRequest.self,
+                                                   predicateProperty: "channelID",
+                                                   predicateValue: channelID)
         return SMO
     }
     
     func fetchCDLocally(deletionID: String) async throws -> SChannelDeletion {
         
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: ChannelDeletion.self,
-                                                        predicateProperty: "deletionID",
-                                                        predicateValue: deletionID)
+        let SMO = try await DataPC.shared.fetchSMO(entity: ChannelDeletion.self,
+                                                   predicateProperty: "deletionID",
+                                                   predicateValue: deletionID)
         return SMO
     }
     
@@ -289,23 +289,23 @@ extension ChannelDC {
         if let user = self.RUs[userID] {
             RU = user
         } else {
-            RU = try await DataPC.shared.fetchSMOAsync(entity: RemoteUser.self,
-                                                       predicateProperty: "userID",
-                                                       predicateValue: userID)
+            RU = try await DataPC.shared.fetchSMO(entity: RemoteUser.self,
+                                                  predicateProperty: "userID",
+                                                  predicateValue: userID)
         }
         
-        try await DataPC.shared.fetchDeleteMOsAsync(entity: RemoteUser.self,
-                                                    predicateProperty: "userID",
-                                                    predicateValue: userID)
+        try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self,
+                                               predicateProperty: "userID",
+                                               predicateValue: userID)
         self.removeRU(userID: userID)
         
-        let channel = try await DataPC.shared.fetchSMOAsync(entity: Channel.self,
-                                                            predicateProperty: "userID",
-                                                            predicateValue: userID)
+        let channel = try await DataPC.shared.fetchSMO(entity: Channel.self,
+                                                       predicateProperty: "userID",
+                                                       predicateValue: userID)
         
-        try await DataPC.shared.fetchDeleteMOsAsync(entity: Channel.self,
-                                                    predicateProperty: "userID",
-                                                    predicateValue: userID)
+        try await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
+                                               predicateProperty: "userID",
+                                               predicateValue: userID)
         self.removeChannel(channelID: channel.channelID)
         
         try await MessageDC.shared.deleteChannelMessages(channelID: channel.channelID)
@@ -351,7 +351,7 @@ extension ChannelDC {
                                                        isOrigin: isOrigin)
             return SCD
         } else {
-            throw DCError.failed
+            throw DCError.clientFailure(func: "ChannelDC.clearChannelData", err: "RU is nil for non-personal channel")
         }
     }
     
@@ -373,7 +373,7 @@ extension ChannelDC {
                                                        isOrigin: isOrigin)
             return SCD
         } else {
-            throw DCError.failed
+            throw DCError.invalidRequest(func: "ChannelDC.deleteChannelData", err: "cannot delete personal channel")
         }
         
     }

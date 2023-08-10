@@ -15,13 +15,13 @@ extension DataPC {
     
     /// fetchMOAsync: fetches managed object and returns it asynchronously
     ///
-    public func fetchMOAsync<T1: NSManagedObject,
-                             T2: CVarArg>(entity: T1.Type,
-                                          queue: String = "background",
-                                          predicateProperty: String? = nil,
-                                          predicateValue: T2? = "",
-                                          customPredicate: NSPredicate? = nil,
-                                          allowNil: Bool = false) async throws -> T1? {
+    public func fetchMO<T1: NSManagedObject,
+                        T2: CVarArg>(entity: T1.Type,
+                                     queue: String = "background",
+                                     predicateProperty: String? = nil,
+                                     predicateValue: T2? = "",
+                                     customPredicate: NSPredicate? = nil,
+                                     showLogs: Bool = false) async throws -> T1 {
         let contextQueue: NSManagedObjectContext
         
         if queue=="main" {
@@ -46,39 +46,35 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if MOs.count > 1 { throw PError.multipleRecords }
+            if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchMO", err: "entity: \(entity)") }
             
-            let MO: T1?
+            let MO: T1
             
-            if !allowNil {
-                guard let firstMO = MOs.first else { throw PError.noRecordExists }
-                MO = firstMO
-            } else {
-                MO = MOs.first
-            }
+            guard let firstMO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchMO", err: "entity: \(entity)") }
+            MO = firstMO
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOAsync: SUCCESS (entity: \(entityName))")
+            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchMO entity: \(entityName)") }
             
             return MO
         } catch {
-            if !allowNil {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOAsync: FAILED (entity: \(entityName)) (\(error))")
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchMO", err: error.localizedDescription)
             }
-            
-            throw PError.failed
         }
     }
     
-    public func fetchMOsAsync<T1: NSManagedObject,
-                              T2: CVarArg>(entity: T1.Type,
-                                           queue: String = "background",
-                                           predicateProperty: String? = nil,
-                                           predicateValue: T2? = "",
-                                           customPredicate: NSPredicate? = nil,
-                                           fetchLimit: Int? = nil,
-                                           sortKey: String? = nil,
-                                           sortAscending: Bool = false,
-                                           silentFail: Bool = false) async throws -> [T1] {
+    public func fetchMOs<T1: NSManagedObject,
+                         T2: CVarArg>(entity: T1.Type,
+                                      queue: String = "background",
+                                      predicateProperty: String? = nil,
+                                      predicateValue: T2? = "",
+                                      customPredicate: NSPredicate? = nil,
+                                      fetchLimit: Int? = nil,
+                                      sortKey: String? = nil,
+                                      sortAscending: Bool = false,
+                                      showLogs: Bool = false) async throws -> [T1] {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -113,25 +109,27 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOsAsync: SUCCESS (entity: \(entityName))")
+            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchMOs: SUCCESS entity: \(entityName)") }
             
             return MOs
         } catch {
-            if !silentFail {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchMOsAsync: FAILED (entity: \(entityName)) (\(error))")
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchMOs", err: error.localizedDescription)
             }
-            throw PError.failed
         }
     }
     
     /// fetchSMOAsync: fetches managed object and returns its safe object asynchronously
     ///
-    public func fetchSMOAsync<T1: NSManagedObject & ToSafeObject,
-                              T2: CVarArg>(entity: T1.Type,
-                                           queue: String = "main",
-                                           predicateProperty: String? = nil,
-                                           predicateValue: T2? = "",
-                                           customPredicate: NSPredicate? = nil) async throws -> T1.SafeType {
+    public func fetchSMO<T1: NSManagedObject & ToSafeObject,
+                         T2: CVarArg>(entity: T1.Type,
+                                      queue: String = "main",
+                                      predicateProperty: String? = nil,
+                                      predicateValue: T2? = "",
+                                      customPredicate: NSPredicate? = nil,
+                                      showLogs: Bool = false) async throws -> T1.SafeType {
         var contextQueue = self.mainContext
         
         if queue=="background" {
@@ -154,31 +152,36 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if MOs.count > 1 { throw PError.multipleRecords }
-            guard let MO = MOs.first else { throw PError.noRecordExists }
+            if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchSMO", err: "entity: \(entity)") }
+            
+            guard let MO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchSMO", err: "entity: \(entity)") }
             
             let SMO = try MO.safeObject()
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: SUCCESS (entity: \(entityName))")
+            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchSMO entity: \(entityName)") }
             
             return SMO
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOAsync: FAILED (entity: \(entityName)) (\(error))")
-            throw PError.failed
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchSMO", err: error.localizedDescription)
+            }
         }
     }
     
     /// fetchSMOsAsync: fetches managed objects and returns their safe objects asynchronously
     ///
-    public func fetchSMOsAsync<T1: NSManagedObject & ToSafeObject,
-                               T2: CVarArg>(entity: T1.Type,
-                                            queue: String = "main",
-                                            predicateProperty: String? = nil,
-                                            predicateValue: T2? = "",
-                                            customPredicate: NSPredicate? = nil,
-                                            fetchLimit: Int? = nil,
-                                            sortKey: String? = nil,
-                                            sortAscending: Bool = false) async throws -> [T1.SafeType] {
+    public func fetchSMOs<T1: NSManagedObject & ToSafeObject,
+                          T2: CVarArg>(entity: T1.Type,
+                                       queue: String = "main",
+                                       predicateProperty: String? = nil,
+                                       predicateValue: T2? = "",
+                                       customPredicate: NSPredicate? = nil,
+                                       fetchLimit: Int? = nil,
+                                       sortKey: String? = nil,
+                                       sortAscending: Bool = false,
+                                       showLogs: Bool = false) async throws -> [T1.SafeType] {
         var contextQueue = self.mainContext
         
         if queue=="background" {
@@ -208,11 +211,11 @@ extension DataPC {
         }
         
         do {
-            var MOs = try await contextQueue.perform {
+            let MOs = try await contextQueue.perform {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
+            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchSMOs entity: \(entityName), fetched: \(MOs.count)") }
             
             let SMOs = try MOs.map {
                 return try $0.safeObject()
@@ -220,118 +223,10 @@ extension DataPC {
             
             return SMOs
         } catch {
-            print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOsAsync: FAILED (entity: \(entityName)) (\(error))")
-            throw PError.failed
-        }
-    }
-    
-    
-    /// fetchSMO: fetches managed object and returns its safe object
-    ///
-    public func fetchSMO<T1: NSManagedObject & ToSafeObject,
-                         T2: CVarArg>(entity: T1.Type,
-                                      queue: String = "main",
-                                      predicateProperty: String? = nil,
-                                      predicateValue: T2? = "",
-                                      customPredicate: NSPredicate? = nil,
-                                      completion: @escaping (Result<T1.SafeType, PError>)->()) {
-        var contextQueue = self.mainContext
-        
-        if queue=="background" {
-            contextQueue = self.backgroundContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        contextQueue.perform {
-            do {
-                let MOs = try contextQueue.fetch(fetchRequest)
-                
-                if MOs.count > 1 { throw PError.multipleRecords }
-                guard let MO = MOs.first else { throw PError.noRecordExists }
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMO: SUCCESS (entity: \(entityName))")
-                
-                let sMO = try MO.safeObject()
-                
-                DispatchQueue.main.async {
-                    completion(.success(sMO))
-                }
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMO: FAILED (entity: \(entityName)) (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
-            }
-        }
-    }
-    
-    /// fetchSMOs: fetches managed objects and returns their safe objects
-    /// 
-    public func fetchSMOs<T1: NSManagedObject & ToSafeObject,
-                          T2: CVarArg>(entity: T1.Type,
-                                       queue: String = "main",
-                                       predicateProperty: String? = nil,
-                                       predicateValue: T2? = "",
-                                       customPredicate: NSPredicate? = nil,
-                                       fetchLimit: Int? = nil,
-                                       sortKey: String? = nil,
-                                       sortAscending: Bool = false,
-                                       completion: @escaping (Result<[T1.SafeType], PError>)->()) {
-        var contextQueue = self.mainContext
-        
-        if queue=="background" {
-            contextQueue = self.backgroundContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        if let fetchLimit = fetchLimit {
-            fetchRequest.fetchLimit=fetchLimit
-        }
-        
-        if let sortKey = sortKey {
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-        }
-        
-        contextQueue.perform {
-            do {
-                let MOs = try contextQueue.fetch(fetchRequest)
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOs: SUCCESS (entity: \(entityName)) (fetched: \(MOs.count))")
-                
-                let sMOs = try MOs.map {
-                    return try $0.safeObject()
-                }
-                
-                DispatchQueue.main.async {
-                    completion(.success(sMOs))
-                }
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.fetchSMOs: FAILED (entity: \(entityName)) (\(error))")
-                
-                DispatchQueue.main.async {
-                    completion(.failure(error as? PError ?? .failed))
-                }
+            if let error = error as? PError {
+                throw error
+            } else {
+                throw PError.persistenceError(func: "DataPC.fetchSMOs", err: error.localizedDescription)
             }
         }
     }

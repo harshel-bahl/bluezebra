@@ -31,14 +31,22 @@ class DataPC: ObservableObject {
     /// Helper Functions
     ///
     internal func mainSave() throws {
-        if self.mainContext.hasChanges {
-            try self.mainContext.save()
+        do {
+            if self.mainContext.hasChanges {
+                try self.mainContext.save()
+            }
+        } catch {
+            throw PError.persistenceError(func: "DataPC.mainSave", err: error.localizedDescription)
         }
     }
     
     internal func backgroundSave() throws {
-        if self.backgroundContext.hasChanges {
-            try self.backgroundContext.save()
+        do {
+            if self.backgroundContext.hasChanges {
+                try self.backgroundContext.save()
+            }
+        } catch {
+            throw PError.persistenceError(func: "DataPC.backgroundSave", err: error.localizedDescription)
         }
     }
 }

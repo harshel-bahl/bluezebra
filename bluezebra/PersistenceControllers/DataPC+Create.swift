@@ -12,68 +12,64 @@ extension DataPC {
     
     /// Creation Persistence Functions
     /// Write operations on background thread
+    ///
+    
+    /// createUser
+    ///
     public func createUser(userID: String,
                            username: String,
                            creationDate: Date,
                            avatar: String,
                            lastOnline: Date? = nil) async throws -> SUser {
         
-        let checkMO = try await self.fetchMOAsync(entity: User.self,
-                                                  allowNil: true)
+        let checkMO = try? await self.fetchMO(entity: User.self)
         
-        if checkMO != nil { throw PError.recordExists }
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createUser", err: "userID: \(userID)") }
         
         let SMO = try await self.backgroundContext.perform {
-            do {
-                let MO = User(context: self.backgroundContext)
-                MO.userID = userID
-                MO.username = username
-                MO.creationDate = creationDate
-                MO.avatar = avatar
-                MO.lastOnline = lastOnline
-                
-                try self.backgroundSave()
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: SUCCESS")
-                
-                let SMO = try MO.safeObject()
-                
-                return SMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createUser: FAILED (\(error))")
-                throw error
-            }
+            let MO = User(context: self.backgroundContext)
+            MO.userID = userID
+            MO.username = username
+            MO.creationDate = creationDate
+            MO.avatar = avatar
+            MO.lastOnline = lastOnline
+            
+            try self.backgroundSave()
+            
+            let SMO = try MO.safeObject()
+            
+            return SMO
         }
+        
         return SMO
     }
     
+    /// createSettings
+    ///
     public func createSettings(pin: String,
                                biometricSetup: String? = nil) async throws -> SSettings {
         
-        let checkMO = try await self.fetchMOAsync(entity: Settings.self,
-                                                  allowNil: true)
+        let checkMO = try? await self.fetchMO(entity: Settings.self)
         
-        if checkMO != nil { throw PError.recordExists }
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createSettings") }
         
         let SMO = try await self.backgroundContext.perform {
-            do {
-                let MO = Settings(context: self.backgroundContext)
-                MO.pin = pin
-                MO.biometricSetup = biometricSetup
-                
-                try self.backgroundSave()
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: SUCCESS")
-                
-                let SMO = try MO.safeObject()
-                
-                return SMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createSettings: FAILED (\(error))")
-                throw error
-            }
+            let MO = Settings(context: self.backgroundContext)
+            MO.pin = pin
+            MO.biometricSetup = biometricSetup
+            
+            try self.backgroundSave()
+            
+            let SMO = try MO.safeObject()
+            
+            return SMO
         }
+        
         return SMO
     }
     
+    /// createRU
+    ///
     public func createRU(userID: String,
                          username: String,
                          avatar: String,
@@ -81,159 +77,96 @@ extension DataPC {
                          lastOnline: Date? = nil,
                          blocked: Bool = false) async throws -> SRemoteUser {
         
-        let fetchedMO = try await fetchMOAsync(entity: RemoteUser.self,
-                                               predicateProperty: "userID",
-                                               predicateValue: userID,
-                                               allowNil: true)
+        let fetchedMO = try? await fetchMO(entity: RemoteUser.self,
+                                           predicateProperty: "userID",
+                                           predicateValue: userID)
         
-        if fetchedMO != nil { throw PError.recordExists}
+        if fetchedMO != nil { throw PError.recordExists(func: "DataPC.createRU", err: "userID: \(userID)") }
         
         let sMO = try await self.backgroundContext.perform {
-            do {
-                let MO = RemoteUser(context: self.backgroundContext)
-                MO.userID = userID
-                MO.username = username
-                MO.avatar = avatar
-                MO.creationDate = creationDate
-                MO.lastOnline = lastOnline
-                MO.blocked = blocked
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRU: SUCCESS")
-                
-                let sMO = try MO.safeObject()
-                
-                return sMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createRU: FAILED (\(error))")
-                throw error
-            }
+            let MO = RemoteUser(context: self.backgroundContext)
+            MO.userID = userID
+            MO.username = username
+            MO.avatar = avatar
+            MO.creationDate = creationDate
+            MO.lastOnline = lastOnline
+            MO.blocked = blocked
+            
+            try self.backgroundSave()
+            
+            let sMO = try MO.safeObject()
+            
+            return sMO
         }
+        
         return sMO
     }
     
-    //    public func createTeam(teamID: String = UUID().uuidString,
-    //                           active: Bool = false,
-    //                           userIDs: [String],
-    //                           nUsers: Int,
-    //                           leads: String,
-    //                           name: String,
-    //                           icon: String,
-    //                           creationUserID: String,
-    //                           creationDate: Date,
-    //                           teamDescription: String? = nil) async throws -> STeam {
-    //
-    //        let fetchedMO = try? await fetchMOAsync(entity: Team.self,
-    //                                                predicateProperty: "teamID",
-    //                                                predicateValue: teamID,
-    //                                                silentFail: true)
-    //
-    //        if fetchedMO != nil { throw PError.recordExists}
-    //
-    //        let sMO = try await self.backgroundContext.perform {
-    //            do {
-    //                let MO = Team(context: self.backgroundContext)
-    //                MO.teamID = teamID
-    //                MO.active = active
-    //                MO.userIDs = userIDs.joined(separator: ",")
-    //                MO.nUsers = nUsers
-    //                MO.leads = leads
-    //                MO.name = name
-    //                MO.icon = icon
-    //                MO.creationUserID = creationUserID
-    //                MO.creationDate = creationDate
-    //                MO.teamDescription = teamDescription
-    //
-    //                try self.backgroundSave()
-    //
-    //                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: SUCCESS")
-    //
-    //                let sMO = try MO.safeObject()
-    //
-    //                return sMO
-    //            } catch {
-    //                print("CLIENT \(DateU.shared.logTS) -- DataPC.createTeam: FAILED (\(error))")
-    //                throw error as? PError ?? .failed
-    //            }
-    //        }
-    //        return sMO
-    //    }
-    
+    /// createCR
+    ///
     public func createCR(requestID: String,
-                         channelID: String,
                          userID: String,
                          date: Date,
                          isSender: Bool) async throws -> SChannelRequest {
         
-        let fetchedMO = try await fetchMOAsync(entity: ChannelRequest.self,
-                                               predicateProperty: "requestID",
-                                               predicateValue: requestID,
-                                               allowNil: true)
+        let checkMO = try? await fetchMO(entity: ChannelRequest.self,
+                                         predicateProperty: "requestID",
+                                         predicateValue: requestID)
         
-        if fetchedMO != nil { throw PError.recordExists }
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createCR", err: "requestID: \(requestID)") }
         
         let sMO = try await self.backgroundContext.perform {
-            do {
-                let MO = ChannelRequest(context: self.backgroundContext)
-                MO.requestID = requestID
-                MO.channelID = channelID
-                MO.userID = userID
-                MO.date = date
-                MO.isSender = isSender
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCR: SUCCESS")
-                
-                let sMO = try MO.safeObject()
-                
-                return sMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCR: FAILED (\(error))")
-                throw error
-            }
+            let MO = ChannelRequest(context: self.backgroundContext)
+            MO.requestID = requestID
+            MO.userID = userID
+            MO.date = date
+            MO.isSender = isSender
+            
+            try self.backgroundSave()
+            
+            let sMO = try MO.safeObject()
+            
+            return sMO
         }
+        
         return sMO
     }
     
+    /// createChannel
+    /// - Creates a channel attributed to one userID, so no duplicates
     public func createChannel(channelID: String,
                               active: Bool,
                               userID: String,
                               creationDate: Date,
                               lastMessageDate: Date? = nil) async throws -> SChannel {
         
-        let fetchedMO = try await fetchMOAsync(entity: Channel.self,
-                                               predicateProperty: "userID",
-                                               predicateValue: userID,
-                                               allowNil: true)
+        let checkMO = try? await fetchMO(entity: Channel.self,
+                                         predicateProperty: "channelID",
+                                         predicateValue: channelID)
         
-        if fetchedMO != nil { throw PError.recordExists }
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createChannel", err: "channelID: \(channelID)") }
         
         let sMO = try await self.backgroundContext.perform {
-            do {
-                let MO = Channel(context: self.backgroundContext)
-                MO.channelID = channelID
-                MO.active = active
-                MO.userID = userID
-                MO.creationDate = creationDate
-                MO.lastMessageDate = lastMessageDate
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannel: SUCCESS")
-                
-                let sMO = try MO.safeObject()
-                
-                return sMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createChannel: FAILED (\(error))")
-                throw error
-            }
+            
+            let MO = Channel(context: self.backgroundContext)
+            MO.channelID = channelID
+            MO.active = active
+            MO.userID = userID
+            MO.creationDate = creationDate
+            MO.lastMessageDate = lastMessageDate
+            
+            try self.backgroundSave()
+            
+            let sMO = try MO.safeObject()
+            
+            return sMO
         }
+        
         return sMO
     }
     
+    /// createCD
+    ///
     public func createCD(deletionID: String,
                          channelType: String,
                          deletionDate: Date,
@@ -244,38 +177,40 @@ extension DataPC {
                          toDeleteUserIDs: [String]? = nil,
                          isOrigin: Bool) async throws -> SChannelDeletion {
         
+        let checkMO = try? await fetchMO(entity: ChannelDeletion.self,
+                                         predicateProperty: "deletionID",
+                                         predicateValue: deletionID)
+        
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createCD", err: "deletionID: \(deletionID)") }
+        
         let sMO = try await self.backgroundContext.perform {
-            do {
-                let MO = ChannelDeletion(context: self.backgroundContext)
-                MO.deletionID = deletionID
-                MO.channelType = channelType
-                MO.deletionDate = deletionDate
-                MO.type = type
-                MO.name = name
-                MO.icon = icon
-                MO.nUsers = nUsers
-                
-                if let toDeleteUserIDs = toDeleteUserIDs {
-                    MO.toDeleteUserIDs = toDeleteUserIDs.joined(separator: ",")
-                }
-                
-                MO.isOrigin = isOrigin
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCD: SUCCESS")
-                
-                let sMO = try MO.safeObject()
-                
-                return sMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createCD: FAILED (\(error))")
-                throw error
+            let MO = ChannelDeletion(context: self.backgroundContext)
+            MO.deletionID = deletionID
+            MO.channelType = channelType
+            MO.deletionDate = deletionDate
+            MO.type = type
+            MO.name = name
+            MO.icon = icon
+            MO.nUsers = nUsers
+            
+            if let toDeleteUserIDs = toDeleteUserIDs {
+                MO.toDeleteUserIDs = toDeleteUserIDs.joined(separator: ",")
             }
+            
+            MO.isOrigin = isOrigin
+            
+            try self.backgroundSave()
+            
+            let sMO = try MO.safeObject()
+            
+            return sMO
         }
+        
         return sMO
     }
     
+    /// createMessage
+    ///
     public func createMessage(messageID: String,
                               channelID: String,
                               userID: String,
@@ -291,47 +226,41 @@ extension DataPC {
                               localDeleted: Bool = false,
                               remoteDeleted: [String]? = nil) async throws -> SMessage {
         
-        let fetchedMO = try await fetchMOAsync(entity: Message.self,
-                                               predicateProperty: "messageID",
-                                               predicateValue: messageID,
-                                               allowNil: true)
+        let checkMO = try? await fetchMO(entity: Message.self,
+                                         predicateProperty: "messageID",
+                                         predicateValue: messageID)
         
-        if fetchedMO != nil { throw PError.recordExists}
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createMessage", err: "messageID: \(messageID)") }
         
         let SMO = try await self.backgroundContext.perform {
-            do {
-                let MO = Message(context: self.backgroundContext)
-                MO.messageID = messageID
-                MO.channelID = channelID
-                MO.userID = userID
-                MO.type = type
-                MO.date = date
-                MO.isSender = isSender
-                MO.message = message
-                if let imageIDs = imageIDs { MO.imageIDs = imageIDs.joined(separator: ",") }
-                if let fileIDs = fileIDs { MO.fileIDs = fileIDs.joined(separator: ",") }
-                if let sent = sent { MO.sent = sent.joined(separator: ",") }
-                if let delivered = delivered { MO.delivered = delivered.joined(separator: ",") }
-                if let read = read { MO.read = read.joined(separator: ",") }
-                MO.localDeleted = localDeleted
-                if let remoteDeleted = remoteDeleted { MO.remoteDeleted = remoteDeleted.joined(separator: ",") }
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createMessage: SUCCESS")
-                
-                let SMO = try MO.safeObject()
-                
-                return SMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createMessage: FAILED (\(error))")
-                throw error
-            }
+            let MO = Message(context: self.backgroundContext)
+            MO.messageID = messageID
+            MO.channelID = channelID
+            MO.userID = userID
+            MO.type = type
+            MO.date = date
+            MO.isSender = isSender
+            MO.message = message
+            if let imageIDs = imageIDs { MO.imageIDs = imageIDs.joined(separator: ",") }
+            if let fileIDs = fileIDs { MO.fileIDs = fileIDs.joined(separator: ",") }
+            if let sent = sent { MO.sent = sent.joined(separator: ",") }
+            if let delivered = delivered { MO.delivered = delivered.joined(separator: ",") }
+            if let read = read { MO.read = read.joined(separator: ",") }
+            MO.localDeleted = localDeleted
+            if let remoteDeleted = remoteDeleted { MO.remoteDeleted = remoteDeleted.joined(separator: ",") }
+            
+            try self.backgroundSave()
+            
+            let SMO = try MO.safeObject()
+            
+            return SMO
         }
         
         return SMO
     }
     
+    /// createEvent
+    ///
     public func createEvent(eventID: String,
                             eventName: String,
                             date: Date,
@@ -339,34 +268,26 @@ extension DataPC {
                             attempts: Int16,
                             packet: Data) async throws -> SEvent {
         
-        let fetchedMO = try await fetchMOAsync(entity: Event.self,
-                                               predicateProperty: "eventID",
-                                               predicateValue: eventID,
-                                               allowNil: true)
+        let checkMO = try? await fetchMO(entity: Event.self,
+                                         predicateProperty: "eventID",
+                                         predicateValue: eventID)
         
-        if fetchedMO != nil { throw PError.recordExists }
+        if checkMO != nil { throw PError.recordExists(func: "DataPC.createEvent", err: "eventID: \(eventID)") }
         
         let SMO = try await self.backgroundContext.perform {
-            do {
-                let MO = Event(context: self.backgroundContext)
-                MO.eventID = eventID
-                MO.eventName = eventName
-                MO.date = date
-                MO.userID = userID
-                MO.attempts = attempts
-                MO.packet = packet
-                
-                try self.backgroundSave()
-                
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createEvent: SUCCESS")
-                
-                let SMO = try MO.safeObject()
-                
-                return SMO
-            } catch {
-                print("CLIENT \(DateU.shared.logTS) -- DataPC.createEvent: FAILED (\(error))")
-                throw error
-            }
+            let MO = Event(context: self.backgroundContext)
+            MO.eventID = eventID
+            MO.eventName = eventName
+            MO.date = date
+            MO.userID = userID
+            MO.attempts = attempts
+            MO.packet = packet
+            
+            try self.backgroundSave()
+            
+            let SMO = try MO.safeObject()
+            
+            return SMO
         }
         
         return SMO

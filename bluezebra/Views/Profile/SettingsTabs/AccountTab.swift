@@ -123,6 +123,21 @@ struct AccountTab: View {
                         Spacer()
                     }
                 }
+                
+                Button("Clear Account", action: {
+                    Task {
+                        try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self)
+                        let custom = NSPredicate(format: "channelID != %@", argumentArray: ["personal"])
+                        try await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
+                        customPredicate: custom)
+                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelRequest.self)
+                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelDeletion.self)
+                        try await DataPC.shared.fetchDeleteMOs(entity: Message.self)
+                        try await DataPC.shared.fetchDeleteMOs(entity: Event.self)
+                        ChannelDC.shared.resetState(keepPersonalChannel: true)
+                        MessageDC.shared.resetState()
+                    }
+                })
             }
         }
         .ignoresSafeArea()

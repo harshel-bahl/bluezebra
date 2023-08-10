@@ -10,25 +10,35 @@ import LocalAuthentication
 
 extension UserDC {
     
-    /// User Authentication Functions
+    /// pinAuth
     ///
-    func pinAuth(pin: String,
-                 completion: ((Result<Void, DCError>)->())? = nil) {
-        if (self.userSettings?.pin == pin) {
-            print("CLIENT \(DateU.shared.logTS) -- UserDC.pinAuth: SUCCESS")
-            if let completion = completion { completion(.success(())) }
+    func pinAuth(pin: String) throws -> Bool {
+        
+        guard let storedPin = self.userSettings?.pin else { throw DCError.nilError(func: "UserDC.pinAuth", err: "userSettings is nil") }
+        
+        if storedPin == pin {
+            return true
         } else {
-            print("CLIENT \(DateU.shared.logTS) -- UserDC.pinAuth: FAILED")
-            if let completion = completion { completion(.failure(.failed)) }
+            throw DCError.authFailure(func: "UserDC.pinAuth", err: "pin was incorrect")
         }
     }
     
-    /// FaceID Log in
+    /// biometricAuth
     ///
     func biometricAuth(completion: @escaping (Result<Void, DCError>)->()) {
         
         let context = LAContext()
         var error: NSError?
+        
+        guard let userSettings = self.userSettings else {
+            completion(.failure(DCError.nilError(func: "UserDC.biometricAuth", err: "userSettings is nil")))
+            return
+        }
+        
+        guard userSettings.biometricSetup == "active" else {
+            completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics is not active")))
+            return
+        }
         
         if (context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) && self.userSettings?.biometricSetup=="active") {
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
@@ -36,24 +46,22 @@ extension UserDC {
                 
                 DispatchQueue.main.async {
                     if success {
-                        self.loggedIn = true
-                        print("CLIENT \(DateU.shared.logTS) -- UserDC.biometricAuth: SUCCESS")
                         completion(.success(()))
                     } else {
-                        print("CLIENT \(DateU.shared.logTS) -- UserDC.biometricAuth: FAILED (biometrics failed)")
-                        completion(.failure(.failed))
+                        completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics failed")))
                     }
                 }
             }
         } else {
             DispatchQueue.main.async {
-                print("CLIENT \(DateU.shared.logTS) -- UserDC.biometricAuth: FAILED (biometric unavailable)")
-                completion(.failure(.failed))
+                completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics are unavailable")))
             }
         }
     }
     
-    func setupBiometricAuth() {
+    /// setupBiometricAuth
+    ///
+    func setupBiometricAuth(completion: @escaping (Result<Void, DCError>)->()) {
         
         let context = LAContext()
         var error: NSError?
@@ -63,43 +71,62 @@ extension UserDC {
                                    localizedReason: "Setup Biometrics for Authentication") { success, authenticationError in
                 if success {
                     Task {
-                        guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
-                                                                                   property: ["biometricSetup"],
-                                                                                   value: ["active"]) else { return }
-                        print("CLIENT \(DateU.shared.logTS) -- UserDC.setupBiometricAuth: SUCCESS")
-                        DispatchQueue.main.async {
-                            self.userSettings = userSettings
+                        do {
+                            let userSettings = try await DataPC.shared.updateMO(entity: Settings.self,
+                                                                                property: ["biometricSetup"],
+                                                                                value: ["active"])
+                            
+                            DispatchQueue.main.async {
+                                self.userSettings = userSettings
+                            }
+                            
+                            completion(.success(()))
+                        } catch {
+                            completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: error.localizedDescription)))
                         }
                     }
+                } else {
+                    completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: authenticationError?.localizedDescription ?? "biometric failed")))
                 }
             }
         } else {
-            print("CLIENT \(DateU.shared.logTS) -- UserDC.setupBiometricAuth: FAILED (biometricAuth unavailable)")
-            
             Task {
-                guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
-                                                                           property: ["biometricSetup"],
-                                                                           value: ["inactive"]) else { return }
-                DispatchQueue.main.async {
-                    self.userSettings = userSettings
+                do {
+                    let userSettings = try await DataPC.shared.updateMO(entity: Settings.self,
+                                                                        property: ["biometricSetup"],
+                                                                        value: ["inactive"])
+                    DispatchQueue.main.async {
+                        self.userSettings = userSettings
+                    }
+                    
+                    completion(.success(()))
+                } catch {
+                    completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: error.localizedDescription)))
                 }
             }
         }
     }
     
-    func cancelBiometricAuthSetup() {
+    /// cancelBiometricAuthSetup
+    ///
+    func cancelBiometricAuthSetup() async throws {
         
-        if self.userSettings!.biometricSetup != "inactive" {
-            Task {
-                guard let userSettings = try? await DataPC.shared.updateMO(entity: Settings.self,
-                                                                           property: ["biometricSetup"],
-                                                                           value: ["inactive"]) else { return }
-                print("CLIENT \(DateU.shared.logTS) -- UserDC.cancelBiometricAuthSetup: SUCCESS")
-                DispatchQueue.main.async {
-                    self.userSettings = userSettings
-                }
-            }
-
+        guard let userSettings = self.userSettings else {
+            throw DCError.nilError(func: "UserDC.biometricAuth", err: "userSettings is nil")
         }
+        
+        guard userSettings.biometricSetup == "active" else {
+            throw DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics is not active")
+        }
+        
+        let SMO = try await DataPC.shared.updateMO(entity: Settings.self,
+                                                   property: ["biometricSetup"],
+                                                   value: ["inactive"])
+        
+        DispatchQueue.main.async {
+            self.userSettings = SMO
+        }
+        
     }
 }
+

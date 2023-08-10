@@ -8,15 +8,23 @@
 import Foundation
 
 enum DCError: Error {
-    case failed
-    case serverError(message: String)
-    case timeOut
-    case disconnected
-    case typecastError
-    case nilError
-    case jsonError
-    case imageDataFailure
-    case remoteDataNil
-    case multipleRemoteDataInstances
-    case invalidRequest
+    
+    /// Server Failures
+    case socketFailure(func: String, err: String = "")
+    case serverFailure(func: String, err: String = "")
+    case serverTimeOut(func: String)
+    case serverDisconnected(func: String)
+    case remoteDataNil(func: String, err: String = "")
+    case multipleRemoteDataInstances(func: String, err: String = "")
+    
+    /// Client Failures
+    case clientFailure(func: String, err: String = "")
+    case typecastError(func: String, err: String = "")
+    case nilError(func: String, err: String = "")
+    case jsonError(func: String, err: String = "")
+    case invalidRequest(func: String, err: String = "")
+    case imageDataFailure(func: String, err: String = "")
+    case dateFailure(func: String, err: String = "")
+    case authFailure(func: String, err: String = "")
+    case fileSystemFailure(func: String, err: String = "")
 }

@@ -27,7 +27,7 @@ struct Login: View {
             
             SafeAreaScreen(BGColour: Color("background4")) {
                 
-                if userDC.userSettings!.biometricSetup=="active" && faceIDFailed == false {
+                if userDC.userSettings?.biometricSetup=="active" && faceIDFailed == false {
                     
                     faceID
                     
@@ -44,7 +44,7 @@ struct Login: View {
                                       fontSize: 38,
                                       fontWeight: .medium)
                             
-                            FixedText(text: userDC.userData!.username,
+                            FixedText(text: userDC.userData?.username ?? "",
                                       colour: Color("text1"),
                                       fontSize: 38)
                             
@@ -58,14 +58,18 @@ struct Login: View {
                                  focus: $focusField,
                                  focusValue: "logIn",
                                  commitAction: { pin in
-                            userDC.pinAuth(pin: pin) { result in
-                                switch result {
-                                case .success():
-                                    focusField = nil
-                                    userDC.loggedIn = true
-                                case .failure(_):
-                                    withAnimation() { showRetryPin = true }
-                                }
+                            
+                            do {
+                                let result = try userDC.pinAuth(pin: pin)
+                                
+                                focusField = nil
+                                userDC.loggedIn = true
+                            } catch {
+                                withAnimation() { showRetryPin = true }
+                                
+                                #if DEBUG
+                                DataU.shared.handleFailure(function: "UserDC.pinAuth", err: error)
+                                #endif
                             }
                         })
                         .edgePadding(top: SP.safeAreaHeight*0.07,

@@ -30,7 +30,9 @@ struct SceneModifier: ViewModifier {
             .onChange(of: env.scenePhase) { phase in
                 switch phase {
                 case .active:
+                    #if DEBUG
                     print("CLIENT \(DateU.shared.logTS) -- scnenePhase: active")
+                    #endif
                     
                     if phase == .active {
                         activeAction()
@@ -38,7 +40,9 @@ struct SceneModifier: ViewModifier {
                     }
                     
                 case .inactive:
+                    #if DEBUG
                     print("CLIENT \(DateU.shared.logTS) -- scenePhase: inactive")
+                    #endif
                     
                     if phase == .inactive && scene == .active {
                         inactiveAction()
@@ -46,7 +50,9 @@ struct SceneModifier: ViewModifier {
                     }
                     
                 case .background:
+                    #if DEBUG
                     print("CLIENT \(DateU.shared.logTS) -- scenePhase: background")
+                    #endif
                     
                     if phase == .background {
                         backgroundAction()

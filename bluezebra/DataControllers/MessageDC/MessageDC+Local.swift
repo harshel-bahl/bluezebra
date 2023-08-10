@@ -15,11 +15,16 @@ extension MessageDC {
     func checkChannelDirs(dirs: [String] = ["images", "files"]) async throws {
         for channelID in self.channelMessages.keys {
             for dir in dirs {
-                let dirCheck = DataPC.shared.checkDir(dir: dir,
-                                                      intermidDirs: [channelID])
-                
-                if !dirCheck {
-                    print("CLIENT \(DateU.shared.logTS) -- MessageDC.checkChannelDirs: Directory not found - (\(channelID)/\(dir))")
+                do {
+                    let dirCheck = DataPC.shared.checkDir(dir: dir,
+                                                          intermidDirs: [channelID])
+                    
+                    guard dirCheck else { throw DCError.fileSystemFailure(func: "checkChannelDirs", err: "channelID: \(channelID), dir: \(dir)")}
+                } catch {
+#if DEBUG
+                    DataU.shared.handleFailure(function: "checkChannelDirs", err: error)
+#endif
+                    
                     try await DataPC.shared.createDir(dir: dir,
                                                       intermidDirs: [channelID])
                 }
@@ -62,11 +67,11 @@ extension MessageDC {
         if let earliestSMO = earliestSMO {
             let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestSMO.date])
             
-            let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Message.self,
-                                                              customPredicate: predicate,
-                                                              fetchLimit: fetchLimit,
-                                                              sortKey: sortKey,
-                                                              sortAscending: sortAscending)
+            let SMOs = try await DataPC.shared.fetchSMOs(entity: Message.self,
+                                                         customPredicate: predicate,
+                                                         fetchLimit: fetchLimit,
+                                                         sortKey: sortKey,
+                                                         sortAscending: sortAscending)
             DispatchQueue.main.async {
                 self.channelMessages[channelID]?.append(contentsOf: SMOs)
             }
@@ -98,17 +103,23 @@ extension MessageDC {
                             date: Date = DateU.shared.currDT,
                             isSender: Bool = true,
                             message: String,
-                            selectedImages: [UIImage],
+                            selectedImages: [IdentifiableImage],
                             fileType: String = ".jpg") async throws -> SMessage {
         
         var imageIDs = [String]()
         
         for image in selectedImages {
-            let resourceID = UUID().uuidString + fileType
             
+            let resourceID = image.id.uuidString + fileType
             imageIDs.append(resourceID)
             
-            try await self.storeImage(image: image,
+            guard let url = image.url else { throw DCError.nilError(func: "MessageDC.createImageMessage", err: "image URL is nil") }
+            
+            let imageData = try Data(contentsOf: url)
+            
+            guard let uiImage = UIImage(data: imageData) else { throw DCError.imageDataFailure(func: "MessageDC.createImageMessage", err: "failed to create UIImage from Data") }
+            
+            try await self.storeImage(image: uiImage,
                                       name: resourceID,
                                       channelID: channelID)
         }
@@ -125,15 +136,15 @@ extension MessageDC {
         return SMO
     }
     
-//    func createFileMessage(channelID: String = "personal",
-//                           userID: String = UserDC.shared.userData!.userID,
-//                           type: MessageType.file.rawValue,
-//                           date: Date = DateU.shared.currDT,
-//                           isSender: Bool = true,
-//                           message: String,
-//                           resourceIDs: [String]? = nil) async throws -> SMessage {
-//
-//    }
+    //    func createFileMessage(channelID: String = "personal",
+    //                           userID: String = UserDC.shared.userData!.userID,
+    //                           type: MessageType.file.rawValue,
+    //                           date: Date = DateU.shared.currDT,
+    //                           isSender: Bool = true,
+    //                           message: String,
+    //                           resourceIDs: [String]? = nil) async throws -> SMessage {
+    //
+    //    }
     
     /// SMO Sync Functions
     ///
@@ -165,7 +176,7 @@ extension MessageDC {
                     fileType: String = ".jpg") async throws {
         
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
-            throw DCError.imageDataFailure
+            throw DCError.imageDataFailure(func: "ChannelDC.fetchImage", err: "channelID: \(channelID), imageName: \(name)")
         }
         
         try await DataPC.shared.storeFile(data: imageData,
@@ -189,7 +200,7 @@ extension MessageDC {
                                                           intermidDirs: [channelID, "images"])
         
         guard let uiImage = UIImage(data: imageData) else {
-            throw DCError.imageDataFailure
+            throw DCError.imageDataFailure(func: "ChannelDC.fetchImage", err: "channelID: \(channelID), imageName: \(imageName)")
         }
         
         return uiImage
@@ -201,12 +212,12 @@ extension MessageDC {
                        fetchLimit: Int = 15,
                        sortKey: String = "date",
                        sortAscending: Bool = false) async throws -> [SMessage] {
-        let SMOs = try await DataPC.shared.fetchSMOsAsync(entity: Message.self,
-                                                          predicateProperty: "channelID",
-                                                          predicateValue: channelID,
-                                                          fetchLimit: fetchLimit,
-                                                          sortKey: sortKey,
-                                                          sortAscending: sortAscending)
+        let SMOs = try await DataPC.shared.fetchSMOs(entity: Message.self,
+                                                     predicateProperty: "channelID",
+                                                     predicateValue: channelID,
+                                                     fetchLimit: fetchLimit,
+                                                     sortKey: sortKey,
+                                                     sortAscending: sortAscending)
         return SMOs
     }
     
@@ -272,18 +283,18 @@ extension MessageDC {
         self.removeMessage(channelID: channelID,
                            messageID: messageID)
         
-        try await DataPC.shared.fetchDeleteMOAsync(entity: Message.self,
-                                                   predicateProperty: "messageID",
-                                                   predicateValue: messageID)
+        try await DataPC.shared.fetchDeleteMO(entity: Message.self,
+                                              predicateProperty: "messageID",
+                                              predicateValue: messageID)
     }
     
     func clearChannelMessages(channelID: String) async throws {
         
         self.removeChannelMessages(channelID: channelID)
         
-        try await DataPC.shared.fetchDeleteMOsAsync(entity: Message.self,
-                                                    predicateProperty: "channelID",
-                                                    predicateValue: channelID)
+        try await DataPC.shared.fetchDeleteMOs(entity: Message.self,
+                                               predicateProperty: "channelID",
+                                               predicateValue: channelID)
         
         try await DataPC.shared.clearDir(dir: "images",
                                          intermidDirs: [channelID])
@@ -296,9 +307,9 @@ extension MessageDC {
         
         self.removeChannel(channelID: channelID)
         
-        try await DataPC.shared.fetchDeleteMOsAsync(entity: Message.self,
-                                                    predicateProperty: "channelID",
-                                                    predicateValue: channelID)
+        try await DataPC.shared.fetchDeleteMOs(entity: Message.self,
+                                               predicateProperty: "channelID",
+                                               predicateValue: channelID)
     }
     
     

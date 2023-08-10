@@ -33,7 +33,7 @@ extension RemoteUser: ToSafeObject {
               let username = self.username,
               let avatar = self.avatar,
               let creationDate = self.creationDate else {
-            throw PError.safeMapError
+            throw PError.safeMapError(func: "RemoteUser.safeObject")
         }
         
         return SRemoteUser(userID: userID,

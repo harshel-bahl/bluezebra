@@ -12,7 +12,7 @@ extension UserDC {
     /// Local Sync Functions
     ///
     func syncUserData() async throws {
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: User.self)
+        let SMO = try await DataPC.shared.fetchSMO(entity: User.self)
         
         DispatchQueue.main.async {
             self.userData = SMO
@@ -20,7 +20,7 @@ extension UserDC {
     }
     
     func syncUserSettings() async throws {
-        let SMO = try await DataPC.shared.fetchSMOAsync(entity: Settings.self)
+        let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self)
         
         DispatchQueue.main.async {
             self.userSettings = SMO
@@ -29,13 +29,13 @@ extension UserDC {
     
     /// SMO Sync Functions
     ///
-    func syncUserSMO(userData: SUser) {
+    func syncUser(userData: SUser) {
         DispatchQueue.main.async {
             self.userData = userData
         }
     }
     
-    func syncSettingsSMO(userSettings: SSettings) {
+    func syncSettings(userSettings: SSettings) {
         DispatchQueue.main.async {
             self.userSettings = userSettings
         }
@@ -47,5 +47,18 @@ extension UserDC {
         self.resetState()
         ChannelDC.shared.resetState()
         MessageDC.shared.resetState()
+    }
+    
+    func resetState() {
+        DispatchQueue.main.async {
+            if self.userData != nil { self.userData = nil }
+            if self.userSettings != nil { self.userSettings = nil }
+            if self.loggedIn != false { self.loggedIn = false }
+            if self.userOnline != false { self.userOnline = false }
+            
+            #if DEBUG
+            print("SUCCESS \(DateU.shared.logTS) -- UserDC.resetState")
+            #endif
+        }
     }
 }
