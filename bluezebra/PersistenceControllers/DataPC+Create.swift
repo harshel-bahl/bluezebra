@@ -41,6 +41,10 @@ extension DataPC {
             return SMO
         }
         
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createUser", info: "userID: \(userID)")
+#endif
+        
         return SMO
     }
     
@@ -64,6 +68,10 @@ extension DataPC {
             
             return SMO
         }
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createSettings")
+#endif
         
         return SMO
     }
@@ -99,6 +107,11 @@ extension DataPC {
             return sMO
         }
         
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createRU", info: "userID: \(userID)")
+#endif
+        
         return sMO
     }
     
@@ -129,13 +142,17 @@ extension DataPC {
             return sMO
         }
         
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createCR", info: "requestID: \(requestID)")
+#endif
+        
         return sMO
     }
     
     /// createChannel
     /// - Creates a channel attributed to one userID, so no duplicates
     public func createChannel(channelID: String,
-                              active: Bool,
                               userID: String,
                               creationDate: Date,
                               lastMessageDate: Date? = nil) async throws -> SChannel {
@@ -150,7 +167,6 @@ extension DataPC {
             
             let MO = Channel(context: self.backgroundContext)
             MO.channelID = channelID
-            MO.active = active
             MO.userID = userID
             MO.creationDate = creationDate
             MO.lastMessageDate = lastMessageDate
@@ -161,6 +177,10 @@ extension DataPC {
             
             return sMO
         }
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createChannel", info: "channelID: \(channelID)")
+#endif
         
         return sMO
     }
@@ -205,6 +225,10 @@ extension DataPC {
             
             return sMO
         }
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createCD", info: "deletionID: \(deletionID)")
+#endif
         
         return sMO
     }
@@ -256,6 +280,10 @@ extension DataPC {
             return SMO
         }
         
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createMessage", info: "messageID: \(messageID)")
+#endif
+        
         return SMO
     }
     
@@ -289,6 +317,10 @@ extension DataPC {
             
             return SMO
         }
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.createEvent", info: "eventID: \(eventID)")
+#endif
         
         return SMO
     }

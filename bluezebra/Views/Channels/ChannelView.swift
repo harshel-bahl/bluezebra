@@ -176,20 +176,39 @@ struct ChannelView: View {
                 
                 Button("Clear channel", action: {
                     Task {
-                        try await channelDC.clearChannelData(channelID: channel.channelID,
-                                                         RU: RU ?? nil,
-                                                             isOrigin: true)
+                        do {
+                            if channel.channelID == "personal" {
+                                try await messageDC.clearChannelMessages(channelID: "personal")
+                            } else {
+                                if let RU = self.RU {
+                                    try await channelDC.sendCD(channel: self.channel,
+                                                               RU: RU)
+                                }
+                            }
+                            DataU.shared.handleSuccess(function: "Clear Channel")
+                        } catch {
+                            DataU.shared.handleFailure(function: "Clear channel", err: error)
+                        }
                     }
                 })
                 
                 if channel.channelID != "personal" {
                     Button("Delete channel", action: {
                         Task {
-                            try await channelDC.deleteChannelData(channelID: channel.channelID,
-                                                                  RU: RU!,
-                                                                  isOrigin: true)
+                            do {
+                                if channel.channelID == "personal" {
+                                    try await messageDC.deleteChannelMessages(channelID: "personal")
+                                } else {
+                                    if let RU = self.RU {
+                                        try await channelDC.sendCD(channel: self.channel,
+                                                                   RU: RU)
+                                    }
+                                }
+                                DataU.shared.handleSuccess(function: "Delete Channel")
+                            } catch {
+                                DataU.shared.handleFailure(function: "Delete channel", err: error)
+                            }
                         }
-                        
                     })
                 }
             }

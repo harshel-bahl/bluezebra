@@ -22,7 +22,8 @@ extension ChannelDC {
     func syncRUs(fetchLimit: Int? = nil) async throws {
         
         let SMOs = try await DataPC.shared.fetchSMOs(entity: RemoteUser.self,
-                                                     fetchLimit: fetchLimit)
+                                                     fetchLimit: fetchLimit,
+                                                     showLogs: true)
         
         DispatchQueue.main.async {
             for SMO in SMOs {
@@ -34,20 +35,22 @@ extension ChannelDC {
     func syncPersonalChannel() async throws {
         let SMO = try await DataPC.shared.fetchSMO(entity: Channel.self,
                                                    predicateProperty: "channelID",
-                                                   predicateValue: "personal")
+                                                   predicateValue: "personal",
+                                                   showLogs: true)
         DispatchQueue.main.async {
             self.personalChannel = SMO
         }
     }
     
     func syncChannels(fetchLimit: Int? = nil) async throws {
-        
-        let predicate = NSPredicate(format: "active == %@ AND channelID != %@", argumentArray: [true, "personal"])
+
+        let predicate = NSPredicate(format: "channelID != %@", argumentArray: ["personal"])
         
         let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
                                                      customPredicate: predicate,
                                                      fetchLimit: fetchLimit,
-                                                     sortKey: "lastMessageDate")
+                                                     sortKey: "lastMessageDate",
+                                                     showLogs: true)
         
         let sortedSMOs = self.sortNilDates(channels: SMOs)
         
@@ -60,7 +63,8 @@ extension ChannelDC {
         
         let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelRequest.self,
                                                      fetchLimit: fetchLimit,
-                                                     sortKey: "date")
+                                                     sortKey: "date",
+                                                     showLogs: true)
         
         DispatchQueue.main.async {
             self.CRs = SMOs
@@ -72,7 +76,8 @@ extension ChannelDC {
         
         let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelDeletion.self,
                                                      fetchLimit: fetchLimit,
-                                                     sortKey: "deletionDate")
+                                                     sortKey: "deletionDate",
+                                                     showLogs: true)
         
         DispatchQueue.main.async {
             self.CDs = SMOs
@@ -193,9 +198,9 @@ extension ChannelDC {
         }
     }
     
-    func removeCR(channelID: String) {
+    func removeCR(requestID: String) {
         DispatchQueue.main.async {
-            let CRIndex = self.CRs.firstIndex(where: { $0.channelID == channelID })
+            let CRIndex = self.CRs.firstIndex(where: { $0.requestID == requestID })
             if let CRIndex = CRIndex {
                 self.CRs.remove(at: CRIndex)
             }
@@ -229,12 +234,12 @@ extension ChannelDC {
                                               predicateValue: channelID)
     }
     
-    func deleteCR(channelID: String) async throws {
-        self.removeCR(channelID: channelID)
+    func deleteCR(requestID: String) async throws {
+        self.removeCR(requestID: requestID)
         
         try await DataPC.shared.fetchDeleteMO(entity: ChannelRequest.self,
-                                              predicateProperty: "channelID",
-                                              predicateValue: channelID)
+                                              predicateProperty: "requestID",
+                                              predicateValue: requestID)
     }
     
     func deleteCD(deletionID: String) async throws {

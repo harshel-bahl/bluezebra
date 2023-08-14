@@ -85,17 +85,35 @@ class DataU {
         return string
     }
     
+    func handleSuccess(function: String,
+                       DT: String = DateU.shared.logTS,
+                       info: String? = nil) {
+        if let info = info {
+            print("SUCCESS \(DT) -- function: \(function), info: (\(info))")
+        } else {
+            print("SUCCESS \(DT) -- function: \(function)")
+        }
+    }
+    
+    func handleSuccess(info: String,
+                       DT: String = DateU.shared.logTS) {
+        print("SUCCESS \(DT) -- info: (\(info))")
+    }
+    
     func handleFailure(function: String,
                        DT: String = DateU.shared.logTS,
                        err: Error,
-                       message: String? = nil) {
-        print("FAILED \(DT) -- function: \(function), error: \(err), message: \(message ?? "-")")
+                       info: String? = nil) {
+        if let info = info {
+            print("FAILED \(DT) -- function: \(function), error: \(err), info: (\(info))")
+        } else {
+            print("FAILED \(DT) -- function: \(function), error: \(err)")
+        }
     }
     
-    func handleSuccess(function: String,
-                       DT: String = DateU.shared.logTS,
-                       message: String? = nil) {
-        print("SUCCESS \(DT) -- function: \(function), message: \(message ?? "-")")
+    func handleFailure(info: String,
+                       DT: String = DateU.shared.logTS) {
+        print("FAILED \(DT) -- info: (\(info))")
     }
 }
 

@@ -53,7 +53,9 @@ extension DataPC {
             guard let firstMO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchMO", err: "entity: \(entity)") }
             MO = firstMO
             
-            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchMO entity: \(entityName)") }
+#if DEBUG
+            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchMO", info: "entity: \(String(describing: entity))") }
+#endif
             
             return MO
         } catch {
@@ -109,7 +111,9 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchMOs: SUCCESS entity: \(entityName)") }
+#if DEBUG
+            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)") }
+#endif
             
             return MOs
         } catch {
@@ -158,7 +162,10 @@ extension DataPC {
             
             let SMO = try MO.safeObject()
             
-            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchSMO entity: \(entityName)") }
+            
+#if DEBUG
+            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))") }
+#endif
             
             return SMO
         } catch {
@@ -215,7 +222,9 @@ extension DataPC {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchSMOs entity: \(entityName), fetched: \(MOs.count)") }
+#if DEBUG
+            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)") }
+#endif
             
             let SMOs = try MOs.map {
                 return try $0.safeObject()

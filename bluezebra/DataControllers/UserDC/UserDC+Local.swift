@@ -9,10 +9,34 @@ import Foundation
 
 extension UserDC {
     
+    /// Local Create Functions
+    ///
+    func createUserLocally(userID: String = UUID().uuidString,
+                    username: String,
+                    pin: String,
+                    avatar: String,
+                    creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
+        
+        let SUser = try await DataPC.shared.createUser(userID: userID,
+                                                       username: username,
+                                                       creationDate: creationDate,
+                                                       avatar: avatar)
+        
+        let SSettings = try await DataPC.shared.createSettings(pin: pin)
+        
+        let SChannel = try await DataPC.shared.createChannel(channelID: "personal",
+                                                             userID: userID,
+                                                             creationDate: creationDate)
+        
+        try await DataPC.shared.createChannelDir(channelID: "personal")
+        
+        return (SUser, SSettings, SChannel)
+    }
+    
     /// Local Sync Functions
     ///
     func syncUserData() async throws {
-        let SMO = try await DataPC.shared.fetchSMO(entity: User.self)
+        let SMO = try await DataPC.shared.fetchSMO(entity: User.self, showLogs: true)
         
         DispatchQueue.main.async {
             self.userData = SMO
@@ -20,7 +44,7 @@ extension UserDC {
     }
     
     func syncUserSettings() async throws {
-        let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self)
+        let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self, showLogs: true)
         
         DispatchQueue.main.async {
             self.userSettings = SMO
@@ -41,14 +65,7 @@ extension UserDC {
         }
     }
     
-    /// Reset Functions
-    func hardReset() async throws {
-        try await DataPC.shared.hardResetDataPC()
-        self.resetState()
-        ChannelDC.shared.resetState()
-        MessageDC.shared.resetState()
-    }
-    
+    /// Deletion Functions
     func resetState() {
         DispatchQueue.main.async {
             if self.userData != nil { self.userData = nil }
@@ -56,9 +73,16 @@ extension UserDC {
             if self.loggedIn != false { self.loggedIn = false }
             if self.userOnline != false { self.userOnline = false }
             
-            #if DEBUG
-            print("SUCCESS \(DateU.shared.logTS) -- UserDC.resetState")
-            #endif
+#if DEBUG
+        DataU.shared.handleSuccess(function: "UserDC.resetState")
+#endif
         }
+    }
+    
+    func deleteUserLocally() async throws {
+        try await DataPC.shared.deletePCData()
+        self.resetState()
+        ChannelDC.shared.resetState()
+        MessageDC.shared.resetState()
     }
 }

@@ -114,7 +114,15 @@ struct AccountTab: View {
                             Task {
                                 do {
                                     try await userDC.deleteUser()
+                                    
+                                    #if DEBUG
+                                    DataU.shared.handleSuccess(function: "UserDC.deleteUser")
+                                    #endif
                                 } catch {
+                                    #if DEBUG
+                                    DataU.shared.handleFailure(function: "UserDC.deleteUser", err: error)
+                                    #endif
+                                    
                                     deletionFailure = true
                                 }
                             }
@@ -126,14 +134,20 @@ struct AccountTab: View {
                 
                 Button("Clear Account", action: {
                     Task {
-                        try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self)
+                        try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self,
+                        showLogs: true)
                         let custom = NSPredicate(format: "channelID != %@", argumentArray: ["personal"])
                         try await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
-                        customPredicate: custom)
-                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelRequest.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelDeletion.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: Message.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: Event.self)
+                        customPredicate: custom,
+                        showLogs: true)
+                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelRequest.self,
+                        showLogs: true)
+                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelDeletion.self,
+                        showLogs: true)
+                        try await DataPC.shared.fetchDeleteMOs(entity: Message.self,
+                        showLogs: true)
+                        try await DataPC.shared.fetchDeleteMOs(entity: Event.self,
+                        showLogs: true)
                         ChannelDC.shared.resetState(keepPersonalChannel: true)
                         MessageDC.shared.resetState()
                     }

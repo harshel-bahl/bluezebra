@@ -19,10 +19,10 @@ extension MessageDC {
                     let dirCheck = DataPC.shared.checkDir(dir: dir,
                                                           intermidDirs: [channelID])
                     
-                    guard dirCheck else { throw DCError.fileSystemFailure(func: "checkChannelDirs", err: "channelID: \(channelID), dir: \(dir)")}
+                    guard dirCheck else { throw DCError.fileSystemFailure(func: "MessageDC.checkChannelDirs", err: "channelID: \(channelID), dir: \(dir)")}
                 } catch {
 #if DEBUG
-                    DataU.shared.handleFailure(function: "checkChannelDirs", err: error)
+                    DataU.shared.handleFailure(function: "MessageDC.checkChannelDirs", err: error)
 #endif
                     
                     try await DataPC.shared.createDir(dir: dir,
@@ -50,7 +50,8 @@ extension MessageDC {
         let SMOs = try await fetchMessages(channelID: channelID,
                                            fetchLimit: fetchLimit,
                                            sortKey: sortKey,
-                                           sortAscending: sortAscending)
+                                           sortAscending: sortAscending,
+                                           showLogs: true)
         
         DispatchQueue.main.async {
             self.channelMessages[channelID] = SMOs
@@ -71,7 +72,8 @@ extension MessageDC {
                                                          customPredicate: predicate,
                                                          fetchLimit: fetchLimit,
                                                          sortKey: sortKey,
-                                                         sortAscending: sortAscending)
+                                                         sortAscending: sortAscending,
+                                                         showLogs: true)
             DispatchQueue.main.async {
                 self.channelMessages[channelID]?.append(contentsOf: SMOs)
             }
@@ -176,7 +178,7 @@ extension MessageDC {
                     fileType: String = ".jpg") async throws {
         
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
-            throw DCError.imageDataFailure(func: "ChannelDC.fetchImage", err: "channelID: \(channelID), imageName: \(name)")
+            throw DCError.imageDataFailure(func: "MessageDC.fetchImage", err: "channelID: \(channelID), imageName: \(name)")
         }
         
         try await DataPC.shared.storeFile(data: imageData,
@@ -200,7 +202,7 @@ extension MessageDC {
                                                           intermidDirs: [channelID, "images"])
         
         guard let uiImage = UIImage(data: imageData) else {
-            throw DCError.imageDataFailure(func: "ChannelDC.fetchImage", err: "channelID: \(channelID), imageName: \(imageName)")
+            throw DCError.imageDataFailure(func: "MessageDC.fetchImage", err: "channelID: \(channelID), imageName: \(imageName)")
         }
         
         return uiImage
@@ -217,7 +219,8 @@ extension MessageDC {
                                                      predicateValue: channelID,
                                                      fetchLimit: fetchLimit,
                                                      sortKey: sortKey,
-                                                     sortAscending: sortAscending)
+                                                     sortAscending: sortAscending,
+                                                     showLogs: true)
         return SMOs
     }
     

@@ -10,7 +10,6 @@ import CoreData
 
 struct SChannel {
     var channelID: String
-    var active: Bool
     var userID: String
     var creationDate: Date
     var lastMessageDate: Date?
@@ -34,7 +33,6 @@ extension Channel: ToSafeObject {
         }
         
         return SChannel(channelID: channelID,
-                        active: self.active,
                         userID: userID,
                         creationDate: creationDate,
                         lastMessageDate: self.lastMessageDate)

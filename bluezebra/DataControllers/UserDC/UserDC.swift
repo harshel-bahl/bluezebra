@@ -23,7 +23,15 @@ class UserDC: ObservableObject {
     @Published var userOnline: Bool = false {
         didSet {
             #if DEBUG
-            print("SUCCESS \(DateU.shared.logTS) -- UserDC.userOnline: \(userOnline)")
+            DataU.shared.handleSuccess(info: "UserDC.userOnline: \(userOnline)")
+            #endif
+        }
+    }
+    
+    @Published var emittedPendingEvents: Bool = false {
+        didSet {
+            #if DEBUG
+            DataU.shared.handleSuccess(info: "UserDC.emittedPendingEvents: \(emittedPendingEvents)")
             #endif
         }
     }

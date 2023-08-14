@@ -48,36 +48,25 @@ extension UserDC {
     /// - Creates 3 objects to ensure error-free operations before request is sent
     /// - Receives ack, if successful then objects remain
     /// - Receives ack, if server failure or timeOut then obejcts are removed and error logged
-    func createUser(userID: String = UUID().uuidString,
-                    username: String,
+    func createUser(username: String,
                     pin: String,
-                    avatar: String,
-                    creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
+                    avatar: String) async throws -> (SUser, SSettings, SChannel) {
         
         guard SocketController.shared.connected else {
             throw DCError.serverDisconnected(func: "UserDC.createUser")
         }
         
         do {
-            let userData = try await DataPC.shared.createUser(userID: userID,
-                                                              username: username.trimmingCharacters(in: .whitespacesAndNewlines),
-                                                              creationDate: creationDate,
-                                                              avatar: avatar)
-            
-            let userSettings = try await DataPC.shared.createSettings(pin: pin)
-            
-            let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
-                                                                        active: true,
-                                                                        userID: userData.userID,
-                                                                        creationDate: creationDate)
+            let (userData, userSettings, personalChannel) = try await self.createUser(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                                      pin: pin,
+                                                                                      avatar: avatar)
             
             let packet = try DataU.shared.jsonEncode(data: UserPacket(userID: userData.userID,
                                                                       username: userData.username,
                                                                       avatar: userData.avatar,
-                                                                      creationDate: DateU.shared.stringFromDate(creationDate, TimeZone(identifier: "UTC")!)))
+                                                                      creationDate: DateU.shared.stringFromDate(userData.creationDate, TimeZone(identifier: "UTC")!)))
             
             try await withCheckedThrowingContinuation { continuation in
-                
                 SocketController.shared.clientSocket.emitWithAck("createUser", ["packet": packet])
                     .timingOut(after: 1) { data in
                         do {
@@ -99,11 +88,7 @@ extension UserDC {
             
             return (userData, userSettings, personalChannel)
         } catch {
-            try? await DataPC.shared.fetchDeleteMO(entity: User.self)
-            try? await DataPC.shared.fetchDeleteMO(entity: Settings.self)
-            try? await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
-                                                    predicateProperty: "channelID",
-                                                    predicateValue: "personal")
+            try? await self.deleteUserLocally()
             throw error
         }
     }
@@ -119,21 +104,13 @@ extension UserDC {
             throw DCError.serverDisconnected(func: "UserDC.deleteUser")
         }
         
-        let RUIDs = ChannelDC.shared.channels.map {
-            return $0.userID
-        }
-        
         guard let userID = self.userData?.userID else {
             throw DCError.nilError(func: "UserDC.deleteUser", err: "userData is nil")
         }
         
-        let packet = try DataU.shared.jsonEncode(data: userID)
-        
         try await withCheckedThrowingContinuation() { continuation in
             
-            SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userID": userID,
-                                                                            "RUIDs": RUIDs,
-                                                                            "packet": packet] as [String : Any])
+            SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userID": userID] as [String : Any])
             .timingOut(after: 1) { data in
                 do {
                     if let queryStatus = data.first as? String,
@@ -152,7 +129,7 @@ extension UserDC {
             }
         }
         
-        try await self.hardReset()
+        try await self.deleteUserLocally()
     }
     
     /// connectUser
@@ -165,13 +142,8 @@ extension UserDC {
         
         guard let userID = self.userData?.userID else { throw DCError.nilError(func: "connectUser", err: "userData is nil") }
         
-        let RUIDs = ChannelDC.shared.channels.map {
-            return $0.userID
-        }
-        
         try await withCheckedThrowingContinuation() { continuation in
-            SocketController.shared.clientSocket.emitWithAck("connectUser", ["userID": userID,
-                                                                             "RUIDs": RUIDs] as [String : Any])
+            SocketController.shared.clientSocket.emitWithAck("connectUser", ["userID": userID] as [String : Any])
             .timingOut(after: 1, callback: { data in
                 do {
                     if let queryStatus = data.first as? String,
@@ -181,7 +153,7 @@ extension UserDC {
                               queryStatus == "user does not exist" {
                         
                         Task {
-                            try? await self.hardReset()
+                            try? await self.deleteUserLocally()
                         }
                         
                         throw DCError.serverFailure(func: "UserDC.connectUser", err: "user does not exist")
@@ -220,12 +192,6 @@ extension UserDC {
             throw DCError.serverDisconnected(func: "UserDC.disconnectUser")
         }
         
-        let RUIDs = ChannelDC.shared.channels.map {
-            return $0.userID
-        }
-        
-        SocketController.shared.clientSocket.emit("disconnectUser", ["userID": userID,
-                                                                     "RUIDs": RUIDs,
-                                                                     "lastOnline": DateU.shared.stringFromDate(datetime, TimeZone(identifier: "UTC")!)] as [String : Any])
+        SocketController.shared.clientSocket.emit("disconnectUser", ["userID": userID])
     }
 }

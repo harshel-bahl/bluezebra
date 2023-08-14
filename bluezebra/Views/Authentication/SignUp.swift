@@ -136,11 +136,17 @@ struct SignUp: View {
                 do {
                     let result = try await userDC.checkUsername(username: username)
                     
+                    #if DEBUG
+                    DataU.shared.handleSuccess(function: "UserDC.checkUsername")
+                    #endif
+                    
                     withAnimation(.easeInOut(duration: 0.25)) {
                         self.checkedUsername = result
                     }
                 } catch {
-                    
+                    #if DEBUG
+                    DataU.shared.handleFailure(function: "UserDC.checkUsername", err: error)
+                    #endif
                 }
             }
         },
@@ -321,6 +327,10 @@ struct SignUp: View {
                                                                                                         avatar: selectedEmoji!.name)
                             self.createdUser = true
                             
+                            #if DEBUG
+                            DataU.shared.handleSuccess(function: "UserDC.createUser", info: "userID: \(userData.userID)")
+                            #endif
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now()+2.75) {
                                 userDC.userData = userData
                                 userDC.userSettings = userSettings
@@ -328,6 +338,10 @@ struct SignUp: View {
                                 userDC.loggedIn = true
                             }
                         } catch {
+                            #if DEBUG
+                            DataU.shared.handleFailure(function: "UserDC.createUser", err: error)
+                            #endif
+                            
                             self.failure = true
                         }
                     }

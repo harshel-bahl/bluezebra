@@ -13,12 +13,12 @@ extension DataPC {
     /// Generic Delete Functions
     ///
     public func fetchDeleteMO<T1: NSManagedObject,
-                                   T2: CVarArg>(entity: T1.Type,
-                                                queue: String = "background",
-                                                predicateProperty: String? = nil,
-                                                predicateValue: T2? = "",
-                                                customPredicate: NSPredicate? = nil,
-                                                showLogs: Bool = false) async throws {
+                              T2: CVarArg>(entity: T1.Type,
+                                           queue: String = "background",
+                                           predicateProperty: String? = nil,
+                                           predicateValue: T2? = "",
+                                           customPredicate: NSPredicate? = nil,
+                                           showLogs: Bool = false) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -41,14 +41,16 @@ extension DataPC {
                 
                 let MOs = try contextQueue.fetch(fetchRequest)
                 
-                if MOs.count > 1 { throw PError.multipleRecords(func: "fetchDeleteMO", err: "entity: \(String(describing: entity))") }
-                guard let MO = MOs.first else { throw PError.noRecordExists(func: "fetchDeleteMO", err: "entity: \(String(describing: entity))") }
+                if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchDeleteMO", err: "entity: \(String(describing: entity))") }
+                guard let MO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchDeleteMO", err: "entity: \(String(describing: entity))") }
                 
                 contextQueue.delete(MO)
                 
                 try contextQueue.save()
                 
-                if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchDeleteMO entity: \(entityName)") }
+#if DEBUG
+                if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMO", info: "entity: \(String(describing: entity))") }
+#endif
             }
         } catch {
             if let error = error as? PError {
@@ -60,12 +62,12 @@ extension DataPC {
     }
     
     public func fetchDeleteMOs<T1: NSManagedObject,
-                                    T2: CVarArg>(entity: T1.Type,
-                                                 queue: String = "background",
-                                                 predicateProperty: String? = nil,
-                                                 predicateValue: T2? = "",
-                                                 customPredicate: NSPredicate? = nil,
-                                                 showLogs: Bool = false) async throws {
+                               T2: CVarArg>(entity: T1.Type,
+                                            queue: String = "background",
+                                            predicateProperty: String? = nil,
+                                            predicateValue: T2? = "",
+                                            customPredicate: NSPredicate? = nil,
+                                            showLogs: Bool = false) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -93,7 +95,9 @@ extension DataPC {
                 
                 try contextQueue.save()
                 
-                if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.fetchDeleteMOs entity: \(entityName), deleted: \(MOs.count)") }
+#if DEBUG
+                if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMOs", info: "entity: \(String(describing: entity))") }
+#endif
             }
         } catch {
             if let error = error as? PError {

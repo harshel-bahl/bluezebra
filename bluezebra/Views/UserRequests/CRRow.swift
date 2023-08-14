@@ -54,6 +54,7 @@ struct CRRow: View {
         }
         .alert("Failed to send channel request", isPresented: $requestFailure) {
             Button("Try again later", role: .cancel) {
+                requestFailure = false
             }
         }
     }
@@ -62,11 +63,16 @@ struct CRRow: View {
         SystemIcon(systemName: sfSymbol,
                    size: .init(width: 25, height: 25),
                    colour: Color("accent1"),
-        buttonAction: {
-//            channelDC.sendCRResult(CR: self.CR,
-//                                   result: result) { result in
-//                
-//            }
+                   buttonAction: {
+            Task {
+                do {
+                    try await channelDC.sendCRResult(CR: self.CR,
+                                                     result: result)
+                } catch {
+                    DataU.shared.handleFailure(function: "sendCRResult", err: error)
+                    requestFailure = true
+                }
+            }
         })
     }
 }

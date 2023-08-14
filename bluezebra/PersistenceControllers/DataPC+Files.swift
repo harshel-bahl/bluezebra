@@ -58,8 +58,12 @@ extension DataPC {
             try fileManager.createDirectory(at: dirURL,
                                             withIntermediateDirectories: true,
                                             attributes: nil)
+            
+#if DEBUG
+            DataU.shared.handleSuccess(function: "DataPC.createDir", info: "dir: \(dir)")
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "createDir", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.createDir", err: error.localizedDescription)
         }
     }
     
@@ -73,7 +77,7 @@ extension DataPC {
         
         do {
             try fileManager.createDirectory(at: topDirURL,
-                                        withIntermediateDirectories: true)
+                                            withIntermediateDirectories: true)
             
             for dir in dirs {
                 let dirURL = topDirURL.appendingPathComponent(dir)
@@ -81,8 +85,13 @@ extension DataPC {
                 try fileManager.createDirectory(at: dirURL,
                                                 withIntermediateDirectories: true)
             }
+            
+            
+#if DEBUG
+            DataU.shared.handleSuccess(function: "DataPC.createChannelDir", info: "channelID: \(channelID)")
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "createChannelDir", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.createChannelDir", err: error.localizedDescription)
         }
     }
     
@@ -126,7 +135,7 @@ extension DataPC {
                 }
             }
         } catch {
-            throw PError.fileSystemFailure(func: "listDirContents", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.listDirContents", err: error.localizedDescription)
         }
     }
     
@@ -159,9 +168,13 @@ extension DataPC {
                 files.append(fileURL.lastPathComponent)
             }
             
+#if DEBUG
+            DataU.shared.handleSuccess(function: "DataPC.getDirContents", info: "dir: \(dir)")
+#endif
+            
             return files
         } catch {
-            throw PError.fileSystemFailure(func: "getDirContents", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.getDirContents", err: error.localizedDescription)
         }
     }
     
@@ -195,11 +208,13 @@ extension DataPC {
                 count += 1
             }
             
+#if DEBUG
             if showLogs {
-                print("SUCCESS \(DateU.shared.logTS) -- DataPC.clearDir removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
+                DataU.shared.handleSuccess(function: "DataPC.clearDir", info: "removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
             }
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "clearDir", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.clearDir", err: error.localizedDescription)
         }
     }
     
@@ -225,9 +240,13 @@ extension DataPC {
         do {
             try fileManager.removeItem(at: dirURL)
             
-            if showLogs { print("SUCCESS \(DateU.shared.logTS) -- DataPC.removeDir dir: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)") }
+#if DEBUG
+            if showLogs {
+                DataU.shared.handleSuccess(function: "DataPC.removeDir", info: "dir: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
+            }
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "removeDir", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.removeDir", err: error.localizedDescription)
         }
     }
     
@@ -256,13 +275,13 @@ extension DataPC {
             if let fileSize = fileAttributes[.size] as? Int64 {
                 return fileSize
             } else {
-                throw PError.typecastError(func: "getFileSize", err: "fileAttributes failed to convert to Int64")
+                throw PError.typecastError(func: "DataPC.getFileSize", err: "fileAttributes failed to convert to Int64")
             }
         } catch {
             if let error = error as? PError {
                 throw error
             } else {
-                throw PError.fileSystemFailure(func: "getFileSize", err: error.localizedDescription)
+                throw PError.fileSystemFailure(func: "DataPC.getFileSize", err: error.localizedDescription)
             }
         }
     }
@@ -289,11 +308,13 @@ extension DataPC {
         do {
             try data.write(to: fileURL)
             
+#if DEBUG
             if showLogs {
-                print("SUCCESS \(DateU.shared.logTS) -- DataPC.storeFile url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
+                DataU.shared.handleSuccess(function: "DataPC.storeFile", info: "url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
             }
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "storeFile", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.storeFile", err: error.localizedDescription)
         }
     }
     
@@ -317,7 +338,7 @@ extension DataPC {
             let file = try Data(contentsOf: fileURL)
             return file
         } catch {
-            throw PError.fileSystemFailure(func: "fetchFile", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.fetchFile", err: error.localizedDescription)
         }
     }
     
@@ -344,11 +365,13 @@ extension DataPC {
         do {
             try fileManager.removeItem(at: fileURL)
             
+#if DEBUG
             if showLogs {
-                print("SUCCESS \(DateU.shared.logTS) -- DataPC.removeFile url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
+                DataU.shared.handleSuccess(function: "DataPC.removeFile", info: "url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
             }
+#endif
         } catch {
-            throw PError.fileSystemFailure(func: "removeFile", err: error.localizedDescription)
+            throw PError.fileSystemFailure(func: "DataPC.removeFile", err: error.localizedDescription)
         }
     }
     
@@ -388,7 +411,7 @@ extension DataPC {
         
         guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, nil),
               let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary) else {
-            throw PError.imageDataFailure(func: "scaledImage", err: "failed to create thumbnail for \(imageURL.lastPathComponent)")
+            throw PError.imageDataFailure(func: "DataPC.scaledImage", err: "failed to create thumbnail for \(imageURL.lastPathComponent)")
         }
         
         return UIImage(cgImage: thumbnail)

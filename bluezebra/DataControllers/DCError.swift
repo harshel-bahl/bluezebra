@@ -14,6 +14,7 @@ enum DCError: Error {
     case serverFailure(func: String, err: String = "")
     case serverTimeOut(func: String)
     case serverDisconnected(func: String)
+    case userDisconnected(func: String)
     case remoteDataNil(func: String, err: String = "")
     case multipleRemoteDataInstances(func: String, err: String = "")
     

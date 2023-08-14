@@ -9,7 +9,7 @@ import Foundation
 
 struct CDPacket: Codable {
     var deletionID: String = UUID().uuidString
-    var channelID: String
     var deletionDate: String
     var type: String
+    var channelID: String
 }

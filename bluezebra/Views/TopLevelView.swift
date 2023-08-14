@@ -16,9 +16,9 @@ struct TopLevelView: View {
     @ObservedObject var messageDC = MessageDC.shared
     @ObservedObject var socketController = SocketController.shared
     
-    @StateObject var styles = Styles()
-    
     @State var fetchedUser = false
+    
+    @State var emittedPendingEvents = false
     
     @State var tab: String = "channels"
     
@@ -47,8 +47,8 @@ struct TopLevelView: View {
                 
                 topLevelTabView
                     .onAppear() {
-                        if !userDC.userOnline {
-                            socketController.userConnection()
+                        if !userDC.userOnline && socketController.connected {
+                            userConnection()
                         }
                         
                         if (userDC.userSettings?.biometricSetup == nil) {
@@ -56,9 +56,9 @@ struct TopLevelView: View {
                                 switch result {
                                 case .success(): break
                                 case .failure(let err):
-                                    #if DEBUG
+#if DEBUG
                                     DataU.shared.handleFailure(function: "UserDC.setupBiometricAuth", err: err)
-                                    #endif
+#endif
                                 }
                             }
                         }
@@ -68,11 +68,20 @@ struct TopLevelView: View {
         .sceneModifier(activeAction: {
             startup()
         }, inactiveAction: {
-            prepareShutdown()
+            if userDC.userOnline {
+                prepareShutdown()
+            }
         }, backgroundAction: {
             shutdown()
         })
-        .environmentObject(styles)
+        .onChange(of: SocketController.shared.connected, perform: { connected in
+            if connected && !userDC.userOnline && userDC.userData != nil {
+                userConnection()
+            }
+        })
+        .onChange(of: userDC.userOnline, perform: { userOnline in
+             
+        })
     }
     
     func startup() {
@@ -85,32 +94,54 @@ struct TopLevelView: View {
                 
                 fetchedUser = true
                 
-                if userDC.userData != nil && userDC.userSettings != nil {
-                    try await channelDC.syncAllData()
-                }
+                try await channelDC.syncAllData()
                 
-                remoteConnection()
+                if !socketController.connected {
+                    socketController.establishConnection()
+                }
                 
                 try await messageDC.syncMessageDC()
                 try await messageDC.checkChannelDirs()
             } catch {
                 fetchedUser = true
                 
-                remoteConnection()
+                if !socketController.connected {
+                    socketController.establishConnection()
+                }
             }
         }
     }
     
-    func remoteConnection() {
-        if !socketController.connected {
-            socketController.establishConnection()
+    func userConnection() {
+        Task {
+            do {
+                try await userDC.connectUser()
+                
+                try await channelDC.checkChannelUsers()
+                
+                #if DEBUG
+                DataU.shared.handleSuccess(function: "TopLevelView.userConnection")
+                #endif
+            } catch {
+                #if DEBUG
+                DataU.shared.handleFailure(function: "TopLevelView.userConnection", err: error)
+                #endif
+            }
         }
     }
     
     func prepareShutdown() {
-        if userDC.userOnline {
-            Task {
+        Task {
+            do {
                 try await userDC.disconnectUser()
+                
+                #if DEBUG
+                DataU.shared.handleSuccess(function: "TopLevelView.prepareShutdown")
+                #endif
+            } catch {
+                #if DEBUG
+                DataU.shared.handleFailure(function: "TopLevelView.prepareShutdown", err: error)
+                #endif
             }
         }
     }

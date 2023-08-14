@@ -152,7 +152,7 @@ struct CRView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         if selected2==0 {
-                            ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.channelID) { CR in
+                            ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.requestID) { CR in
                                 if let RU = channelDC.RUs[CR.userID] {
                                     VStack(spacing: 0) {
                                         CRRow(CR: CR,
@@ -167,7 +167,7 @@ struct CRView: View {
                                 }
                             }
                         } else if selected2==1 {
-                            ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.channelID) { CR in
+                            ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.requestID) { CR in
                                 if let RU = channelDC.RUs[CR.userID] {
                                     VStack(spacing: 0) {
                                         CRRow(CR: CR,

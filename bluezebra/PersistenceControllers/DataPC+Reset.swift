@@ -10,19 +10,23 @@ import CoreData
 
 extension DataPC {
     
-    /// Reset DataPC Functions
+    /// DataPC Deletion Functions
     ///
     
-    public func hardResetDataPC(showLogs: Bool = false) async throws {
-        try await self.fetchDeleteMOs(entity: User.self)
-        try await self.fetchDeleteMOs(entity: Settings.self)
-        try await self.fetchDeleteMOs(entity: RemoteUser.self)
-        try await self.fetchDeleteMOs(entity: Channel.self)
-        try await self.fetchDeleteMOs(entity: ChannelRequest.self)
-        try await self.fetchDeleteMOs(entity: ChannelDeletion.self)
-        try await self.fetchDeleteMOs(entity: Message.self)
-        try await self.fetchDeleteMOs(entity: Event.self)
+    public func deletePCData() async throws {
+        try await self.fetchDeleteMOs(entity: User.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: Settings.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: RemoteUser.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: Channel.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: ChannelRequest.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: ChannelDeletion.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: Message.self, showLogs: true)
+        try await self.fetchDeleteMOs(entity: Event.self, showLogs: true)
         
-        if showLogs { print("CLIENT \(DateU.shared.logTS) -- DataPC.hardResetDataPC: SUCCESS") }
+        try await self.clearDir(dir: "")
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "DataPC.deletePCData")
+#endif
     }
 }
