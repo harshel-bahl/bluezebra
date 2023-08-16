@@ -54,10 +54,14 @@ class SocketController: NSObject, ObservableObject {
             self.connected = false
         }
         
-        clientSocket.on(clientEvent: .error) { data, ack in
+        clientSocket.on(clientEvent: .error) { [weak self] data, ack in
 #if DEBUG
             DataU.shared.handleFailure(info: "clientSocket.on(clientEvent: .error), err: \((data[0] as? String) ?? "-")")
 #endif
+            
+            guard let self = self else { return }
+            
+            self.connected = false
         }
     }
     

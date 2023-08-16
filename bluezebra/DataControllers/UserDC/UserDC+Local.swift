@@ -38,17 +38,13 @@ extension UserDC {
     func syncUserData() async throws {
         let SMO = try await DataPC.shared.fetchSMO(entity: User.self)
         
-        DispatchQueue.main.async {
-            self.userData = SMO
-        }
+        self.syncUser(userData: SMO)
     }
     
     func syncUserSettings() async throws {
         let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self)
         
-        DispatchQueue.main.async {
-            self.userSettings = SMO
-        }
+        self.syncSettings(userSettings: SMO)
     }
     
     /// SMO Sync Functions
@@ -65,12 +61,27 @@ extension UserDC {
         }
     }
     
+    func offline() {
+        DispatchQueue.main.async {
+            if self.userOnline != false { self.userOnline = false }
+            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
+        }
+        
+#if DEBUG
+            DataU.shared.handleSuccess(function: "UserDC.offline")
+#endif
+    }
+    
     func shutdown() {
         DispatchQueue.main.async {
             if self.loggedIn != false { self.loggedIn = false }
             if self.userOnline != false { self.userOnline = false }
             if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
         }
+        
+#if DEBUG
+            DataU.shared.handleSuccess(function: "UserDC.shutdown")
+#endif
     }
     
     func resetState() {

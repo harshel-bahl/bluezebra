@@ -132,6 +132,10 @@ extension ChannelDC {
     func syncChannel(channel: SChannel) {
         DispatchQueue.main.async {
             
+            if let index = self.RUChannels.firstIndex(where: { $0.channelID == channel.channelID }) {
+                self.RUChannels.remove(at: index)
+            }
+            
             if self.RUChannels.isEmpty {
                 self.RUChannels.append(channel)
             }
@@ -163,6 +167,11 @@ extension ChannelDC {
     
     func syncCR(CR: SChannelRequest) {
         DispatchQueue.main.async {
+            
+            if let index = self.CRs.firstIndex(where: { $0.requestID == CR.requestID }) {
+                self.CRs.remove(at: index)
+            }
+            
             if self.CRs.isEmpty {
                 self.CRs.append(CR)
             }
@@ -178,6 +187,11 @@ extension ChannelDC {
     
     func syncCD(CD: SChannelDeletion) {
         DispatchQueue.main.async {
+            
+            if let index = self.CDs.firstIndex(where: { $0.deletionID == CD.deletionID }) {
+                self.CDs.remove(at: index)
+            }
+            
             if self.CDs.isEmpty {
                 self.CDs.append(CD)
             }
@@ -202,6 +216,7 @@ extension ChannelDC {
     func removeChannel(channelID: String) {
         DispatchQueue.main.async {
             let channelIndex = self.RUChannels.firstIndex(where: { $0.channelID == channelID })
+            
             if let channelIndex = channelIndex {
                 self.RUChannels.remove(at: channelIndex)
             }
@@ -211,6 +226,7 @@ extension ChannelDC {
     func removeCR(requestID: String) {
         DispatchQueue.main.async {
             let CRIndex = self.CRs.firstIndex(where: { $0.requestID == requestID })
+            
             if let CRIndex = CRIndex {
                 self.CRs.remove(at: CRIndex)
             }
@@ -220,6 +236,7 @@ extension ChannelDC {
     func removeCD(deletionID: String) {
         DispatchQueue.main.async {
             let CDIndex = self.CDs.firstIndex(where: { $0.deletionID == deletionID })
+            
             if let CDIndex = CDIndex {
                 self.CDs.remove(at: CDIndex)
             }

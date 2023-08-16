@@ -80,8 +80,8 @@ struct TopLevelView: View {
                 userConnection()
             }
             
-            if !connected && (userDC.userOnline || userDC.emittedPendingEvents) {
-                userDC.shutdown()
+            if !connected {
+                userDC.offline()
                 channelDC.shutdown()
             }
         })
