@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import ScreenshotPreventingSwiftUI
 
 struct ChannelView: View {
     
@@ -72,20 +73,6 @@ struct ChannelView: View {
                                   buttonAction: { avatar in
                             
                         })
-                        
-                        if channel.channelID != "personal",
-                           let online = channelDC.onlineUsers[RU!.userID],
-                           online == true {
-                            
-                            PulsatingCircle(size: .init(width: 8, height: 8),
-                                            colour: .green,
-                                            scaleRatio: 0.75,
-                                            animationSpeed: 0.5,
-                                            text: "online",
-                                            fontSize: 10,
-                                            padding: 3)
-                            .offset(y: 35)
-                        }
                     }
                     
                     VStack(spacing: 0) {
@@ -101,6 +88,17 @@ struct ChannelView: View {
                                           fontSize: 12,
                                           fontWeight: .bold,
                                           padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
+                            }
+                            
+                            if channel.channelID != "personal",
+                               let online = channelDC.onlineUsers[RU!.userID],
+                               online == true {
+                                
+                                PulsatingCircle(size: .init(width: 10, height: 10),
+                                                colour: .green,
+                                                scaleRatio: 0.7,
+                                                animationSpeed: 1.5)
+                                .edgePadding(leading: 10)
                             }
                             
                             Spacer()
@@ -125,25 +123,25 @@ struct ChannelView: View {
                         }
                         .edgePadding(bottom: 5)
                         
-                        FixedText(text: {
-                            if let latestMessage = self.latestMessage {
-                                if channel.channelID == "personal" && latestMessage.imageIDs != nil && latestMessage.message == "" {
-                                    return "📷 Sent something"
-                                } else if latestMessage.imageIDs != nil && latestMessage.message == "" {
-                                    return "📷 Sent you something!"
+                            FixedText(text: {
+                                if let latestMessage = self.latestMessage {
+                                    if channel.channelID == "personal" && latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                        return "📷 Sent something"
+                                    } else if latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                        return "📷 Sent you something!"
+                                    } else {
+                                        return latestMessage.message
+                                    }
                                 } else {
-                                    return latestMessage.message
+                                    return "Tap to chat!"
                                 }
-                            } else {
-                                return "Tap to chat!"
-                            }
-                        }(),
-                                  colour: Color("text2"),
-                                  fontSize: 15,
-                                  lineLimit: 2...2,
-                                  padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8),
-                                  multilineAlignment: .leading,
-                                  pushText: .leading)
+                            }(),
+                                      colour: Color("text2"),
+                                      fontSize: 15,
+                                      lineLimit: 2...2,
+                                      padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8),
+                                      multilineAlignment: .leading,
+                                      pushText: .leading)
                     }
                     .edgePadding(leading: 12.5)
                 }
@@ -201,7 +199,8 @@ struct ChannelView: View {
                                 } else {
                                     if let RU = self.RU {
                                         try await channelDC.sendCD(channel: self.channel,
-                                                                   RU: RU)
+                                                                   RU: RU,
+                                                                   type: "delete")
                                     }
                                 }
                                 DataU.shared.handleSuccess(function: "Delete Channel")

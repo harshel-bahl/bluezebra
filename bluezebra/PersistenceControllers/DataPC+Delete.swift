@@ -49,7 +49,7 @@ extension DataPC {
                 try contextQueue.save()
                 
 #if DEBUG
-                if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMO", info: "entity: \(String(describing: entity))") }
+                DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMO", info: "entity: \(String(describing: entity))") 
 #endif
             }
         } catch {
@@ -96,7 +96,7 @@ extension DataPC {
                 try contextQueue.save()
                 
 #if DEBUG
-                if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMOs", info: "entity: \(String(describing: entity))") }
+                DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMOs", info: "entity: \(String(describing: entity)), deleted: \(MOs.count)")
 #endif
             }
         } catch {

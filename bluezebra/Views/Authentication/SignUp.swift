@@ -319,7 +319,6 @@ struct SignUp: View {
                           buttonSize: .init(width: SP.screenWidth*0.8, height: 50),
                           BGColour: Color("accent1"),
                           action: {
-                    
                     Task {
                         do {
                             let (userData, userSettings, personalChannel) = try await userDC.createUser(username: self.username,

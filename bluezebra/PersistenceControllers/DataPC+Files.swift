@@ -179,8 +179,7 @@ extension DataPC {
     }
     
     func clearDir(dir: String,
-                  intermidDirs: [String]? = nil,
-                  showLogs: Bool = false) async throws {
+                  intermidDirs: [String]? = nil) async throws {
         let fileManager = FileManager.default
         
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -209,9 +208,7 @@ extension DataPC {
             }
             
 #if DEBUG
-            if showLogs {
                 DataU.shared.handleSuccess(function: "DataPC.clearDir", info: "removed: \(count), dirURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
-            }
 #endif
         } catch {
             throw PError.fileSystemFailure(func: "DataPC.clearDir", err: error.localizedDescription)
@@ -219,8 +216,7 @@ extension DataPC {
     }
     
     func removeDir(dir: String,
-                   intermidDirs: [String]? = nil,
-                   showLogs: Bool = false) async throws {
+                   intermidDirs: [String]? = nil) async throws {
         let fileManager = FileManager.default
         
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -241,9 +237,7 @@ extension DataPC {
             try fileManager.removeItem(at: dirURL)
             
 #if DEBUG
-            if showLogs {
                 DataU.shared.handleSuccess(function: "DataPC.removeDir", info: "dir: \(intermidDirs?.joined(separator: "/") ?? "")/\(dirURL.lastPathComponent)")
-            }
 #endif
         } catch {
             throw PError.fileSystemFailure(func: "DataPC.removeDir", err: error.localizedDescription)
@@ -289,8 +283,7 @@ extension DataPC {
     func storeFile(data: Data,
                    fileName: String = UUID().uuidString,
                    intermidDirs: [String]? = nil,
-                   fileType: String? = nil,
-                   showLogs: Bool = false) async throws {
+                   fileType: String? = nil) async throws {
         let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         
         var fileURL = documentsDir
@@ -309,9 +302,7 @@ extension DataPC {
             try data.write(to: fileURL)
             
 #if DEBUG
-            if showLogs {
                 DataU.shared.handleSuccess(function: "DataPC.storeFile", info: "url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
-            }
 #endif
         } catch {
             throw PError.fileSystemFailure(func: "DataPC.storeFile", err: error.localizedDescription)
@@ -343,8 +334,7 @@ extension DataPC {
     }
     
     func removeFile(fileName: String,
-                    intermidDirs: [String]? = nil,
-                    showLogs: Bool = false) async throws {
+                    intermidDirs: [String]? = nil) async throws {
         
         let fileManager = FileManager.default
         
@@ -366,9 +356,7 @@ extension DataPC {
             try fileManager.removeItem(at: fileURL)
             
 #if DEBUG
-            if showLogs {
                 DataU.shared.handleSuccess(function: "DataPC.removeFile", info: "url: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileName)")
-            }
 #endif
         } catch {
             throw PError.fileSystemFailure(func: "DataPC.removeFile", err: error.localizedDescription)

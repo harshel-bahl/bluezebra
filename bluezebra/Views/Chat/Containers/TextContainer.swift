@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScreenshotPreventingSwiftUI
 
 struct TextContainer: View {
     
@@ -160,6 +161,7 @@ struct TextContainer: View {
             .frame(width: maxWidth, alignment: message.isSender ? .trailing : .leading)
             .padding(outerPadding)
             .frame(width: SP.screenWidth, alignment: message.isSender ? .trailing : .leading)
+            
     }
 }
 

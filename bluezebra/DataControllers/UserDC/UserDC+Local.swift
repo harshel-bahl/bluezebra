@@ -12,10 +12,10 @@ extension UserDC {
     /// Local Create Functions
     ///
     func createUserLocally(userID: String = UUID().uuidString,
-                    username: String,
-                    pin: String,
-                    avatar: String,
-                    creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
+                           username: String,
+                           pin: String,
+                           avatar: String,
+                           creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
         
         let SUser = try await DataPC.shared.createUser(userID: userID,
                                                        username: username,
@@ -36,7 +36,7 @@ extension UserDC {
     /// Local Sync Functions
     ///
     func syncUserData() async throws {
-        let SMO = try await DataPC.shared.fetchSMO(entity: User.self, showLogs: true)
+        let SMO = try await DataPC.shared.fetchSMO(entity: User.self)
         
         DispatchQueue.main.async {
             self.userData = SMO
@@ -44,7 +44,7 @@ extension UserDC {
     }
     
     func syncUserSettings() async throws {
-        let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self, showLogs: true)
+        let SMO = try await DataPC.shared.fetchSMO(entity: Settings.self)
         
         DispatchQueue.main.async {
             self.userSettings = SMO
@@ -65,16 +65,24 @@ extension UserDC {
         }
     }
     
-    /// Deletion Functions
+    func shutdown() {
+        DispatchQueue.main.async {
+            if self.loggedIn != false { self.loggedIn = false }
+            if self.userOnline != false { self.userOnline = false }
+            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
+        }
+    }
+    
     func resetState() {
         DispatchQueue.main.async {
             if self.userData != nil { self.userData = nil }
             if self.userSettings != nil { self.userSettings = nil }
             if self.loggedIn != false { self.loggedIn = false }
             if self.userOnline != false { self.userOnline = false }
+            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
             
 #if DEBUG
-        DataU.shared.handleSuccess(function: "UserDC.resetState")
+            DataU.shared.handleSuccess(function: "UserDC.resetState")
 #endif
         }
     }

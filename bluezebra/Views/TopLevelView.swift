@@ -75,12 +75,25 @@ struct TopLevelView: View {
             shutdown()
         })
         .onChange(of: SocketController.shared.connected, perform: { connected in
+            
             if connected && !userDC.userOnline && userDC.userData != nil {
                 userConnection()
             }
+            
+            if !connected && (userDC.userOnline || userDC.emittedPendingEvents) {
+                userDC.shutdown()
+                channelDC.shutdown()
+            }
         })
         .onChange(of: userDC.userOnline, perform: { userOnline in
-             
+            
+        })
+        .onChange(of: userDC.emittedPendingEvents, perform: { emittedPendingEvents in
+            if emittedPendingEvents {
+                if channelDC.RUChannels.count != 0 {
+                    startupNetworking()
+                }
+            }
         })
     }
     
@@ -117,15 +130,29 @@ struct TopLevelView: View {
             do {
                 try await userDC.connectUser()
                 
+#if DEBUG
+                DataU.shared.handleSuccess(function: "TopLevelView.userConnection")
+#endif
+            } catch {
+#if DEBUG
+                DataU.shared.handleFailure(function: "TopLevelView.userConnection", err: error)
+#endif
+            }
+        }
+    }
+    
+    func startupNetworking() {
+        Task {
+            do {
                 try await channelDC.checkChannelUsers()
                 
-                #if DEBUG
-                DataU.shared.handleSuccess(function: "TopLevelView.userConnection")
-                #endif
+#if DEBUG
+                DataU.shared.handleSuccess(function: "TopLevelView.startupNetworking")
+#endif
             } catch {
-                #if DEBUG
-                DataU.shared.handleFailure(function: "TopLevelView.userConnection", err: error)
-                #endif
+#if DEBUG
+                DataU.shared.handleFailure(function: "TopLevelView.startupNetworking", err: error)
+#endif
             }
         }
     }
@@ -135,20 +162,21 @@ struct TopLevelView: View {
             do {
                 try await userDC.disconnectUser()
                 
-                #if DEBUG
+#if DEBUG
                 DataU.shared.handleSuccess(function: "TopLevelView.prepareShutdown")
-                #endif
+#endif
             } catch {
-                #if DEBUG
+#if DEBUG
                 DataU.shared.handleFailure(function: "TopLevelView.prepareShutdown", err: error)
-                #endif
+#endif
             }
         }
     }
     
     func shutdown() {
         SocketController.shared.closeConnection()
-        userDC.loggedIn = false
+        userDC.shutdown()
+        channelDC.shutdown()
     }
     
     var topLevelTabView: some View {

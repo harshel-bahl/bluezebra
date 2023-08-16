@@ -16,8 +16,7 @@ extension DataPC {
                                        predicateValue: T2? = "",
                                        customPredicate: NSPredicate? = nil,
                                        property: [String],
-                                       value: [Any?],
-                                       showLogs: Bool = false) async throws -> T1.SafeType {
+                                       value: [Any?]) async throws -> T1.SafeType {
         var MO: T1
         
         do {
@@ -47,7 +46,7 @@ extension DataPC {
             }
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.updateMO", info: "entity: \(String(describing: entity))") }
+            DataU.shared.handleSuccess(function: "DataPC.updateMO", info: "entity: \(String(describing: entity))")
 #endif
             
             return sMO
@@ -71,8 +70,7 @@ extension DataPC {
                                         fetchLimit: Int? = nil,
                                         sortKey: String? = nil,
                                         sortAscending: Bool = false,
-                                        errorOnEmpty: Bool = false,
-                                        showLogs: Bool = false) async throws -> [T1.SafeType] {
+                                        errorOnEmpty: Bool = false) async throws -> [T1.SafeType] {
         var MOs: [T1]
         
         do {
@@ -122,7 +120,7 @@ extension DataPC {
             }
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.updateMOs", info: "entity: \(String(describing: entity))") }
+            DataU.shared.handleSuccess(function: "DataPC.updateMOs", info: "entity: \(String(describing: entity))")
 #endif
             
             return sMOs

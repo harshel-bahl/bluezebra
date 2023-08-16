@@ -57,9 +57,9 @@ extension UserDC {
         }
         
         do {
-            let (userData, userSettings, personalChannel) = try await self.createUser(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
-                                                                                      pin: pin,
-                                                                                      avatar: avatar)
+            let (userData, userSettings, personalChannel) = try await self.createUserLocally(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                                             pin: pin,
+                                                                                             avatar: avatar)
             
             let packet = try DataU.shared.jsonEncode(data: UserPacket(userID: userData.userID,
                                                                       username: userData.username,
@@ -104,6 +104,10 @@ extension UserDC {
             throw DCError.serverDisconnected(func: "UserDC.deleteUser")
         }
         
+        guard UserDC.shared.userOnline else {
+            throw DCError.userDisconnected(func: "UserDC.deleteUser")
+        }
+        
         guard let userID = self.userData?.userID else {
             throw DCError.nilError(func: "UserDC.deleteUser", err: "userData is nil")
         }
@@ -111,29 +115,29 @@ extension UserDC {
         try await withCheckedThrowingContinuation() { continuation in
             
             SocketController.shared.clientSocket.emitWithAck("deleteUser", ["userID": userID] as [String : Any])
-            .timingOut(after: 1) { data in
-                do {
-                    if let queryStatus = data.first as? String,
-                       queryStatus == SocketAckStatus.noAck {
-                        throw DCError.serverTimeOut(func: "UserDC.deleteUser")
-                    } else if let queryStatus = data.first as? String {
-                        throw DCError.serverFailure(func: "UserDC.deleteUser", err: queryStatus)
-                    } else if let _ = data.first as? NSNull {
-                        continuation.resume(returning: ())
-                    } else {
-                        throw DCError.serverFailure(func: "UserDC.deleteUser")
+                .timingOut(after: 1) { data in
+                    do {
+                        if let queryStatus = data.first as? String,
+                           queryStatus == SocketAckStatus.noAck {
+                            throw DCError.serverTimeOut(func: "UserDC.deleteUser")
+                        } else if let queryStatus = data.first as? String {
+                            throw DCError.serverFailure(func: "UserDC.deleteUser", err: queryStatus)
+                        } else if let _ = data.first as? NSNull {
+                            continuation.resume(returning: ())
+                        } else {
+                            throw DCError.serverFailure(func: "UserDC.deleteUser")
+                        }
+                    } catch {
+                        continuation.resume(throwing: error)
                     }
-                } catch {
-                    continuation.resume(throwing: error)
                 }
-            }
         }
         
         try await self.deleteUserLocally()
     }
     
     /// connectUser
-    /// 
+    ///
     func connectUser() async throws {
         
         guard SocketController.shared.connected else {
@@ -144,30 +148,30 @@ extension UserDC {
         
         try await withCheckedThrowingContinuation() { continuation in
             SocketController.shared.clientSocket.emitWithAck("connectUser", ["userID": userID] as [String : Any])
-            .timingOut(after: 1, callback: { data in
-                do {
-                    if let queryStatus = data.first as? String,
-                       queryStatus == SocketAckStatus.noAck {
-                        throw DCError.serverTimeOut(func: "UserDC.connectUser")
-                    } else if let queryStatus = data.first as? String,
-                              queryStatus == "user does not exist" {
-                        
-                        Task {
-                            try? await self.deleteUserLocally()
+                .timingOut(after: 1, callback: { data in
+                    do {
+                        if let queryStatus = data.first as? String,
+                           queryStatus == SocketAckStatus.noAck {
+                            throw DCError.serverTimeOut(func: "UserDC.connectUser")
+                        } else if let queryStatus = data.first as? String,
+                                  queryStatus == "user does not exist" {
+                            
+                            Task {
+                                try? await self.deleteUserLocally()
+                            }
+                            
+                            throw DCError.serverFailure(func: "UserDC.connectUser", err: "user does not exist")
+                        } else if let queryStatus = data.first as? String {
+                            throw DCError.serverFailure(func: "UserDC.connectUser", err: queryStatus)
+                        } else if let _ = data.first as? NSNull {
+                            continuation.resume(returning: ())
+                        } else {
+                            throw DCError.serverFailure(func: "UserDC.connectUser")
                         }
-                        
-                        throw DCError.serverFailure(func: "UserDC.connectUser", err: "user does not exist")
-                    } else if let queryStatus = data.first as? String {
-                        throw DCError.serverFailure(func: "UserDC.connectUser", err: queryStatus)
-                    } else if let _ = data.first as? NSNull {
-                        continuation.resume(returning: ())
-                    } else {
-                        throw DCError.serverFailure(func: "UserDC.connectUser")
+                    } catch {
+                        continuation.resume(throwing: error)
                     }
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            })
+                })
         }
         
         DispatchQueue.main.async {
@@ -179,11 +183,19 @@ extension UserDC {
     ///
     func disconnectUser(datetime: Date = DateU.shared.currDT) async throws {
         
+        guard SocketController.shared.connected else {
+            throw DCError.serverDisconnected(func: "UserDC.disconnectUser")
+        }
+        
+        guard UserDC.shared.userOnline else {
+            throw DCError.userDisconnected(func: "UserDC.disconnectUser")
+        }
+        
         guard let userID = self.userData?.userID else { throw DCError.nilError(func: "UserDC.disconnectUser", err: "userData is nil") }
         
         let SMO = try await DataPC.shared.updateMO(entity: User.self,
-                                                           property: ["lastOnline"],
-                                                           value: [datetime])
+                                                   property: ["lastOnline"],
+                                                   value: [datetime])
         DispatchQueue.main.async {
             self.userData = SMO
         }
@@ -192,6 +204,6 @@ extension UserDC {
             throw DCError.serverDisconnected(func: "UserDC.disconnectUser")
         }
         
-        SocketController.shared.clientSocket.emit("disconnectUser", ["userID": userID])
+        SocketController.shared.clientSocket.emit("disconnectUser")
     }
 }

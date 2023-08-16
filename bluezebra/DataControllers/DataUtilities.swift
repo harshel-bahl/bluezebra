@@ -75,6 +75,27 @@ class DataU {
         }
     }
     
+    func arrayToJSONData<T>(_ array: [T]) throws -> Data {
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: array, options: [])
+            return jsonData
+        } catch {
+            throw DCError.jsonError(func: "arrayToJSONData", err: error.localizedDescription)
+        }
+    }
+    
+    func jsonDataToArray(_ jsonData: Data) throws -> [Any] {
+        do {
+            if let array = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [Any] {
+                return array
+            } else {
+                throw DCError.jsonError(func: "jsonDataToArray", err: "Data is not an array")
+            }
+        } catch {
+            throw DCError.jsonError(func: "jsonDataToArray", err: error.localizedDescription)
+        }
+    }
+    
     /// calcDataSize
     ///
     func calcDataSize(data: Data) -> String {

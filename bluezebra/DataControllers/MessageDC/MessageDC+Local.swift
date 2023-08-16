@@ -38,7 +38,7 @@ extension MessageDC {
         
         try await self.syncChannel()
         
-        for channel in ChannelDC.shared.channels {
+        for channel in ChannelDC.shared.RUChannels {
             try await self.syncChannel(channelID: channel.channelID)
         }
     }
@@ -50,8 +50,7 @@ extension MessageDC {
         let SMOs = try await fetchMessages(channelID: channelID,
                                            fetchLimit: fetchLimit,
                                            sortKey: sortKey,
-                                           sortAscending: sortAscending,
-                                           showLogs: true)
+                                           sortAscending: sortAscending)
         
         DispatchQueue.main.async {
             self.channelMessages[channelID] = SMOs
@@ -72,8 +71,7 @@ extension MessageDC {
                                                          customPredicate: predicate,
                                                          fetchLimit: fetchLimit,
                                                          sortKey: sortKey,
-                                                         sortAscending: sortAscending,
-                                                         showLogs: true)
+                                                         sortAscending: sortAscending)
             DispatchQueue.main.async {
                 self.channelMessages[channelID]?.append(contentsOf: SMOs)
             }
@@ -219,8 +217,7 @@ extension MessageDC {
                                                      predicateValue: channelID,
                                                      fetchLimit: fetchLimit,
                                                      sortKey: sortKey,
-                                                     sortAscending: sortAscending,
-                                                     showLogs: true)
+                                                     sortAscending: sortAscending)
         return SMOs
     }
     
@@ -313,6 +310,12 @@ extension MessageDC {
         try await DataPC.shared.fetchDeleteMOs(entity: Message.self,
                                                predicateProperty: "channelID",
                                                predicateValue: channelID)
+        
+        try await DataPC.shared.clearDir(dir: "images",
+                                         intermidDirs: [channelID])
+        
+        try await DataPC.shared.clearDir(dir: "files",
+                                         intermidDirs: [channelID])
     }
     
     

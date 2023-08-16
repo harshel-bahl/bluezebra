@@ -68,7 +68,7 @@ struct DeletionRow: View {
                     
                     HStack(spacing: 0) {
                         if let toDeleteUserIDs = CD.toDeleteUserIDs,
-                           toDeleteUserIDs.components(separatedBy: ",").isEmpty {
+                           toDeleteUserIDs.components(separatedBy: ",").first == "" {
                             FixedText(text: "Status: ",
                                       colour: Color("text2"),
                                       fontSize: 12.5)
@@ -82,12 +82,14 @@ struct DeletionRow: View {
                                       fontSize: 12.5)
                             
                             FixedText(text: "Incomplete",
-                                      colour: Color("orangeAccent1"),
+                                      colour: Color("accent6"),
                                       fontSize: 12.5)
                         }
+                            
                         
                         Spacer()
                     }
+                    
                 }
             }
             .edgePadding(top: 12.5, bottom: 12.5, leading: 20, trailing: 20)

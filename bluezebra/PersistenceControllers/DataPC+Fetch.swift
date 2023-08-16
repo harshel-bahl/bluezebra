@@ -20,8 +20,7 @@ extension DataPC {
                                      queue: String = "background",
                                      predicateProperty: String? = nil,
                                      predicateValue: T2? = "",
-                                     customPredicate: NSPredicate? = nil,
-                                     showLogs: Bool = false) async throws -> T1 {
+                                     customPredicate: NSPredicate? = nil) async throws -> T1 {
         let contextQueue: NSManagedObjectContext
         
         if queue=="main" {
@@ -54,7 +53,7 @@ extension DataPC {
             MO = firstMO
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchMO", info: "entity: \(String(describing: entity))") }
+            DataU.shared.handleSuccess(function: "DataPC.fetchMO", info: "entity: \(String(describing: entity))")
 #endif
             
             return MO
@@ -75,8 +74,7 @@ extension DataPC {
                                       customPredicate: NSPredicate? = nil,
                                       fetchLimit: Int? = nil,
                                       sortKey: String? = nil,
-                                      sortAscending: Bool = false,
-                                      showLogs: Bool = false) async throws -> [T1] {
+                                      sortAscending: Bool = false) async throws -> [T1] {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -112,7 +110,7 @@ extension DataPC {
             }
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)") }
+            DataU.shared.handleSuccess(function: "DataPC.fetchMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)")
 #endif
             
             return MOs
@@ -132,8 +130,7 @@ extension DataPC {
                                       queue: String = "main",
                                       predicateProperty: String? = nil,
                                       predicateValue: T2? = "",
-                                      customPredicate: NSPredicate? = nil,
-                                      showLogs: Bool = false) async throws -> T1.SafeType {
+                                      customPredicate: NSPredicate? = nil) async throws -> T1.SafeType {
         var contextQueue = self.mainContext
         
         if queue=="background" {
@@ -164,7 +161,7 @@ extension DataPC {
             
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))") }
+            DataU.shared.handleSuccess(function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))")
 #endif
             
             return SMO
@@ -187,8 +184,7 @@ extension DataPC {
                                        customPredicate: NSPredicate? = nil,
                                        fetchLimit: Int? = nil,
                                        sortKey: String? = nil,
-                                       sortAscending: Bool = false,
-                                       showLogs: Bool = false) async throws -> [T1.SafeType] {
+                                       sortAscending: Bool = false) async throws -> [T1.SafeType] {
         var contextQueue = self.mainContext
         
         if queue=="background" {
@@ -223,7 +219,7 @@ extension DataPC {
             }
             
 #if DEBUG
-            if showLogs { DataU.shared.handleSuccess(function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)") }
+            DataU.shared.handleSuccess(function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)")
 #endif
             
             let SMOs = try MOs.map {

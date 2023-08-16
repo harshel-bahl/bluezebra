@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import ScreenshotPreventingSwiftUI
 
 struct MessageScrollView: View {
     
@@ -124,40 +125,44 @@ struct MessageScrollView: View {
             .onReceive(keyboardHeightPublisher, perform: { height in
                 keyboardHeight = height
             })
+            .screenshotProtected(isProtected: true)
         }
     }
     
     @ViewBuilder
     var containers: some View {
         if let messages = getMessages() {
-            ForEach(messages, id: \.messageID) { message in
-                
-                if showDateHeaders {
-                    let showDateHeader = shouldShowDateHeader(
-                        messages: messages,
-                        thisMessage: message
-                    )
+//            ScreenshotPrevent(isProtected: true) {
+                ForEach(messages, id: \.messageID) { message in
                     
-                    if let showDateHeader = showDateHeader,
-                       showDateHeader {
-                        DateDMY(date: message.date,
-                                fontSize: dateFontSize,
-                                colour: dateFontColour)
-                        .padding(dateBorderPadding)
-                        .background() { dateBG }
-                        .cornerRadius(5)
-                        .padding(messages.first?.messageID == message.messageID ?
-                                 EdgeInsets(top: 10, leading: 0, bottom: 15, trailing: 0) : datePadding)
+                    if showDateHeaders {
+                        let showDateHeader = shouldShowDateHeader(
+                            messages: messages,
+                            thisMessage: message
+                        )
+                        
+                        if let showDateHeader = showDateHeader,
+                           showDateHeader {
+                            DateDMY(date: message.date,
+                                    fontSize: dateFontSize,
+                                    colour: dateFontColour)
+                            .padding(dateBorderPadding)
+                            .background() { dateBG }
+                            .cornerRadius(5)
+                            .padding(messages.first?.messageID == message.messageID ?
+                                     EdgeInsets(top: 10, leading: 0, bottom: 15, trailing: 0) : datePadding)
+                        }
                     }
+                    
+                    let messageStatus = chatState.computeReceipt(message: message)
+                    
+                    MessageContainer(message: message,
+                                     messageStatus: messageStatus)
+                    .id(message.messageID)
+                    .padding(.bottom, messages.last?.messageID == message.messageID ? 5 : 0)
+//                    .screenshotProtected(isProtected: true)
                 }
-                
-                let messageStatus = chatState.computeReceipt(message: message)
-                
-                MessageContainer(message: message,
-                                 messageStatus: messageStatus)
-                .id(message.messageID)
-                .padding(.bottom, messages.last?.messageID == message.messageID ? 5 : 0)
-            }
+//            }
         }
     }
     

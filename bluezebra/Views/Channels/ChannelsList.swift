@@ -54,7 +54,7 @@ struct ChannelsList: View {
         }
                        .sheetModifier(isPresented: $showDeletionLog,
                                       BG: Color("background3")) {
-                           DeletionLog(channelType: "personal")
+                           DeletionLog(channelType: "RU")
                        }
     }
     
@@ -95,7 +95,7 @@ struct ChannelsList: View {
     }
     
     func channelList() -> [SChannel] {
-        var channelList = channelDC.channels
+        var channelList = channelDC.RUChannels
         
         channelList.insert(channelDC.personalChannel!, at: 0)
         

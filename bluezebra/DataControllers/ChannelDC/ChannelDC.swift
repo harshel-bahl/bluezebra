@@ -31,9 +31,9 @@ class ChannelDC: ObservableObject {
     /// channels: channels with a single remote user
     /// - uses an array since it is fetched in order of lastMessageDate
     /// - only contains active=true objects
-    @Published var channels = [SChannel]() {
+    @Published var RUChannels = [SChannel]() {
         didSet {
-            for channel in channels {
+            for channel in RUChannels {
                 let channelID = channel.channelID
                 
                 if !MessageDC.shared.channelMessages.keys.contains(channelID) {
@@ -64,22 +64,4 @@ class ChannelDC: ObservableObject {
         self.addSocketHandlers()
     }
     
-    /// ChannelDC reset function
-    ///
-    func resetState(keepPersonalChannel: Bool = false) {
-        DispatchQueue.main.async {
-            self.RUs = [String: SRemoteUser]()
-            self.onlineUsers = [String: Bool]()
-            
-            self.channels = [SChannel]()
-            if !keepPersonalChannel { self.personalChannel = nil }
-            
-            self.CRs = [SChannelRequest]()
-            self.CDs = [SChannelDeletion]()
-            
-            #if DEBUG
-            print("CLIENT \(DateU.shared.logTS) -- ChannelDC.resetState: SUCCESS")
-            #endif
-        }
-    }
 }

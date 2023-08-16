@@ -32,7 +32,9 @@ extension ChannelDC {
                   let userID = data.first as? String else { return }
             
             if self.onlineUsers.keys.contains(userID) {
-                self.onlineUsers[userID] = true
+                DispatchQueue.main.async {
+                    self.onlineUsers[userID] = true
+                }
             }
         }
     }
@@ -43,22 +45,21 @@ extension ChannelDC {
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.userDisconnected: triggered")
 #endif
             
-            guard let self = self,
-                  let data = data.first as? NSDictionary,
-                  let userID = data.allKeys[0] as? String,
-                  let lastOnline = data[userID] as? String else { return }
-            
-            if self.onlineUsers.keys.contains(userID) {
-                self.onlineUsers[userID] = false
-            }
+            guard let self = self else { return }
             
             Task {
                 do {
-                    let lastOnline = try DateU.shared.dateFromString(lastOnline)
+                    guard let userID = data.first as? String else { throw DCError.jsonError(func: "ChannelDC.userDisconnected") }
+                    
+                    if self.onlineUsers.keys.contains(userID) {
+                        DispatchQueue.main.async {
+                            self.onlineUsers[userID] = false
+                        }
+                    }
                     
                     let SRU = try await DataPC.shared.updateMO(entity: RemoteUser.self,
                                                                property: ["lastOnline"],
-                                                               value: [lastOnline])
+                                                               value: [DateU.shared.currDT])
                     self.syncRU(RU: SRU)
                 } catch {
 #if DEBUG
@@ -113,7 +114,7 @@ extension ChannelDC {
 
                     ack.with(NSNull())
                 } catch {
-                    DataU.shared.handleFailure(function: "receivedCR", err: error)
+                    DataU.shared.handleFailure(function: "ChannelDC.receivedCR", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -147,9 +148,9 @@ extension ChannelDC {
                                                               predicateValue: CRResultPacket.requestID)
                         self.removeCR(requestID: CRResultPacket.requestID)
                         
-                        let SChannel = try await DataPC.shared.createChannel(channelID: CRResultPacket.channelID,
-                                                                             userID: SCR.userID,
-                                                                             creationDate: creationDate)
+                        let SChannel = try await self.createChannel(channelID: CRResultPacket.channelID,
+                                                                    userID: SCR.userID,
+                                                                    creationDate: creationDate)
                         self.syncChannel(channel: SChannel)
                         
                         ack.with(NSNull())
@@ -167,7 +168,7 @@ extension ChannelDC {
                         ack.with(NSNull())
                     }
                 } catch {
-                    DataU.shared.handleFailure(function: "receivedCRResult", err: error)
+                    DataU.shared.handleFailure(function: "ChannelDC.receivedCRResult", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -233,8 +234,17 @@ extension ChannelDC {
                     }
                     
                     ack.with(NSNull())
+                    
+                    do {
+                        try await self.sendCDResult(deletionID: CDPacket.deletionID,
+                                                    userID: SRU.userID)
+                        
+                        DataU.shared.handleSuccess(function: "ChannelDC.sendCDResult")
+                    } catch {
+                        DataU.shared.handleFailure(function: "ChannelDC.sendCDResult", err: error)
+                    }
                 } catch {
-                    DataU.shared.handleFailure(function: "receivedCD", err: error)
+                    DataU.shared.handleFailure(function: "ChannelDC.receivedCD", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -243,24 +253,63 @@ extension ChannelDC {
     
     func receivedCDResult() {
         SocketController.shared.clientSocket.on("receivedCDResult") { [weak self] (data, ack) in
-            #if DEBUG
+#if DEBUG
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCDResult: triggered")
-            #endif
+#endif
             
-//            guard let self = self,
-//                  let data = data.first as? NSDictionary,
-//                  let deletionID = data["deletionID"] as? String,
-//                  let dateString = data["remoteDeletedDate"] as? String,
-//                  let remoteDeletedDate = DateU.shared.dateFromString(dateString) else { return }
-//
-//            Task {
-//                let _ = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
-//                                                         predicateProperty: "deletionID",
-//                                                         predicateValue: deletionID,
-//                                                         property: ["toDeleteUserIDs", "remoteDeletedDate"],
-//                                                         value: [[String]().joined(separator: ","), remoteDeletedDate])
-//                await self.fetchChannelDeletions()
-//            }
+            guard let self = self else { return }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                Task {
+                    do {
+                        guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCDResult", err: "data failed to typecast to Data or is nil") }
+                        
+                        let CDResult = try DataU.shared.jsonDataToDictionary(data)
+                        
+                        guard let deletionID = CDResult["deletionID"] as? String,
+                              let userID = CDResult["userID"] as? String,
+                              let date = CDResult["date"] as? String else { throw DCError.jsonError(func: "ChannelDC.receivedCDResult") }
+                        
+                        let remoteDeletedDate = try DateU.shared.dateFromString(date)
+                        
+                        let SCD = try await DataPC.shared.fetchSMO(entity: ChannelDeletion.self,
+                                                                   predicateProperty: "deletionID",
+                                                                   predicateValue: deletionID)
+                        
+                        if var toDeleteUserIDs = SCD.toDeleteUserIDs?.components(separatedBy: ",") {
+                            toDeleteUserIDs = toDeleteUserIDs.filter { $0 != userID }
+                            let userIDS = toDeleteUserIDs.joined(separator: ",")
+                            
+                            if toDeleteUserIDs.isEmpty {
+                                let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
+                                                                                  predicateProperty: "deletionID",
+                                                                                  predicateValue: deletionID,
+                                                                                  property: ["toDeleteUserIDs", "remoteDeletedDate"],
+                                                                                  value: [userIDS, remoteDeletedDate])
+                                self.removeCD(deletionID: deletionID)
+                                self.syncCD(CD: updatedSCD)
+                            } else {
+                                let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
+                                                                                  predicateProperty: "deletionID",
+                                                                                  predicateValue: deletionID,
+                                                                                  property: ["toDeleteUserIDs"],
+                                                                                  value: [userIDS])
+                                self.removeCD(deletionID: deletionID)
+                                self.syncCD(CD: updatedSCD)
+                            }
+                            
+                            ack.with(NSNull())
+                            
+                            DataU.shared.handleSuccess(function: "ChannelDC.receivedCDResult")
+                        } else {
+                            throw DCError.nilError(func: "ChannelDC.receivedCDResult")
+                        }
+                    } catch {
+                        DataU.shared.handleFailure(function: "ChannelDC.receivedCDResult", err: error)
+                        ack.with(error.localizedDescription)
+                    }
+                }
+            }
         }
     }
 
@@ -271,34 +320,25 @@ extension ChannelDC {
             print("SERVER \(DateU.shared.logTS) -- ChannelDC.deleteUserTrace: triggered")
             #endif
             
-            guard let self = self,
-                  let data = data.first as? NSDictionary,
-                  let userID = data["userID"] as? String else { return }
+            guard let self = self else { return }
             
             Task {
-                /// Delete remoteUser
-                try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self,
-                                                            predicateProperty: "userID",
-                                                            predicateValue: userID)
-                try await self.syncRUs()
-                
-                /// Delete channelRequests
-                try await DataPC.shared.fetchDeleteMOs(entity: ChannelRequest.self,
-                                                            predicateProperty: "userID",
-                                                            predicateValue: userID)
-                try await self.syncCRs()
-                
-                /// Delete channel
-                try await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
-                                                            predicateProperty: "userID",
-                                                            predicateValue: userID)
-                try await self.syncChannels()
-                
-                // update team userIDs to remove user's userID
-                // can be done by calling update with custom predicate of contains userID, then change to list and remove userID
-                
-                /// Delete messages
-                
+                do {
+                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.deleteUserTrace", err: "data failed to typecast to Data or is nil") }
+                    
+                    let deletionData = try DataU.shared.jsonDataToDictionary(data)
+                    
+                    guard let userID = deletionData["userID"] as? String else { throw DCError.jsonError(func: "ChannelDC.deleteUserTrace") }
+                    
+                    try await self.deleteUserTrace(userID: userID)
+                    
+                    ack.with(NSNull())
+                    
+                    DataU.shared.handleSuccess(function: "ChannelDC.deleteUserTrace")
+                } catch {
+                    DataU.shared.handleFailure(function: "ChannelDC.deleteUserTrace", err: error)
+                    ack.with(error.localizedDescription)
+                }
             }
         }
     }
