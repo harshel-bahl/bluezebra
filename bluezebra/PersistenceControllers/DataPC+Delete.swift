@@ -17,8 +17,7 @@ extension DataPC {
                                            queue: String = "background",
                                            predicateProperty: String? = nil,
                                            predicateValue: T2? = "",
-                                           customPredicate: NSPredicate? = nil,
-                                           showLogs: Bool = false) async throws {
+                                           customPredicate: NSPredicate? = nil) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {
@@ -66,8 +65,7 @@ extension DataPC {
                                             queue: String = "background",
                                             predicateProperty: String? = nil,
                                             predicateValue: T2? = "",
-                                            customPredicate: NSPredicate? = nil,
-                                            showLogs: Bool = false) async throws {
+                                            customPredicate: NSPredicate? = nil) async throws {
         var contextQueue = self.backgroundContext
         
         if queue=="main" {

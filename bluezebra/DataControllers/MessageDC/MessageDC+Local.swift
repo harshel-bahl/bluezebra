@@ -10,74 +10,6 @@ import SwiftUI
 
 extension MessageDC {
     
-    /// Local Setup Functions
-    ///
-    func checkChannelDirs(dirs: [String] = ["images", "files"]) async throws {
-        for channelID in self.channelMessages.keys {
-            for dir in dirs {
-                do {
-                    let dirCheck = DataPC.shared.checkDir(dir: dir,
-                                                          intermidDirs: [channelID])
-                    
-                    guard dirCheck else { throw DCError.fileSystemFailure(func: "MessageDC.checkChannelDirs", err: "channelID: \(channelID), dir: \(dir)")}
-                } catch {
-#if DEBUG
-                    DataU.shared.handleFailure(function: "MessageDC.checkChannelDirs", err: error)
-#endif
-                    
-                    try await DataPC.shared.createDir(dir: dir,
-                                                      intermidDirs: [channelID])
-                }
-            }
-        }
-    }
-    
-    /// Local Sync Functions
-    ///
-    func syncMessageDC() async throws {
-        
-        try await self.syncChannel()
-        
-        for channel in ChannelDC.shared.RUChannels {
-            try await self.syncChannel(channelID: channel.channelID)
-        }
-    }
-    
-    func syncChannel(channelID: String = "personal",
-                     fetchLimit: Int = 10,
-                     sortKey: String = "date",
-                     sortAscending: Bool = false) async throws {
-        let SMOs = try await fetchMessages(channelID: channelID,
-                                           fetchLimit: fetchLimit,
-                                           sortKey: sortKey,
-                                           sortAscending: sortAscending)
-        
-        DispatchQueue.main.async {
-            self.channelMessages[channelID] = SMOs
-        }
-    }
-    
-    func addMessages(channelID: String,
-                     fetchLimit: Int = 25,
-                     sortKey: String = "date",
-                     sortAscending: Bool = false) async throws {
-        
-        let earliestSMO = self.channelMessages[channelID]?.last
-        
-        if let earliestSMO = earliestSMO {
-            let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestSMO.date])
-            
-            let SMOs = try await DataPC.shared.fetchSMOs(entity: Message.self,
-                                                         customPredicate: predicate,
-                                                         fetchLimit: fetchLimit,
-                                                         sortKey: sortKey,
-                                                         sortAscending: sortAscending)
-            DispatchQueue.main.async {
-                self.channelMessages[channelID]?.append(contentsOf: SMOs)
-            }
-        }
-    }
-    
     /// Local Create Functions
     ///
     func createTextMessage(channelID: String = "personal",
@@ -145,6 +77,52 @@ extension MessageDC {
     //                           resourceIDs: [String]? = nil) async throws -> SMessage {
     //
     //    }
+    
+    /// Local Sync Functions
+    ///
+    func syncMessageDC() async throws {
+        
+        try await self.syncChannel()
+        
+        for channel in ChannelDC.shared.RUChannels {
+            try await self.syncChannel(channelID: channel.channelID)
+        }
+    }
+    
+    func syncChannel(channelID: String = "personal",
+                     fetchLimit: Int = 10,
+                     sortKey: String = "date",
+                     sortAscending: Bool = false) async throws {
+        let SMOs = try await fetchMessages(channelID: channelID,
+                                           fetchLimit: fetchLimit,
+                                           sortKey: sortKey,
+                                           sortAscending: sortAscending)
+        
+        DispatchQueue.main.async {
+            self.channelMessages[channelID] = SMOs
+        }
+    }
+    
+    func addMessages(channelID: String,
+                     fetchLimit: Int = 25,
+                     sortKey: String = "date",
+                     sortAscending: Bool = false) async throws {
+        
+        let earliestSMO = self.channelMessages[channelID]?.last
+        
+        if let earliestSMO = earliestSMO {
+            let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestSMO.date])
+            
+            let SMOs = try await DataPC.shared.fetchSMOs(entity: Message.self,
+                                                         customPredicate: predicate,
+                                                         fetchLimit: fetchLimit,
+                                                         sortKey: sortKey,
+                                                         sortAscending: sortAscending)
+            DispatchQueue.main.async {
+                self.channelMessages[channelID]?.append(contentsOf: SMOs)
+            }
+        }
+    }
     
     /// SMO Sync Functions
     ///
@@ -310,13 +288,17 @@ extension MessageDC {
         try await DataPC.shared.fetchDeleteMOs(entity: Message.self,
                                                predicateProperty: "channelID",
                                                predicateValue: channelID)
-        
-        try await DataPC.shared.clearDir(dir: "images",
-                                         intermidDirs: [channelID])
-        
-        try await DataPC.shared.clearDir(dir: "files",
-                                         intermidDirs: [channelID])
     }
     
+    func shutdown() {
+        DispatchQueue.main.async {
+            
+        }
+        
+#if DEBUG
+        DataU.shared.handleSuccess(function: "MessageDC.shutdown")
+#endif
+        
+    }
     
 }

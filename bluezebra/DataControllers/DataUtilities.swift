@@ -96,6 +96,16 @@ class DataU {
         }
     }
     
+    func createUniqueID(IDs: [String]) -> String {
+        var ID = UUID().uuidString
+        
+        while !IDs.contains(ID) {
+            ID = UUID().uuidString
+        }
+        
+        return ID
+    }
+    
     /// calcDataSize
     ///
     func calcDataSize(data: Data) -> String {
@@ -135,6 +145,22 @@ class DataU {
     func handleFailure(info: String,
                        DT: String = DateU.shared.logTS) {
         print("FAILED \(DT) -- info: (\(info))")
+    }
+    
+    func handleEventTrigger(eventName: String,
+                            DT: String = DateU.shared.logTS) {
+        print("SUCCESS \(DT) -- event triggered: \(eventName)")
+    }
+    
+    func handleEventSuccess(eventName: String,
+                            DT: String = DateU.shared.logTS) {
+        print("SUCCESS \(DT) -- event: \(eventName)")
+    }
+    
+    func handleEventFailure(eventName: String,
+                            DT: String = DateU.shared.logTS,
+                            err: Error) {
+        print("SUCCESS \(DT) -- event: \(eventName), error: \(err)")
     }
 }
 

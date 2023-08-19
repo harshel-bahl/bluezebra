@@ -82,7 +82,7 @@ struct TopLevelView: View {
             
             if !connected {
                 userDC.offline()
-                channelDC.shutdown()
+                channelDC.offline()
             }
         })
         .onChange(of: userDC.userOnline, perform: { userOnline in
@@ -130,13 +130,7 @@ struct TopLevelView: View {
             do {
                 try await userDC.connectUser()
                 
-#if DEBUG
-                DataU.shared.handleSuccess(function: "TopLevelView.userConnection")
-#endif
             } catch {
-#if DEBUG
-                DataU.shared.handleFailure(function: "TopLevelView.userConnection", err: error)
-#endif
             }
         }
     }
@@ -144,15 +138,9 @@ struct TopLevelView: View {
     func startupNetworking() {
         Task {
             do {
-                try await channelDC.checkChannelUsers()
+//                try await channelDC.checkChannelUsers()
                 
-#if DEBUG
-                DataU.shared.handleSuccess(function: "TopLevelView.startupNetworking")
-#endif
             } catch {
-#if DEBUG
-                DataU.shared.handleFailure(function: "TopLevelView.startupNetworking", err: error)
-#endif
             }
         }
     }
@@ -160,23 +148,18 @@ struct TopLevelView: View {
     func prepareShutdown() {
         Task {
             do {
-                try await userDC.disconnectUser()
+//                try await userDC.disconnectUser()
                 
-#if DEBUG
-                DataU.shared.handleSuccess(function: "TopLevelView.prepareShutdown")
-#endif
             } catch {
-#if DEBUG
-                DataU.shared.handleFailure(function: "TopLevelView.prepareShutdown", err: error)
-#endif
             }
         }
     }
     
     func shutdown() {
-        SocketController.shared.closeConnection()
+        if socketController.connected { SocketController.shared.closeConnection() }
         userDC.shutdown()
         channelDC.shutdown()
+        messageDC.shutdown()
     }
     
     var topLevelTabView: some View {

@@ -18,13 +18,17 @@ extension UserDC {
     func receivedPendingEventsNotif() {
         SocketController.shared.clientSocket.on("receivedPendingEvents") { [weak self] (data, ack) in
 #if DEBUG
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedPendingEventsNotif: triggered")
+            DataU.shared.handleEventTrigger(eventName: "ChannelDC.receivedPendingEvents")
 #endif
             guard let self = self else { return }
             
             self.emittedPendingEvents = true
             
             ack.with(NSNull())
+            
+#if DEBUG
+            DataU.shared.handleEventSuccess(eventName: "ChannelDC.receivedPendingEvents")
+#endif
         }
     }
 }

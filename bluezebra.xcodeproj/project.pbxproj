@@ -62,7 +62,6 @@
 		34C839F029CFD9C10093C48B /* DeletionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839EF29CFD9C10093C48B /* DeletionLog.swift */; };
 		34C839F329CFE23A0093C48B /* AddRURow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839F229CFE23A0093C48B /* AddRURow.swift */; };
 		34C839F729CFE6110093C48B /* CRRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C839F629CFE6110093C48B /* CRRow.swift */; };
-		34D3494229C1C47400FD7C8B /* ChannelDCEventQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D3494129C1C47400FD7C8B /* ChannelDCEventQueue.swift */; };
 		34E1E08329E1FE8C007319C3 /* TextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08229E1FE8C007319C3 /* TextContainer.swift */; };
 		34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08429E21541007319C3 /* TextCellStyle.swift */; };
 		34E1E08729E2222D007319C3 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08629E2222D007319C3 /* Styles.swift */; };
@@ -197,7 +196,6 @@
 		34C839EF29CFD9C10093C48B /* DeletionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionLog.swift; sourceTree = "<group>"; };
 		34C839F229CFE23A0093C48B /* AddRURow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRURow.swift; sourceTree = "<group>"; };
 		34C839F629CFE6110093C48B /* CRRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRRow.swift; sourceTree = "<group>"; };
-		34D3494129C1C47400FD7C8B /* ChannelDCEventQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDCEventQueue.swift; sourceTree = "<group>"; };
 		34E1E08229E1FE8C007319C3 /* TextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContainer.swift; sourceTree = "<group>"; };
 		34E1E08429E21541007319C3 /* TextCellStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCellStyle.swift; sourceTree = "<group>"; };
 		34E1E08629E2222D007319C3 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
@@ -348,7 +346,6 @@
 				3475AE9529EFB884001882D4 /* ChannelDC+Local.swift */,
 				3475AE9729EFB8DA001882D4 /* ChannelDC+Handlers.swift */,
 				3475AE9929EFB9B0001882D4 /* ChannelDC+Events.swift */,
-				34D3494129C1C47400FD7C8B /* ChannelDCEventQueue.swift */,
 			);
 			path = ChannelDC;
 			sourceTree = "<group>";
@@ -832,7 +829,6 @@
 				34AFD46729DD1EC700B2AC74 /* CRView.swift in Sources */,
 				3489D5E529F9D90C0074EF5E /* Settings.swift in Sources */,
 				345EEF5329F4173A00861DB9 /* MessageDC+Local.swift in Sources */,
-				34D3494229C1C47400FD7C8B /* ChannelDCEventQueue.swift in Sources */,
 				341A0DA72A21C03400C5B00C /* DataUtilities.swift in Sources */,
 				345EEF5729F4175B00861DB9 /* MessageDC+Events.swift in Sources */,
 				34C839F729CFE6110093C48B /* CRRow.swift in Sources */,

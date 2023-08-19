@@ -148,10 +148,9 @@ extension ChannelDC {
                                                               predicateValue: CRResultPacket.requestID)
                         self.removeCR(requestID: CRResultPacket.requestID)
                         
-                        let SChannel = try await self.createChannel(channelID: CRResultPacket.channelID,
+                        try await self.createChannel(channelID: CRResultPacket.channelID,
                                                                     userID: SCR.userID,
                                                                     creationDate: creationDate)
-                        self.syncChannel(channel: SChannel)
                         
                         ack.with(NSNull())
                     } else {

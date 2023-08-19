@@ -61,15 +61,21 @@ extension UserDC {
         }
     }
     
+    /// updateLastOnline
+    ///
+    func updateLastOnline(datetime: Date = DateU.shared.currDT) async throws {
+        
+        let SMO = try await DataPC.shared.updateMO(entity: User.self,
+                                                   property: ["lastOnline"],
+                                                   value: [datetime])
+        self.syncUser(userData: SMO)
+    }
+    
     func offline() {
         DispatchQueue.main.async {
             if self.userOnline != false { self.userOnline = false }
             if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
         }
-        
-#if DEBUG
-            DataU.shared.handleSuccess(function: "UserDC.offline")
-#endif
     }
     
     func shutdown() {
@@ -78,10 +84,6 @@ extension UserDC {
             if self.userOnline != false { self.userOnline = false }
             if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
         }
-        
-#if DEBUG
-            DataU.shared.handleSuccess(function: "UserDC.shutdown")
-#endif
     }
     
     func resetState() {
@@ -91,10 +93,6 @@ extension UserDC {
             if self.loggedIn != false { self.loggedIn = false }
             if self.userOnline != false { self.userOnline = false }
             if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
-            
-#if DEBUG
-            DataU.shared.handleSuccess(function: "UserDC.resetState")
-#endif
         }
     }
     
