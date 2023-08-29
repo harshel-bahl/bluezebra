@@ -186,7 +186,7 @@ extension ChannelDC {
                                                                    isSender: isOrigin)
                         self.syncCR(CR: SCR)
                         
-                        if let RUCheck = try? await self.fetchRULocally(userID: CRPacket.originUser.userID) {
+                        if let _ = try? await self.fetchRULocally(userID: CRPacket.originUser.userID) {
                             try await self.deleteRU(userID: CRPacket.originUser.userID)
                         }
                         
@@ -195,7 +195,6 @@ extension ChannelDC {
                                                                    avatar: CRPacket.originUser.avatar,
                                                                    creationDate: try DateU.shared.dateFromStringTZ(CRPacket.originUser.creationDate))
                         
-                        self.syncRU(RU: SRU)
                     }
                     
 #if DEBUG
@@ -345,12 +344,11 @@ extension ChannelDC {
                     let RUPacket = try DataU.shared.jsonDecodeFromData(packet: RUPacket.self,
                                                                        data: RU)
                     
-                    let SChannel = try await DataPC.shared.createChannel(channelID: channelID,
-                                                                         userID: RUPacket.userID,
-                                                                         creationDate: try DateU.shared.dateFromStringTZ(creationDateS))
-                    self.syncChannel(channel: SChannel)
+                    try await self.createChannel(channelID: channelID,
+                                                 userID: RUPacket.userID,
+                                                 creationDate: try DateU.shared.dateFromStringTZ(creationDateS))
                     
-                    if let RUCheck = try? await self.fetchRULocally(userID: RUPacket.userID) {
+                    if let _ = try? await self.fetchRULocally(userID: RUPacket.userID) {
                         try await self.deleteRU(userID: RUPacket.userID)
                     }
                     
@@ -358,7 +356,6 @@ extension ChannelDC {
                                                                username: RUPacket.username,
                                                                avatar: RUPacket.avatar,
                                                                creationDate: try DateU.shared.dateFromStringTZ(RUPacket.creationDate))
-                    self.syncRU(RU: SRU)
                     
                     channelsAdded.append(channelID)
 #if DEBUG
@@ -440,7 +437,6 @@ extension ChannelDC {
                                                                   predicateValue: userID,
                                                                   property: ["lastOnline"],
                                                                   value: [RULastOnline])
-                        self.syncRU(RU: RU)
                     }
                     
                     RUStatusUpdated += 1
@@ -491,47 +487,37 @@ extension ChannelDC {
             let jsonPacket = try DataU.shared.dictionaryToJSONData(["requestID": requestID,
                                                                     "date": DateU.shared.stringFromDate(date, TimeZone(identifier: "UTC")!)])
             
-            do {
-                let SCR = try await DataPC.shared.createCR(requestID: requestID,
-                                                           userID: RU.userID,
-                                                           date: date,
-                                                           isSender: true)
-                
-                let SRU = try await DataPC.shared.createRU(userID: RU.userID,
-                                                           username: RU.username,
-                                                           avatar: RU.avatar,
-                                                           creationDate: try DateU.shared.dateFromStringTZ(RU.creationDate))
-                
-                try await withCheckedThrowingContinuation() { continuation in
-                    SocketController.shared.clientSocket.emitWithAck("sendCR", ["userID": RU.userID,
-                                                                                "packet": jsonPacket] as [String : Any])
-                    .timingOut(after: 1) { data in
-                        do {
-                            if let queryStatus = data.first as? String,
-                               queryStatus == SocketAckStatus.noAck {
-                                throw DCError.serverTimeOut(func: "ChannelDC.sendCR")
-                            } else if let queryStatus = data.first as? String {
-                                throw DCError.serverFailure(func: "ChannelDC.sendCR", err: queryStatus)
-                            } else if let _ = data.first as? NSNull {
-                                continuation.resume(returning: ())
-                            } else {
-                                throw DCError.serverFailure(func: "ChannelDC.sendCR")
-                            }
-                        } catch {
-                            continuation.resume(throwing: error)
+            try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("sendCR", ["userID": RU.userID,
+                                                                            "packet": jsonPacket] as [String : Any])
+                .timingOut(after: 1) { data in
+                    do {
+                        if let queryStatus = data.first as? String,
+                           queryStatus == SocketAckStatus.noAck {
+                            throw DCError.serverTimeOut(func: "ChannelDC.sendCR")
+                        } else if let queryStatus = data.first as? String {
+                            throw DCError.serverFailure(func: "ChannelDC.sendCR", err: queryStatus)
+                        } else if let _ = data.first as? NSNull {
+                            continuation.resume(returning: ())
+                        } else {
+                            throw DCError.serverFailure(func: "ChannelDC.sendCR")
                         }
+                    } catch {
+                        continuation.resume(throwing: error)
                     }
                 }
-                
-                self.syncCR(CR: SCR)
-                self.syncRU(RU: SRU)
-            } catch {
-                try? await self.deleteCR(requestID: requestID)
-                
-                try? await self.deleteRU(userID: RU.userID)
-                
-                throw error
             }
+            
+            let SCR = try await DataPC.shared.createCR(requestID: requestID,
+                                                       userID: RU.userID,
+                                                       date: date,
+                                                       isSender: true)
+            
+            let SRU = try await DataPC.shared.createRU(userID: RU.userID,
+                                                       username: RU.username,
+                                                       avatar: RU.avatar,
+                                                       creationDate: try DateU.shared.dateFromStringTZ(RU.creationDate))
+            self.syncCR(CR: SCR)
             
 #if DEBUG
             DataU.shared.handleSuccess(function: "ChannelDC.sendCR", info: "RUID: \(RU.userID)")
@@ -568,10 +554,8 @@ extension ChannelDC {
             try await withCheckedThrowingContinuation() { continuation in
                 SocketController.shared.clientSocket.emitWithAck("sendCRResult", ["userID": CR.userID,
                                                                                   "packet": jsonPacket] as [String : Any])
-                .timingOut(after: 1) { [weak self] data in
+                .timingOut(after: 1) { data in
                     do {
-                        guard let self = self else { throw DCError.nilError(func: "sendCRResult", err: "self is nil") }
-                        
                         if let queryStatus = data.first as? String,
                            queryStatus == SocketAckStatus.noAck {
                             throw DCError.serverTimeOut(func: "ChannelDC.sendCRResult")
@@ -682,7 +666,7 @@ extension ChannelDC {
                     
                     try await MessageDC.shared.deleteChannelMessages(channelID: channel.channelID)
                     
-                    if let RUCheck = try? await self.fetchRULocally(userID: RU.userID) {
+                    if let _ = try? await self.fetchRULocally(userID: RU.userID) {
                         try await self.deleteRU(userID: RU.userID)
                     }
                 }

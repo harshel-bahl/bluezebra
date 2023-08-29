@@ -28,4 +28,5 @@ enum DCError: Error {
     case dateFailure(func: String, err: String = "")
     case authFailure(func: String, err: String = "")
     case fileSystemFailure(func: String, err: String = "")
+    case securityFailure(func: String, err: String = "")
 }

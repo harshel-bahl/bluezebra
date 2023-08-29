@@ -105,7 +105,7 @@ class DataU {
         
         return ID
     }
-    
+
     /// calcDataSize
     ///
     func calcDataSize(data: Data) -> String {

@@ -60,7 +60,6 @@ extension ChannelDC {
                     let SRU = try await DataPC.shared.updateMO(entity: RemoteUser.self,
                                                                property: ["lastOnline"],
                                                                value: [DateU.shared.currDT])
-                    self.syncRU(RU: SRU)
                 } catch {
 #if DEBUG
                     DataU.shared.handleFailure(function: "ChannelDC.userDisconnected", err: error)
@@ -83,7 +82,7 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCR", err: "data failed to typecast to Data or is nil")}
+                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCR", err: "data failed to typecast to Data or is nil") }
                     
                     let CRPacket = try DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
                                                                        data: data)
@@ -110,7 +109,6 @@ extension ChannelDC {
                                                                creationDate: originUserCreationDate,
                                                                lastOnline: originUserLastOnline)
                     self.syncCR(CR: SCR)
-                    self.syncRU(RU: SRU)
 
                     ack.with(NSNull())
                 } catch {
@@ -131,7 +129,7 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCRResult", err: "data failed to typecast to Data or is nil")}
+                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCRResult", err: "data failed to typecast to Data or is nil") }
                     
                     let CRResultPacket = try DataU.shared.jsonDecodeFromData(packet: CRResultPacket.self,
                                                                              data: data)
@@ -157,7 +155,6 @@ extension ChannelDC {
                         try await DataPC.shared.fetchDeleteMO(entity: RemoteUser.self,
                                                               predicateProperty: "userID",
                                                               predicateValue: SCR.userID)
-                        self.removeRU(userID: SCR.userID)
                         
                         try await DataPC.shared.fetchDeleteMO(entity: ChannelRequest.self,
                                                               predicateProperty: "requestID",
@@ -184,7 +181,7 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCD", err: "data failed to typecast to Data or is nil")}
+                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCD", err: "data failed to typecast to Data or is nil") }
                     
                     let CDPacket = try DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
                                                                        data: data)
@@ -227,7 +224,6 @@ extension ChannelDC {
                         try await DataPC.shared.fetchDeleteMO(entity: RemoteUser.self,
                                                               predicateProperty: "userID",
                                                               predicateValue: SRU.userID)
-                        self.removeRU(userID: SRU.userID)
 
                         try await MessageDC.shared.deleteChannelMessages(channelID: CDPacket.channelID)
                     }

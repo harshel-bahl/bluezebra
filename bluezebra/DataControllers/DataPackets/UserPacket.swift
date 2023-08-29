@@ -8,8 +8,10 @@
 import Foundation
 
 struct UserPacket: Codable {
-    var userID: String = UUID().uuidString
-    var username: String
-    var avatar: String
-    var creationDate: String
+    let UID: String
+    let username: String
+    let password: String
+    let publicKey: Data
+    let avatar: String
+    let creationDate: String
 }

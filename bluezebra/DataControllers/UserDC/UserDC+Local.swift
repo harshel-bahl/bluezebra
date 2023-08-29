@@ -15,22 +15,34 @@ extension UserDC {
                            username: String,
                            pin: String,
                            avatar: String,
-                           creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel) {
+                           creationDate: Date = DateU.shared.currDT) async throws -> (SUser, String, Data, SSettings, SChannel) {
         
-        let SUser = try await DataPC.shared.createUser(userID: userID,
+        let userdata = try await DataPC.shared.createUser(userID: userID,
                                                        username: username,
                                                        creationDate: creationDate,
                                                        avatar: avatar)
         
-        let SSettings = try await DataPC.shared.createSettings(pin: pin)
+        let password = SecurityU.shared.generateRandPass(length: 12)
         
-        let SChannel = try await DataPC.shared.createChannel(channelID: "personal",
+        try DataPC.shared.storePassword(account: "userPassword", password: password)
+         
+        let keys = try SecurityU.shared.generateKeyPair()
+        
+        guard let privateKey = keys["privateKey"],
+              let publicKey = keys["publicKey"] else { throw DCError.nilError(func: "UserDC.createUserLocally") }
+        
+        try DataPC.shared.storeKey(keyData: privateKey, account: "userPrivateKey", isPublic: false)
+        try DataPC.shared.storeKey(keyData: publicKey, account: "userPublicKey", isPublic: true)
+        
+        let userSettings = try await DataPC.shared.createSettings(pin: pin)
+        
+        let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
                                                              userID: userID,
                                                              creationDate: creationDate)
         
         try await DataPC.shared.createChannelDir(channelID: "personal")
         
-        return (SUser, SSettings, SChannel)
+        return (userdata, password, publicKey, userSettings, personalChannel)
     }
     
     /// Local Sync Functions

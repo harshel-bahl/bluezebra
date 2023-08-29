@@ -33,6 +33,16 @@ class ChannelDC: ObservableObject {
                 if !MessageDC.shared.channelMessages.keys.contains(channelID) {
                     MessageDC.shared.channelMessages[channelID] = [SMessage]()
                 }
+                
+                let userID = channel.userID
+                
+                if !self.RUs.keys.contains(userID) {
+                    Task {
+                        if let SRU = try? await self.fetchRUOffOn(userID: userID) {
+                            self.syncRU(RU: SRU)
+                        }
+                    }
+                }
             }
         }
     }
@@ -42,11 +52,29 @@ class ChannelDC: ObservableObject {
 
     /// channelRequests:
     /// - uses an array since it is fetched in order of date
-    @Published var CRs = [SChannelRequest]()
+    @Published var CRs = [SChannelRequest]() {
+        didSet {
+            for CR in CRs {
+                let userID = CR.userID
+                
+                if !self.RUs.keys.contains(userID) {
+                    Task {
+                        if let SRU = try? await self.fetchRUOffOn(userID: userID) {
+                            self.syncRU(RU: SRU)
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     /// channelDeletions:
     /// - uses an array since it is fetched in order of deletionDate
     @Published var CDs = [SChannelDeletion]()
+    
+    /// RUs
+    /// - array is updated to sync with RUChannels and CRs
+    @Published var RUs = [String: SRemoteUser]()
     
     /// serverRUChannelSync
     /// - checks RUChannel exists with server

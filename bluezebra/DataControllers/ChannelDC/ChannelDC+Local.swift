@@ -60,8 +60,8 @@ extension ChannelDC {
                 self.RUChannels = sortedSMOs
             }
         } else {
-            if let lastDate = self.RUChannels.last?.lastMessageDate {
-                let predicate = NSPredicate(format: "channelID != %@ AND lastMessageDate < %@", argumentArray: ["personal", lastDate])
+            if let earliestDate = self.RUChannels.last?.lastMessageDate {
+                let predicate = NSPredicate(format: "channelID != %@ AND lastMessageDate < %@", argumentArray: ["personal", earliestDate])
                 
                 let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
                                                              customPredicate: predicate,
@@ -74,9 +74,9 @@ extension ChannelDC {
                     self.RUChannels.append(contentsOf: sortedSMOs)
                 }
             } else {
-                guard let lastDate = self.RUChannels.last?.creationDate else { return }
+                guard let earliestDate = self.RUChannels.last?.creationDate else { return }
                 
-                let predicate = NSPredicate(format: "channelID != %@ AND lastMessageDate < %@", argumentArray: ["personal", lastDate])
+                let predicate = NSPredicate(format: "channelID != %@ AND lastMessageDate < %@", argumentArray: ["personal", earliestDate])
                 
                 let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
                                                              customPredicate: predicate,
@@ -103,11 +103,13 @@ extension ChannelDC {
                 self.CRs = SMOs
             }
         } else {
-            guard let lastDate = self.CRs.sorted(by: { (CR1, CR2) -> Bool in
+            guard let earliestCR = self.CRs.sorted(by: { (CR1, CR2) -> Bool in
                 return CR1.date > CR2.date
             }).last else { return }
             
-            let predicate = NSPredicate(format: "date < %@", argumentArray: [lastDate])
+            let earliestDate = earliestCR.date
+            
+            let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestDate])
             
             let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelRequest.self,
                                                          customPredicate: predicate,
@@ -132,11 +134,13 @@ extension ChannelDC {
                 self.CDs = SMOs
             }
         } else {
-            guard let lastDate = self.CDs.sorted(by: { (CD1, CD2) -> Bool in
+            guard let earliestCD = self.CDs.sorted(by: { (CD1, CD2) -> Bool in
                 return CD1.deletionDate > CD2.deletionDate
             }).last else { return }
             
-            let predicate = NSPredicate(format: "deletionDate < %@", argumentArray: [lastDate])
+            let earliestDate = earliestCD.deletionDate
+            
+            let predicate = NSPredicate(format: "deletionDate < %@", argumentArray: [earliestDate])
             
             let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelDeletion.self,
                                                          customPredicate: predicate,
@@ -253,6 +257,12 @@ extension ChannelDC {
                     return
                 }
             }
+        }
+    }
+    
+    func syncRU(RU: SRemoteUser) {
+        DispatchQueue.main.async {
+            self.RUs[RU.userID] = RU
         }
     }
     

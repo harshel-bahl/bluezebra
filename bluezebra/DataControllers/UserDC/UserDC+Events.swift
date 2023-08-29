@@ -20,7 +20,7 @@ extension UserDC {
             }
             
             let result = try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("checkUsername", username)
+                SocketController.shared.clientSocket.emitWithAck("checkUsername", ["username": username] as [String: Any])
                     .timingOut(after: 1) { data in
                         do {
                             if let queryStatus = data.first as? String,
@@ -69,12 +69,14 @@ extension UserDC {
                 throw DCError.serverDisconnected(func: "UserDC.createUser")
             }
             
-            let (userData, userSettings, personalChannel) = try await self.createUserLocally(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
+            let (userData, password, publicKey, userSettings, personalChannel) = try await self.createUserLocally(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
                                                                                              pin: pin,
                                                                                              avatar: avatar)
             
-            let packet = try DataU.shared.jsonEncode(data: UserPacket(userID: userData.userID,
+            let packet = try DataU.shared.jsonEncode(data: UserPacket(UID: userData.userID,
                                                                       username: userData.username,
+                                                                      password: password,
+                                                                      publicKey: publicKey,
                                                                       avatar: userData.avatar,
                                                                       creationDate: DateU.shared.stringFromDate(userData.creationDate, TimeZone(identifier: "UTC")!)))
             
@@ -181,7 +183,7 @@ extension UserDC {
             guard let userID = self.userData?.userID else { throw DCError.nilError(func: "connectUser", err: "userData is nil") }
             
             try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("connectUser", ["userID": userID] as [String : Any])
+                SocketController.shared.clientSocket.emitWithAck("connectUser", ["UID": userID] as [String : Any])
                     .timingOut(after: 1, callback: { data in
                         do {
                             if let queryStatus = data.first as? String,

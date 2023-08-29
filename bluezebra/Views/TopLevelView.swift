@@ -114,7 +114,6 @@ struct TopLevelView: View {
                 }
                 
                 try await messageDC.syncMessageDC()
-                try await messageDC.checkChannelDirs()
             } catch {
                 fetchedUser = true
                 

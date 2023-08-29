@@ -16,4 +16,5 @@ enum PError: Error {
     case safeMapError(func: String, err: String = "")
     case fileSystemFailure(func: String, err: String = "")
     case imageDataFailure(func: String, err: String = "")
+    case securityFailure(func: String, err: String = "")
 }

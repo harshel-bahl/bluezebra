@@ -67,6 +67,13 @@
 		34E1E08729E2222D007319C3 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08629E2222D007319C3 /* Styles.swift */; };
 		34E1E08C29E25054007319C3 /* KeyboardAwareModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */; };
 		34E1E08F29E25092007319C3 /* EmojiModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1E08E29E25092007319C3 /* EmojiModifier.swift */; };
+		F00C29A62A9DDF2900FE5839 /* SwiftyRSA in Frameworks */ = {isa = PBXBuildFile; productRef = F00C29A52A9DDF2900FE5839 /* SwiftyRSA */; };
+		F00C29A82A9DE16200FE5839 /* DataPC+Secure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29A72A9DE16200FE5839 /* DataPC+Secure.swift */; };
+		F00C29AB2A9DE90100FE5839 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = F00C29AA2A9DE90100FE5839 /* Logging */; };
+		F00C29AE2A9DECF700FE5839 /* HeliumLogger in Frameworks */ = {isa = PBXBuildFile; productRef = F00C29AD2A9DECF700FE5839 /* HeliumLogger */; };
+		F00C29B02A9DED0800FE5839 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29AF2A9DED0800FE5839 /* Logger.swift */; };
+		F00C29B32A9DF0FA00FE5839 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = F00C29B22A9DF0FA00FE5839 /* SwiftyBeaver */; };
+		F00C29B52A9E24A600FE5839 /* SecurityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29B42A9E24A600FE5839 /* SecurityUtilities.swift */; };
 		F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425B2A48764700CFCD32 /* BorderOverlay.swift */; };
 		F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425D2A487B9B00CFCD32 /* FixedText.swift */; };
 		F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425F2A48A66000CFCD32 /* SceneModifier.swift */; };
@@ -201,6 +208,9 @@
 		34E1E08629E2222D007319C3 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
 		34E1E08B29E25054007319C3 /* KeyboardAwareModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAwareModifier.swift; sourceTree = "<group>"; };
 		34E1E08E29E25092007319C3 /* EmojiModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiModifier.swift; sourceTree = "<group>"; };
+		F00C29A72A9DE16200FE5839 /* DataPC+Secure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Secure.swift"; sourceTree = "<group>"; };
+		F00C29AF2A9DED0800FE5839 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		F00C29B42A9E24A600FE5839 /* SecurityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityUtilities.swift; sourceTree = "<group>"; };
 		F00E425B2A48764700CFCD32 /* BorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderOverlay.swift; sourceTree = "<group>"; };
 		F00E425D2A487B9B00CFCD32 /* FixedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedText.swift; sourceTree = "<group>"; };
 		F00E425F2A48A66000CFCD32 /* SceneModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModifier.swift; sourceTree = "<group>"; };
@@ -281,6 +291,10 @@
 				346879CB298858AF002F3B5E /* SocketIO in Frameworks */,
 				344D60EA2A112CA2005FCEA6 /* EmojiPicker in Frameworks */,
 				F0AE43D82A68E70200A1E181 /* Kingfisher in Frameworks */,
+				F00C29AB2A9DE90100FE5839 /* Logging in Frameworks */,
+				F00C29B32A9DF0FA00FE5839 /* SwiftyBeaver in Frameworks */,
+				F00C29AE2A9DECF700FE5839 /* HeliumLogger in Frameworks */,
+				F00C29A62A9DDF2900FE5839 /* SwiftyRSA in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,8 +442,10 @@
 				3475AE8929EF9BD0001882D4 /* DataPackets */,
 				346879CC2988596B002F3B5E /* SocketController.swift */,
 				341A0DA62A21C03400C5B00C /* DataUtilities.swift */,
+				F00C29B42A9E24A600FE5839 /* SecurityUtilities.swift */,
 				F065C61B2A3267D8007E1D9F /* DateUtilities.swift */,
 				341A0DA82A21C09500C5B00C /* DCError.swift */,
+				F00C29AF2A9DED0800FE5839 /* Logger.swift */,
 			);
 			path = DataControllers;
 			sourceTree = "<group>";
@@ -441,6 +457,7 @@
 				34938E192967CFDC00EA95CF /* DataPC.swift */,
 				346C302C29EACFBF0075107E /* DataPC+Create.swift */,
 				F0AF8D6A2A6A5BED00B45249 /* DataPC+Files.swift */,
+				F00C29A72A9DE16200FE5839 /* DataPC+Secure.swift */,
 				346C302E29EACFDA0075107E /* DataPC+Update.swift */,
 				346C303029EAD0BD0075107E /* DataPC+Fetch.swift */,
 				346C303229EAD10A0075107E /* DataPC+Delete.swift */,
@@ -691,6 +708,10 @@
 				F09DFA8A2A484BE6008D4DB1 /* FilePicker */,
 				F0AE43D72A68E70200A1E181 /* Kingfisher */,
 				F0AF8D752A808D6800B45249 /* ScreenshotPreventingSwiftUI */,
+				F00C29A52A9DDF2900FE5839 /* SwiftyRSA */,
+				F00C29AA2A9DE90100FE5839 /* Logging */,
+				F00C29AD2A9DECF700FE5839 /* HeliumLogger */,
+				F00C29B22A9DF0FA00FE5839 /* SwiftyBeaver */,
 			);
 			productName = BlueZebra;
 			productReference = 341065DB2962E1DA001644B0 /* bluezebra.app */;
@@ -727,6 +748,10 @@
 				F09DFA892A484BE6008D4DB1 /* XCRemoteSwiftPackageReference "FilePicker" */,
 				F0AE43D62A68E70200A1E181 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				F0AF8D742A808D6800B45249 /* XCRemoteSwiftPackageReference "ScreenshotPreventing-iOS" */,
+				F00C29A42A9DDF2900FE5839 /* XCRemoteSwiftPackageReference "SwiftyRSA" */,
+				F00C29A92A9DE90100FE5839 /* XCRemoteSwiftPackageReference "swift-log" */,
+				F00C29AC2A9DECF700FE5839 /* XCRemoteSwiftPackageReference "HeliumLogger" */,
+				F00C29B12A9DF0FA00FE5839 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
 			);
 			productRefGroup = 341065DC2962E1DA001644B0 /* Products */;
 			projectDirPath = "";
@@ -788,6 +813,7 @@
 				F07059172A412BAC002571A4 /* RUPacket.swift in Sources */,
 				3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */,
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
+				F00C29B52A9E24A600FE5839 /* SecurityUtilities.swift in Sources */,
 				F0AE43AC2A5607BA00A1E181 /* SimpleScrollView.swift in Sources */,
 				F0AE437A2A4BA25100A1E181 /* VariableText.swift in Sources */,
 				F08C6F3C2A864C0A00A0C9B7 /* CRResultPacket.swift in Sources */,
@@ -807,6 +833,7 @@
 				341A0DA52A219F2B00C5B00C /* ChildSizeReader.swift in Sources */,
 				F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */,
 				346C303329EAD10A0075107E /* DataPC+Delete.swift in Sources */,
+				F00C29A82A9DE16200FE5839 /* DataPC+Secure.swift in Sources */,
 				346879CD2988596B002F3B5E /* SocketController.swift in Sources */,
 				346C303529EAD13A0075107E /* DataPC+Reset.swift in Sources */,
 				F0AE439E2A5385BA00A1E181 /* DateTimeShor.swift in Sources */,
@@ -848,6 +875,7 @@
 				F0AE43BA2A60E62B00A1E181 /* ImageSegmentView.swift in Sources */,
 				34E1E08329E1FE8C007319C3 /* TextContainer.swift in Sources */,
 				F0AE43C72A6256A600A1E181 /* ChatInterface.swift in Sources */,
+				F00C29B02A9DED0800FE5839 /* Logger.swift in Sources */,
 				F065C6132A2E8D84007E1D9F /* AuthenticationTab.swift in Sources */,
 				34938E1C2967D2B000EA95CF /* ChannelDC.swift in Sources */,
 				F0AE43842A4BA8F900A1E181 /* RecordingAni.swift in Sources */,
@@ -1111,6 +1139,38 @@
 				kind = branch;
 			};
 		};
+		F00C29A42A9DDF2900FE5839 /* XCRemoteSwiftPackageReference "SwiftyRSA" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TakeScoop/SwiftyRSA.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		F00C29A92A9DE90100FE5839 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		F00C29AC2A9DECF700FE5839 /* XCRemoteSwiftPackageReference "HeliumLogger" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/HeliumLogger.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		F00C29B12A9DF0FA00FE5839 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyBeaver/SwiftyBeaver.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		F09DFA862A4848F4008D4DB1 /* XCRemoteSwiftPackageReference "ExyteMediaPicker" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/ExyteMediaPicker.git";
@@ -1155,6 +1215,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 346879C9298858AF002F3B5E /* XCRemoteSwiftPackageReference "socket.io-client-swift" */;
 			productName = SocketIO;
+		};
+		F00C29A52A9DDF2900FE5839 /* SwiftyRSA */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F00C29A42A9DDF2900FE5839 /* XCRemoteSwiftPackageReference "SwiftyRSA" */;
+			productName = SwiftyRSA;
+		};
+		F00C29AA2A9DE90100FE5839 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F00C29A92A9DE90100FE5839 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		F00C29AD2A9DECF700FE5839 /* HeliumLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F00C29AC2A9DECF700FE5839 /* XCRemoteSwiftPackageReference "HeliumLogger" */;
+			productName = HeliumLogger;
+		};
+		F00C29B22A9DF0FA00FE5839 /* SwiftyBeaver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F00C29B12A9DF0FA00FE5839 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
+			productName = SwiftyBeaver;
 		};
 		F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */ = {
 			isa = XCSwiftPackageProductDependency;
