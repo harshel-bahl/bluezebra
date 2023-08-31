@@ -11,11 +11,11 @@ import CoreData
 struct SMessage: Equatable {
     var messageID: String = UUID().uuidString
     var channelID: String
-    var userID: String
+    var UID: String
     var type: String
     var date: Date
     var isSender: Bool
-    var message: String
+    var message: String?
     var imageIDs: String?
     var fileIDs: String?
     var sent: String?
@@ -47,20 +47,19 @@ extension Message: ToSafeObject {
     func safeObject() throws -> SMessage {
         guard let messageID = self.messageID,
               let channelID = self.channelID,
-              let userID = self.userID,
+              let UID = self.userID,
               let type = self.type,
-              let date = self.date,
-              let message = self.message else {
-            throw PError.safeMapError(func: "Message.safeObject")
+              let date = self.date else {
+            throw PError.safeMapError(err: "Message required property(s) nil")
         }
         
         return SMessage(messageID: messageID,
                         channelID: channelID,
-                        userID: userID,
+                        UID: UID,
                         type: type,
                         date: date,
                         isSender: self.isSender,
-                        message: message,
+                        message: self.message,
                         imageIDs: self.imageIDs,
                         fileIDs: self.fileIDs,
                         sent: self.sent,

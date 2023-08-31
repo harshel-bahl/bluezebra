@@ -35,12 +35,11 @@ class SecurityU {
             
             let privateKeyData = try privateKey.data()
             let publicKeyData = try publicKey.data()
-            
-            log.debug("created key pair")
+    
             
             return ["publicKey": publicKeyData, "privateKey": privateKeyData]
         } catch {
-            throw DCError.securityFailure(func: "DataU.generateKeyPair", err: error.localizedDescription)
+            throw DCError.securityFailure(err: error.localizedDescription)
         }
     }
     

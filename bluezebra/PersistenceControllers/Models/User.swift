@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 struct SUser {
-    let userID: String
+    let UID: String
     let username: String
     let creationDate: Date
     let avatar: String
@@ -28,14 +28,14 @@ extension User: ToSafeObject {
     
     func safeObject() throws -> SUser {
         
-        guard let userID = self.userID,
+        guard let UID = self.userID,
               let username = self.username,
               let creationDate = self.creationDate,
               let avatar = self.avatar else {
-            throw PError.safeMapError(func: "User.safeObject")
+            throw PError.safeMapError(err: "User required property(s) nil")
         }
         
-        return SUser(userID: userID,
+        return SUser(UID: UID,
                      username: username,
                      creationDate: creationDate,
                      avatar: avatar,

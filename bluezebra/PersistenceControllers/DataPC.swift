@@ -36,7 +36,7 @@ class DataPC: ObservableObject {
                 try self.mainContext.save()
             }
         } catch {
-            throw PError.persistenceError(func: "DataPC.mainSave", err: error.localizedDescription)
+            throw PError.persistenceError(err: error.localizedDescription)
         }
     }
     
@@ -46,7 +46,7 @@ class DataPC: ObservableObject {
                 try self.backgroundContext.save()
             }
         } catch {
-            throw PError.persistenceError(func: "DataPC.backgroundSave", err: error.localizedDescription)
+            throw PError.persistenceError(err: error.localizedDescription)
         }
     }
 }

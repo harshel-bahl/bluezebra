@@ -34,7 +34,7 @@ extension Event: ToSafeObject {
               let eventName = self.eventName,
               let date = self.date,
               let userID = self.userID else {
-            throw PError.safeMapError(func: "Event.safeObject")
+            throw PError.safeMapError()
         }
         
         return SEvent(eventID: eventID,

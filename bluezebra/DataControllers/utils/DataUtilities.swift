@@ -29,7 +29,7 @@ class DataU {
             let dataPacket = try JSONDecoder().decode(T.self, from: data)
             return dataPacket
         } catch {
-            throw DCError.jsonError(func: "jsonDecodeFromData", err: error.localizedDescription)
+            throw DCError.jsonError(err: error.localizedDescription)
         }
     }
     
@@ -42,7 +42,7 @@ class DataU {
             let dataPacket = try JSONDecoder().decode(T.self, from: data)
             return dataPacket
         } catch {
-            throw DCError.jsonError(func: "jsonDecodeFromObject", err: error.localizedDescription)
+            throw DCError.jsonError(err: error.localizedDescription)
         }
     }
     
@@ -53,7 +53,7 @@ class DataU {
             let jsonData = try JSONSerialization.data(withJSONObject: dictionary, options: [])
             return jsonData
         } catch {
-            throw DCError.jsonError(func: "dictionaryToJSONData", err: error.localizedDescription)
+            throw DCError.jsonError(err: error.localizedDescription)
         }
     }
     
@@ -63,14 +63,14 @@ class DataU {
         do {
             let data = try JSONSerialization.jsonObject(with: jsonData, options: [])
             
-            guard let dictionary = data as? [String: Any] else { throw DCError.typecastError(func: "jsonDataToDictionary", err: "couldn't cast data to [String: Any] dictionary") }
+            guard let dictionary = data as? [String: Any] else { throw DCError.typecastError(err: "couldn't cast data to [String: Any] dictionary") }
             
             return dictionary
         } catch {
             if let error = error as? DCError {
                 throw error
             } else {
-                throw DCError.jsonError(func: "jsonDataToDictionary", err: error.localizedDescription)
+                throw DCError.jsonError(err: error.localizedDescription)
             }
         }
     }
@@ -80,7 +80,7 @@ class DataU {
             let jsonData = try JSONSerialization.data(withJSONObject: array, options: [])
             return jsonData
         } catch {
-            throw DCError.jsonError(func: "arrayToJSONData", err: error.localizedDescription)
+            throw DCError.jsonError(err: error.localizedDescription)
         }
     }
     
@@ -89,10 +89,10 @@ class DataU {
             if let array = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [Any] {
                 return array
             } else {
-                throw DCError.jsonError(func: "jsonDataToArray", err: "Data is not an array")
+                throw DCError.jsonError(err: "Data is not an array")
             }
         } catch {
-            throw DCError.jsonError(func: "jsonDataToArray", err: error.localizedDescription)
+            throw DCError.jsonError(err: error.localizedDescription)
         }
     }
     
@@ -114,53 +114,6 @@ class DataU {
         bcf.countStyle = .file
         let string = bcf.string(fromByteCount: Int64(data.count))
         return string
-    }
-    
-    func handleSuccess(function: String,
-                       DT: String = DateU.shared.logTS,
-                       info: String? = nil) {
-        if let info = info {
-            print("SUCCESS \(DT) -- function: \(function), info: (\(info))")
-        } else {
-            print("SUCCESS \(DT) -- function: \(function)")
-        }
-    }
-    
-    func handleSuccess(info: String,
-                       DT: String = DateU.shared.logTS) {
-        print("SUCCESS \(DT) -- info: (\(info))")
-    }
-    
-    func handleFailure(function: String,
-                       DT: String = DateU.shared.logTS,
-                       err: Error,
-                       info: String? = nil) {
-        if let info = info {
-            print("FAILED \(DT) -- function: \(function), error: \(err), info: (\(info))")
-        } else {
-            print("FAILED \(DT) -- function: \(function), error: \(err)")
-        }
-    }
-    
-    func handleFailure(info: String,
-                       DT: String = DateU.shared.logTS) {
-        print("FAILED \(DT) -- info: (\(info))")
-    }
-    
-    func handleEventTrigger(eventName: String,
-                            DT: String = DateU.shared.logTS) {
-        print("SUCCESS \(DT) -- event triggered: \(eventName)")
-    }
-    
-    func handleEventSuccess(eventName: String,
-                            DT: String = DateU.shared.logTS) {
-        print("SUCCESS \(DT) -- event: \(eventName)")
-    }
-    
-    func handleEventFailure(eventName: String,
-                            DT: String = DateU.shared.logTS,
-                            err: Error) {
-        print("SUCCESS \(DT) -- event: \(eventName), error: \(err)")
     }
 }
 

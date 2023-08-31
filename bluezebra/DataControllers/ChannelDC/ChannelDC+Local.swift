@@ -395,15 +395,9 @@ extension ChannelDC {
                 let dirCheck = DataPC.shared.checkDir(dir: dir,
                                                       intermidDirs: [channelID])
                 
-                guard dirCheck else { throw DCError.fileSystemFailure(func: "MessageDC.checkChannelDirs", err: "channelID: \(channelID), dir: \(dir)") }
+                guard dirCheck else { throw DCError.fileSystemFailure( err: "channelID: \(channelID), dir: \(dir)") }
                 
-#if DEBUG
-                DataU.shared.handleSuccess(function: "ChannelDC.checkChannelDirs")
-#endif
             } catch {
-#if DEBUG
-                DataU.shared.handleFailure(function: "ChannelDC.checkChannelDirs", err: error)
-#endif
                 
                 try await DataPC.shared.createDir(dir: dir,
                                                   intermidDirs: [channelID])
@@ -446,7 +440,7 @@ extension ChannelDC {
                                                        isOrigin: isOrigin)
             return SCD
         } else {
-            throw DCError.nilError(func: "ChannelDC.clearChannelData", err: "RU is nil for non-personal channel")
+            throw DCError.nilError(err: "RU is nil for non-personal channel")
         }
     }
     
@@ -476,7 +470,7 @@ extension ChannelDC {
                                                        isOrigin: isOrigin)
             return SCD
         } else {
-            throw DCError.invalidRequest(func: "ChannelDC.deleteChannelData", err: "cannot delete personal channel")
+            throw DCError.invalidRequest(err: "cannot delete personal channel")
         }
     }
     
@@ -524,20 +518,12 @@ extension ChannelDC {
         DispatchQueue.main.async {
             self.onlineUsers = [String: Bool]()
         }
-        
-#if DEBUG
-        DataU.shared.handleSuccess(function: "ChannelDC.offline")
-#endif
     }
     
     func shutdown() {
         DispatchQueue.main.async {
             self.onlineUsers = [String: Bool]()
         }
-        
-#if DEBUG
-        DataU.shared.handleSuccess(function: "ChannelDC.shutdown")
-#endif
     }
     
     func resetState(keepPersonalChannel: Bool = false) {
@@ -550,10 +536,6 @@ extension ChannelDC {
             
             self.CRs = [SChannelRequest]()
             self.CDs = [SChannelDeletion]()
-            
-#if DEBUG
-            DataU.shared.handleSuccess(function: "ChannelDC.resetState")
-#endif
         }
     }
 }

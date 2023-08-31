@@ -45,11 +45,11 @@ extension MessageDC {
             let resourceID = image.id.uuidString + fileType
             imageIDs.append(resourceID)
             
-            guard let url = image.url else { throw DCError.nilError(func: "MessageDC.createImageMessage", err: "image URL is nil") }
+            guard let url = image.url else { throw DCError.nilError( err: "image URL is nil") }
             
             let imageData = try Data(contentsOf: url)
             
-            guard let uiImage = UIImage(data: imageData) else { throw DCError.imageDataFailure(func: "MessageDC.createImageMessage", err: "failed to create UIImage from Data") }
+            guard let uiImage = UIImage(data: imageData) else { throw DCError.imageDataFailure( err: "failed to create UIImage from Data") }
             
             try await self.storeImage(image: uiImage,
                                       name: resourceID,
@@ -154,7 +154,7 @@ extension MessageDC {
                     fileType: String = ".jpg") async throws {
         
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
-            throw DCError.imageDataFailure(func: "MessageDC.fetchImage", err: "channelID: \(channelID), imageName: \(name)")
+            throw DCError.imageDataFailure( err: "channelID: \(channelID), imageName: \(name)")
         }
         
         try await DataPC.shared.storeFile(data: imageData,
@@ -178,7 +178,7 @@ extension MessageDC {
                                                           intermidDirs: [channelID, "images"])
         
         guard let uiImage = UIImage(data: imageData) else {
-            throw DCError.imageDataFailure(func: "MessageDC.fetchImage", err: "channelID: \(channelID), imageName: \(imageName)")
+            throw DCError.imageDataFailure( err: "channelID: \(channelID), imageName: \(imageName)")
         }
         
         return uiImage
@@ -295,9 +295,6 @@ extension MessageDC {
             
         }
         
-#if DEBUG
-        DataU.shared.handleSuccess(function: "MessageDC.shutdown")
-#endif
         
     }
     

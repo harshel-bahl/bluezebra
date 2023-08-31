@@ -13,32 +13,29 @@ class UserDC: ObservableObject {
     
     static let shared = UserDC()
     
-    @Published var userData: SUser?
+    @Published var userdata: SUser?
     @Published var userSettings: SSettings?
     
     /// loggedIn: controls whether user has authenticated into app
     @Published var loggedIn = false {
         didSet {
-#if DEBUG
-            DataU.shared.handleSuccess(info: "UserDC.loggedIn: \(loggedIn)")
-#endif
+            log.info(message: "user is logged in", info: "UserDC.loggedIn: \(loggedIn)")
         }
     }
     
-    /// userOnline: state of user connection to server
-    @Published var userOnline: Bool = false {
+    /// userConnected
+    /// - whether user is authenticated and connected to server
+    @Published var userConnected: Bool = false {
         didSet {
-#if DEBUG
-            DataU.shared.handleSuccess(info: "UserDC.userOnline: \(userOnline)")
-#endif
+            log.info(message: "user is connected", info: "UserDC.userConnected: \(userConnected)")
         }
     }
     
-    @Published var emittedPendingEvents: Bool = false {
+    // receivedPendingEvents
+    // - whether user has received server's pending events
+    @Published var receivedPendingEvents: Bool = false {
         didSet {
-#if DEBUG
-            DataU.shared.handleSuccess(info: "UserDC.emittedPendingEvents: \(emittedPendingEvents)")
-#endif
+            log.info(message: "user received pending events", info: "UserDC.receivedPendingEvents: \(receivedPendingEvents)")
         }
     }
     

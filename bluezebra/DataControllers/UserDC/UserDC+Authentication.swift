@@ -14,12 +14,12 @@ extension UserDC {
     ///
     func pinAuth(pin: String) throws -> Bool {
         
-        guard let storedPin = self.userSettings?.pin else { throw DCError.nilError(func: "UserDC.pinAuth", err: "userSettings is nil") }
+        guard let storedPin = self.userSettings?.pin else { throw DCError.nilError(err: "userSettings is nil") }
         
         if storedPin == pin {
             return true
         } else {
-            throw DCError.authFailure(func: "UserDC.pinAuth", err: "pin was incorrect")
+            throw DCError.authFailure(err: "pin was incorrect")
         }
     }
     
@@ -31,12 +31,12 @@ extension UserDC {
         var error: NSError?
         
         guard let userSettings = self.userSettings else {
-            completion(.failure(DCError.nilError(func: "UserDC.biometricAuth", err: "userSettings is nil")))
+            completion(.failure(DCError.nilError(err: "userSettings is nil")))
             return
         }
         
         guard userSettings.biometricSetup == "active" else {
-            completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics is not active")))
+            completion(.failure(DCError.authFailure(err: "biometrics is not active")))
             return
         }
         
@@ -48,13 +48,13 @@ extension UserDC {
                     if success {
                         completion(.success(()))
                     } else {
-                        completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics failed")))
+                        completion(.failure(DCError.authFailure(err: "biometrics failed")))
                     }
                 }
             }
         } else {
             DispatchQueue.main.async {
-                completion(.failure(DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics are unavailable")))
+                completion(.failure(DCError.authFailure(err: "biometrics are unavailable")))
             }
         }
     }
@@ -82,11 +82,11 @@ extension UserDC {
                             
                             completion(.success(()))
                         } catch {
-                            completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: error.localizedDescription)))
+                            completion(.failure(DCError.authFailure(err: error.localizedDescription)))
                         }
                     }
                 } else {
-                    completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: authenticationError?.localizedDescription ?? "biometric failed")))
+                    completion(.failure(DCError.authFailure(err: authenticationError?.localizedDescription ?? "biometric failed")))
                 }
             }
         } else {
@@ -101,7 +101,7 @@ extension UserDC {
                     
                     completion(.success(()))
                 } catch {
-                    completion(.failure(DCError.authFailure(func: "UserDC.setupBiometricAuth", err: error.localizedDescription)))
+                    completion(.failure(DCError.authFailure(err: error.localizedDescription)))
                 }
             }
         }
@@ -112,11 +112,11 @@ extension UserDC {
     func cancelBiometricAuthSetup() async throws {
         
         guard let userSettings = self.userSettings else {
-            throw DCError.nilError(func: "UserDC.biometricAuth", err: "userSettings is nil")
+            throw DCError.nilError(err: "userSettings is nil")
         }
         
         guard userSettings.biometricSetup == "active" else {
-            throw DCError.authFailure(func: "UserDC.biometricAuth", err: "biometrics is not active")
+            throw DCError.authFailure(err: "biometrics is not active")
         }
         
         let SMO = try await DataPC.shared.updateMO(entity: Settings.self,

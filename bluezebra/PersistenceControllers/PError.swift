@@ -8,13 +8,14 @@
 import Foundation
 
 enum PError: Error {
-    case persistenceError(func: String, err: String = "")
-    case recordExists(func: String, err: String = "")
-    case noRecordExists(func: String, err: String = "")
-    case multipleRecords(func: String, err: String = "")
-    case typecastError(func: String, err: String = "")
-    case safeMapError(func: String, err: String = "")
-    case fileSystemFailure(func: String, err: String = "")
-    case imageDataFailure(func: String, err: String = "")
-    case securityFailure(func: String, err: String = "")
+    case persistenceError(err: String = "")
+    case recordExists(err: String = "")
+    case noRecordExists(err: String = "")
+    case multipleRecords(err: String = "")
+    case typecastError(err: String = "")
+    case safeMapError(err: String = "")
+    case invalidRequest(err: String = "")
+    case fileSystemFailure(err: String = "")
+    case imageDataFailure(err: String = "")
+    case securityFailure(err: String = "")
 }

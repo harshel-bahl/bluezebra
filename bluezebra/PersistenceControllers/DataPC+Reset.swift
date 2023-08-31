@@ -14,15 +14,21 @@ extension DataPC {
     ///
     
     public func deletePCData() async throws {
-        try await self.fetchDeleteMOs(entity: User.self)
-        try await self.fetchDeleteMOs(entity: Settings.self)
-        try await self.fetchDeleteMOs(entity: RemoteUser.self)
-        try await self.fetchDeleteMOs(entity: Channel.self)
-        try await self.fetchDeleteMOs(entity: ChannelRequest.self)
-        try await self.fetchDeleteMOs(entity: ChannelDeletion.self)
-        try await self.fetchDeleteMOs(entity: Message.self)
-        try await self.fetchDeleteMOs(entity: Event.self)
+        
+        // Core Data
+        try await self.deleteMOs(entity: User.self)
+        try await self.deleteMOs(entity: Settings.self)
+        try await self.deleteMOs(entity: RemoteUser.self)
+        try await self.deleteMOs(entity: Channel.self)
+        try await self.deleteMOs(entity: ChannelRequest.self)
+        try await self.deleteMOs(entity: ChannelDeletion.self)
+        try await self.deleteMOs(entity: Message.self)
+        try await self.deleteMOs(entity: Event.self)
     
+        // FileSystem
         try await self.clearDir(dir: "")
+        
+        // Keychain
+        try self.deleteAllItems()
     }
 }

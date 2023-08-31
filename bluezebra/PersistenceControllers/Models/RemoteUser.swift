@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 struct SRemoteUser {
-    var userID: String
+    var UID: String
     var username: String
     var avatar: String
     var creationDate: Date
@@ -29,14 +29,14 @@ class RemoteUser: NSManagedObject {
 extension RemoteUser: ToSafeObject {
     
     func safeObject() throws -> SRemoteUser {
-        guard let userID = self.userID,
+        guard let UID = self.userID,
               let username = self.username,
               let avatar = self.avatar,
               let creationDate = self.creationDate else {
-            throw PError.safeMapError(func: "RemoteUser.safeObject")
+            throw PError.safeMapError(err: "RemoteUser required property(s) nil")
         }
         
-        return SRemoteUser(userID: userID,
+        return SRemoteUser(UID: UID,
                            username: username,
                            avatar: avatar,
                            creationDate: creationDate,

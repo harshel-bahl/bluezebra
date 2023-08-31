@@ -12,215 +12,248 @@ extension DataPC {
     
     /// Generic Fetch Functions
     ///
+    public struct DatePredicate {
+        var key: String
+        var date: Date
+        var isAbove: Bool
+    }
+
+    internal func createDatePredicate(_ datePredicate: DatePredicate) -> NSPredicate {
+        let comparison = datePredicate.isAbove ? ">=" : "<="
+        let predicateFormat = "\(datePredicate.key) \(comparison) %@"
+        return NSPredicate(format: predicateFormat, argumentArray: [datePredicate.date])
+    }
+
+    internal func createPredicate(_ predObject: [String: Any], comparison: String) throws -> NSPredicate {
+        
+        let subpredicates = try predObject.map { key, value -> NSPredicate in
+            
+            let predicateFormat = "\(key) \(comparison) %@"
+            
+            let cvarArgValue: CVarArg
+            if let boolValue = value as? Bool {
+                cvarArgValue = NSNumber(value: boolValue)
+            } else if let otherValue = value as? CVarArg {
+                cvarArgValue = otherValue
+            } else {
+                throw PError.invalidRequest(err: "the value must conform to CVarArg")
+            }
+            
+            let argumentArray: [CVarArg] = [cvarArgValue]
+            
+            return NSPredicate(format: predicateFormat, argumentArray: argumentArray)
+        }
+        
+        return NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
+    }
     
-    /// fetchMOAsync: fetches managed object and returns it asynchronously
-    ///
-    public func fetchMO<T1: NSManagedObject,
-                        T2: CVarArg>(entity: T1.Type,
-                                     queue: String = "background",
-                                     predicateProperty: String? = nil,
-                                     predicateValue: T2? = "",
-                                     customPredicate: NSPredicate? = nil) async throws -> T1 {
-        let contextQueue: NSManagedObjectContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        } else {
-            contextQueue = self.backgroundContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
+    public func fetchMO<T: NSManagedObject>(
+        entity: T.Type,
+        queue: String = "background",
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        customPredicate: NSPredicate? = nil
+    ) async throws -> T {
         do {
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try createPredicate(predObject, comparison: "=="))
+            }
+            
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            if let customPredicate = customPredicate {
+                predicates.append(customPredicate)
+            }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
             let MOs = try await contextQueue.perform {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchMO", err: "entity: \(entity)") }
+            if MOs.count > 1 { throw PError.multipleRecords() }
             
-            let MO: T1
+            guard let MO = MOs.first else { throw PError.noRecordExists() }
             
-            guard let firstMO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchMO", err: "entity: \(entity)") }
-            MO = firstMO
-            
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.fetchMO", info: "entity: \(String(describing: entity))")
-#endif
+            log.debug(message: "fetched MO", function: "DataPC.fetchMO", info: "entity: \(String(describing: entity))")
             
             return MO
         } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.fetchMO", err: error.localizedDescription)
-            }
+            log.error(message: "failed to fetch MO", function: "DataPC.fetchMO", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
-    
-    public func fetchMOs<T1: NSManagedObject,
-                         T2: CVarArg>(entity: T1.Type,
-                                      queue: String = "background",
-                                      predicateProperty: String? = nil,
-                                      predicateValue: T2? = "",
-                                      customPredicate: NSPredicate? = nil,
-                                      fetchLimit: Int? = nil,
-                                      sortKey: String? = nil,
-                                      sortAscending: Bool = false) async throws -> [T1] {
-        var contextQueue = self.backgroundContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            if let predicateValue = predicateValue as? Bool {
-                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", NSNumber(value: predicateValue))
-            } else {
-                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-            }
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        if let fetchLimit = fetchLimit {
-            fetchRequest.fetchLimit=fetchLimit
-        }
-        
-        if let sortKey = sortKey {
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-        }
-        
+
+    public func fetchMOs<T1: NSManagedObject>(
+        entity: T1.Type,
+        queue: String = "background",
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        datePredicates: [DatePredicate] = [],
+        customPredicate: NSPredicate? = nil,
+        fetchLimit: Int? = nil,
+        sortKey: String? = nil,
+        sortAscending: Bool = false,
+        errorOnEmpty: Bool = false
+    ) async throws -> [T1] {
         do {
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try createPredicate(predObject, comparison: "=="))
+            }
+            
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            predicates += datePredicates.map { createDatePredicate($0) }
+            
+            if let customPredicate = customPredicate {
+                predicates.append(customPredicate)
+            }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
+            fetchRequest.fetchLimit = fetchLimit ?? 0
+            
+            if let sortKey = sortKey {
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+            }
+            
             let MOs = try await contextQueue.perform {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.fetchMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)")
-#endif
+            if errorOnEmpty {
+                guard MOs.isEmpty else { throw PError.noRecordExists() }
+            }
+            
+            log.debug(message: "fetched MOs", function: "DataPC.fetchMOs", info: "entity: \(String(describing: entity))")
             
             return MOs
         } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.fetchMOs", err: error.localizedDescription)
-            }
+            log.error(message: "failed to fetch MOs", function: "DataPC.fetchMOs", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
     
-    /// fetchSMOAsync: fetches managed object and returns its safe object asynchronously
-    ///
-    public func fetchSMO<T1: NSManagedObject & ToSafeObject,
-                         T2: CVarArg>(entity: T1.Type,
-                                      queue: String = "main",
-                                      predicateProperty: String? = nil,
-                                      predicateValue: T2? = "",
-                                      customPredicate: NSPredicate? = nil) async throws -> T1.SafeType {
-        var contextQueue = self.mainContext
-        
-        if queue=="background" {
-            contextQueue = self.backgroundContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
+    public func fetchSMO<T1: NSManagedObject & ToSafeObject>(
+        entity: T1.Type,
+        queue: String = "main",
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        customPredicate: NSPredicate? = nil
+    ) async throws -> T1.SafeType {
         do {
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try createPredicate(predObject, comparison: "=="))
+            }
+            
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            if let customPredicate = customPredicate {
+                predicates.append(customPredicate)
+            }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
             let MOs = try await contextQueue.perform {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-            if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchSMO", err: "entity: \(entity)") }
+            if MOs.count > 1 {
+                throw PError.multipleRecords()
+            }
             
-            guard let MO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchSMO", err: "entity: \(entity)") }
+            guard let MO = MOs.first else {
+                throw PError.noRecordExists()
+            }
             
             let SMO = try MO.safeObject()
             
-            
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))")
-#endif
+            log.debug(message: "fetched SMO", function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))")
             
             return SMO
         } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.fetchSMO", err: error.localizedDescription)
-            }
+            log.error(message: "failed to fetch SMO", function: "DataPC.fetchSMO", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
     
-    /// fetchSMOsAsync: fetches managed objects and returns their safe objects asynchronously
-    ///
-    public func fetchSMOs<T1: NSManagedObject & ToSafeObject,
-                          T2: CVarArg>(entity: T1.Type,
-                                       queue: String = "main",
-                                       predicateProperty: String? = nil,
-                                       predicateValue: T2? = "",
-                                       customPredicate: NSPredicate? = nil,
-                                       fetchLimit: Int? = nil,
-                                       sortKey: String? = nil,
-                                       sortAscending: Bool = false) async throws -> [T1.SafeType] {
-        var contextQueue = self.mainContext
-        
-        if queue=="background" {
-            contextQueue = self.backgroundContext
-        }
-        
-        let entityName = String(describing: entity)
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            if let predicateValue = predicateValue as? Bool {
-                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", NSNumber(value: predicateValue))
-            } else {
-                fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-            }
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        if let fetchLimit = fetchLimit {
-            fetchRequest.fetchLimit = fetchLimit
-        }
-        
-        if let sortKey = sortKey {
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-        }
-        
+    public func fetchSMOs<T1: NSManagedObject & ToSafeObject>(
+        entity: T1.Type,
+        queue: String = "main",
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        datePredicates: [DatePredicate] = [],
+        customPredicate: NSPredicate? = nil,
+        fetchLimit: Int? = nil,
+        sortKey: String? = nil,
+        sortAscending: Bool = false
+    ) async throws -> [T1.SafeType] {
         do {
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try createPredicate(predObject, comparison: "=="))
+            }
+            
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            predicates += datePredicates.map { createDatePredicate($0) }
+            
+            if let customPredicate = customPredicate {
+                predicates.append(customPredicate)
+            }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
+            fetchRequest.fetchLimit = fetchLimit ?? 0
+            
+            if let sortKey = sortKey {
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+            }
+            
             let MOs = try await contextQueue.perform {
                 return try contextQueue.fetch(fetchRequest)
             }
             
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity)), resultCount: \(MOs.count)")
-#endif
+            log.debug(message: "fetched SMOs", function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity))")
             
             let SMOs = try MOs.map {
                 return try $0.safeObject()
@@ -228,11 +261,8 @@ extension DataPC {
             
             return SMOs
         } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.fetchSMOs", err: error.localizedDescription)
-            }
+            log.error(message: "failed to fetch SMOs", function: "DataPC.fetchSMOs", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
 }

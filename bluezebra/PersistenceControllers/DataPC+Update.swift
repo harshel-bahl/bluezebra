@@ -10,126 +10,151 @@ import CoreData
 
 extension DataPC {
     
-    public func updateMO<T1: NSManagedObject & ToSafeObject,
-                         T2: CVarArg> (entity: T1.Type,
-                                       predicateProperty: String? = nil,
-                                       predicateValue: T2? = "",
-                                       customPredicate: NSPredicate? = nil,
-                                       property: [String],
-                                       value: [Any?]) async throws -> T1.SafeType {
-        var MO: T1
-        
+    public func updateMO<T: NSManagedObject & ToSafeObject>(
+        entity: T.Type,
+        queue: String = "background",
+        useSync: Bool = false,
+        property: [String],
+        value: [Any?],
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        customPredicate: NSPredicate? = nil
+    ) async throws -> T.SafeType {
         do {
-            if let predicateProperty = predicateProperty,
-               let predicateValue = predicateValue {
-                let fetchedMO = try await self.fetchMO(entity: entity,
-                                                       predicateProperty: predicateProperty,
-                                                       predicateValue: predicateValue)
-                MO = fetchedMO
-            } else if let customPredicate = customPredicate {
-                let fetchedMO = try await self.fetchMO(entity: entity,
-                                                       customPredicate: customPredicate)
-                MO = fetchedMO
-            } else {
-                let fetchedMO = try await self.fetchMO(entity: entity)
-                MO = fetchedMO
-            }
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let sMO = try await self.backgroundContext.perform {
-                for index in (0...(property.count-1)) {
-                    MO.setValue(value[index], forKey: property[index])
-                }
-                
-                try self.backgroundSave()
-                
-                return try MO.safeObject()
-            }
+            let MO = try await self.fetchMO(entity: entity,
+                                            queue: queue,
+                                            predObject: predObject,
+                                            predObjectNotEqual: predObjectNotEqual,
+                                            customPredicate: customPredicate)
             
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.updateMO", info: "entity: \(String(describing: entity))")
-#endif
+            let SMO: T.SafeType
             
-            return sMO
-        } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.updateMO", err: error.localizedDescription)
-            }
-        }
-    }
-    
-    
-    public func updateMOs<T1: NSManagedObject & ToSafeObject,
-                          T2: CVarArg> (entity: T1.Type,
-                                        predicateProperty: String? = nil,
-                                        predicateValue: T2? = "",
-                                        customPredicate: NSPredicate? = nil,
-                                        property: [String],
-                                        value: [Any?],
-                                        fetchLimit: Int? = nil,
-                                        sortKey: String? = nil,
-                                        sortAscending: Bool = false,
-                                        errorOnEmpty: Bool = false) async throws -> [T1.SafeType] {
-        var MOs: [T1]
-        
-        do {
-            if let predicateProperty = predicateProperty,
-               let predicateValue = predicateValue {
-                let fetchedMOs = try await self.fetchMOs(entity: entity,
-                                                         predicateProperty: predicateProperty,
-                                                         predicateValue: predicateValue,
-                                                         fetchLimit: fetchLimit,
-                                                         sortKey: sortKey,
-                                                         sortAscending: sortAscending)
-                MOs = fetchedMOs
-            } else if let customPredicate = customPredicate {
-                let fetchedMOs = try await self.fetchMOs(entity: entity,
-                                                         customPredicate: customPredicate,
-                                                         fetchLimit: fetchLimit,
-                                                         sortKey: sortKey,
-                                                         sortAscending: sortAscending)
-                MOs = fetchedMOs
-            } else {
-                let fetchedMOs = try await self.fetchMOs(entity: entity,
-                                                         fetchLimit: fetchLimit,
-                                                         sortKey: sortKey,
-                                                         sortAscending: sortAscending)
-                MOs = fetchedMOs
-            }
-            
-            if errorOnEmpty {
-                guard MOs.isEmpty == true else { throw PError.noRecordExists(func: "DataPC.updateMOs", err: "entity: \(entity)") }
-            }
-            
-            let sMOs = try await self.backgroundContext.perform {
-                
-                for MO in MOs {
+            if useSync {
+                SMO = try contextQueue.performAndWait {
+                    
                     for index in (0...(property.count-1)) {
                         MO.setValue(value[index], forKey: property[index])
                     }
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                    
+                    return try MO.safeObject()
                 }
-                
-                try self.backgroundSave()
-                
-                let sMOs = try MOs.map {
-                    return try $0.safeObject()
-                }
-                
-                return sMOs
-            }
-            
-#if DEBUG
-            DataU.shared.handleSuccess(function: "DataPC.updateMOs", info: "entity: \(String(describing: entity))")
-#endif
-            
-            return sMOs
-        } catch {
-            if let error = error as? PError {
-                throw error
             } else {
-                throw PError.persistenceError(func: "DataPC.updateMOs", err: error.localizedDescription)
+                SMO = try await contextQueue.perform {
+                    
+                    for index in (0...(property.count-1)) {
+                        MO.setValue(value[index], forKey: property[index])
+                    }
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                    
+                    return try MO.safeObject()
+                }
             }
+            
+            log.debug(message: "updated MO", function: "DataPC.updateMO", info: "entity: \(String(describing: entity))")
+            
+            return SMO
+        } catch {
+            log.error(message: "failed to update MO", function: "DataPC.updateMO", error: error, info: "entity: \(String(describing: entity))")
+            throw error
+        }
+    }
+    
+    public func updateMOs<T: NSManagedObject & ToSafeObject>(
+        entity: T.Type,
+        queue: String = "background",
+        useSync: Bool = false,
+        property: [String],
+        value: [Any?],
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        datePredicates: [DatePredicate] = [],
+        customPredicate: NSPredicate? = nil,
+        fetchLimit: Int? = nil,
+        sortKey: String? = nil,
+        sortAscending: Bool = false,
+        errorOnEmpty: Bool = false
+    ) async throws -> [T.SafeType] {
+        do {
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let MOs = try await self.fetchMOs(
+                entity: entity,
+                queue: queue,
+                predObject: predObject,
+                predObjectNotEqual: predObjectNotEqual,
+                datePredicates: datePredicates,
+                customPredicate: customPredicate,
+                fetchLimit: fetchLimit,
+                sortKey: sortKey,
+                sortAscending: sortAscending,
+                errorOnEmpty: errorOnEmpty
+            )
+            
+            let SMOs: [T.SafeType]
+            
+            if useSync {
+                SMOs = try contextQueue.performAndWait() {
+                    
+                    for MO in MOs {
+                        for index in (0...(property.count-1)) {
+                            MO.setValue(value[index], forKey: property[index])
+                        }
+                    }
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                    
+                    let SMOs = try MOs.map {
+                        return try $0.safeObject()
+                    }
+                    
+                    return SMOs
+                }
+            } else {
+                SMOs = try await contextQueue.perform() {
+                    
+                    for MO in MOs {
+                        for index in (0...(property.count-1)) {
+                            MO.setValue(value[index], forKey: property[index])
+                        }
+                    }
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                    
+                    let SMOs = try MOs.map {
+                        return try $0.safeObject()
+                    }
+                    
+                    return SMOs
+                }
+            }
+            
+            log.debug(message: "updated MOs", function: "DataPC.updateMOs", info: "entity: \(String(describing: entity))")
+            
+            return SMOs
+        } catch {
+            log.error(message: "failed to update MOs", function: "DataPC.updateMOs", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
 }

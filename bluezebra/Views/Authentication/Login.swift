@@ -66,10 +66,6 @@ struct Login: View {
                                 userDC.loggedIn = true
                             } catch {
                                 withAnimation() { showRetryPin = true }
-                                
-                                #if DEBUG
-                                DataU.shared.handleFailure(function: "UserDC.pinAuth", err: error)
-                                #endif
                             }
                         })
                         .edgePadding(top: SP.safeAreaHeight*0.07,

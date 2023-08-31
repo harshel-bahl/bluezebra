@@ -43,7 +43,7 @@ extension ChannelDeletion: ToSafeObject {
               let type = self.type,
               let name = self.name,
               let icon = self.icon else {
-            throw PError.safeMapError(func: "ChannelDeletion.safeObject")
+            throw PError.safeMapError(err: "Channel Deletion required property(s) nil")
         }
         
         return SChannelDeletion(deletionID: deletionID,

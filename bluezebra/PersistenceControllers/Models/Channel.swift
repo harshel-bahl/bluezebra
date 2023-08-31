@@ -10,7 +10,7 @@ import CoreData
 
 struct SChannel {
     var channelID: String
-    var userID: String
+    var UID: String
     var creationDate: Date
     var lastMessageDate: Date?
 }
@@ -27,13 +27,13 @@ extension Channel: ToSafeObject {
     
     func safeObject() throws -> SChannel {
         guard let channelID = self.channelID,
-              let userID = self.userID,
+              let UID = self.userID,
               let creationDate =  self.creationDate else {
-            throw PError.safeMapError(func: "Channel.safeObject")
+            throw PError.safeMapError(err: "Channel required property(s) nil")
         }
         
         return SChannel(channelID: channelID,
-                        userID: userID,
+                        UID: UID,
                         creationDate: creationDate,
                         lastMessageDate: self.lastMessageDate)
     }

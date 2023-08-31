@@ -47,7 +47,7 @@ class DateU {
         df.timeZone = TimeZone(identifier: "UTC")
         df.locale = Locale(identifier: "en_US_POSIX")
         
-        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(func: "dateFromStringTZ", err: "date: \(dateString)")}
+        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(err: "date: \(dateString)")}
         
         return date
     }
@@ -60,7 +60,7 @@ class DateU {
         df.timeZone = TimeZone(identifier: "UTC")
         df.locale = Locale(identifier: "en_US_POSIX")
         
-        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(func: "dateFromStringTZ", err: "date: \(dateString)")}
+        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(err: "date: \(dateString)")}
         
         return date
     }

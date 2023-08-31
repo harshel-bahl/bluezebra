@@ -114,15 +114,7 @@ struct AccountTab: View {
                             Task {
                                 do {
                                     try await userDC.deleteUser()
-                                    
-                                    #if DEBUG
-                                    DataU.shared.handleSuccess(function: "UserDC.deleteUser")
-                                    #endif
                                 } catch {
-                                    #if DEBUG
-                                    DataU.shared.handleFailure(function: "UserDC.deleteUser", err: error)
-                                    #endif
-                                    
                                     deletionFailure = true
                                 }
                             }

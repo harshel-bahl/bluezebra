@@ -55,10 +55,7 @@ struct TopLevelView: View {
                             userDC.setupBiometricAuth() { result in
                                 switch result {
                                 case .success(): break
-                                case .failure(let err):
-#if DEBUG
-                                    DataU.shared.handleFailure(function: "UserDC.setupBiometricAuth", err: err)
-#endif
+                                case .failure(let err): break
                                 }
                             }
                         }
@@ -88,8 +85,8 @@ struct TopLevelView: View {
         .onChange(of: userDC.userOnline, perform: { userOnline in
             
         })
-        .onChange(of: userDC.emittedPendingEvents, perform: { emittedPendingEvents in
-            if emittedPendingEvents {
+        .onChange(of: userDC.receivedPendingEvents, perform: { receivedPendingEvents in
+            if receivedPendingEvents {
                 if channelDC.RUChannels.count != 0 {
                     startupNetworking()
                 }

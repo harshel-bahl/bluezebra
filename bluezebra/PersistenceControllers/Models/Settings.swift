@@ -23,7 +23,7 @@ extension Settings: ToSafeObject {
     func safeObject() throws -> SSettings {
         
         guard let pin = self.pin else {
-            throw PError.safeMapError(func: "Settings.safeObject")
+            throw PError.safeMapError(err: "Settings required property(s) nil")
         }
         
         return SSettings(pin: pin,

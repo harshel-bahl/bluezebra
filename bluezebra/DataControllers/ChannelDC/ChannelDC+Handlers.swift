@@ -49,7 +49,7 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let userID = data.first as? String else { throw DCError.jsonError(func: "ChannelDC.userDisconnected") }
+                    guard let userID = data.first as? String else { throw DCError.jsonError() }
                     
                     if self.onlineUsers.keys.contains(userID) {
                         DispatchQueue.main.async {
@@ -61,9 +61,6 @@ extension ChannelDC {
                                                                property: ["lastOnline"],
                                                                value: [DateU.shared.currDT])
                 } catch {
-#if DEBUG
-                    DataU.shared.handleFailure(function: "ChannelDC.userDisconnected", err: error)
-#endif
                 }
             }
         }
@@ -82,7 +79,7 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCR", err: "data failed to typecast to Data or is nil") }
+                    guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
                     
                     let CRPacket = try DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
                                                                        data: data)
@@ -112,7 +109,6 @@ extension ChannelDC {
 
                     ack.with(NSNull())
                 } catch {
-                    DataU.shared.handleFailure(function: "ChannelDC.receivedCR", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -122,14 +118,12 @@ extension ChannelDC {
     
     func receivedCRResult() {
         SocketController.shared.clientSocket.on("receivedCRResult") { [weak self] (data, ack) in
-#if DEBUG
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCRResult: triggered")
-#endif
+            
             guard let self = self else { return }
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCRResult", err: "data failed to typecast to Data or is nil") }
+                    guard let data = data.first as? Data else { throw DCError.typecastError(err: "data failed to typecast to Data or is nil") }
                     
                     let CRResultPacket = try DataU.shared.jsonDecodeFromData(packet: CRResultPacket.self,
                                                                              data: data)
@@ -164,7 +158,6 @@ extension ChannelDC {
                         ack.with(NSNull())
                     }
                 } catch {
-                    DataU.shared.handleFailure(function: "ChannelDC.receivedCRResult", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -173,15 +166,12 @@ extension ChannelDC {
     
     func receivedCD() {
         SocketController.shared.clientSocket.on("receivedCD") { [weak self] (data, ack) in
-#if DEBUG
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCD: triggered")
-#endif
             
             guard let self = self else { return }
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCD", err: "data failed to typecast to Data or is nil") }
+                    guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
                     
                     let CDPacket = try DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
                                                                        data: data)
@@ -234,12 +224,9 @@ extension ChannelDC {
                         try await self.sendCDResult(deletionID: CDPacket.deletionID,
                                                     userID: SRU.userID)
                         
-                        DataU.shared.handleSuccess(function: "ChannelDC.sendCDResult")
                     } catch {
-                        DataU.shared.handleFailure(function: "ChannelDC.sendCDResult", err: error)
                     }
                 } catch {
-                    DataU.shared.handleFailure(function: "ChannelDC.receivedCD", err: error)
                     ack.with(error.localizedDescription)
                 }
             }
@@ -248,22 +235,19 @@ extension ChannelDC {
     
     func receivedCDResult() {
         SocketController.shared.clientSocket.on("receivedCDResult") { [weak self] (data, ack) in
-#if DEBUG
-            print("SERVER \(DateU.shared.logTS) -- ChannelDC.receivedCDResult: triggered")
-#endif
             
             guard let self = self else { return }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 Task {
                     do {
-                        guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.receivedCDResult", err: "data failed to typecast to Data or is nil") }
+                        guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
                         
                         let CDResult = try DataU.shared.jsonDataToDictionary(data)
                         
                         guard let deletionID = CDResult["deletionID"] as? String,
                               let userID = CDResult["userID"] as? String,
-                              let date = CDResult["date"] as? String else { throw DCError.jsonError(func: "ChannelDC.receivedCDResult") }
+                              let date = CDResult["date"] as? String else { throw DCError.jsonError() }
                         
                         let remoteDeletedDate = try DateU.shared.dateFromString(date)
                         
@@ -295,12 +279,10 @@ extension ChannelDC {
                             
                             ack.with(NSNull())
                             
-                            DataU.shared.handleSuccess(function: "ChannelDC.receivedCDResult")
                         } else {
-                            throw DCError.nilError(func: "ChannelDC.receivedCDResult")
+                            throw DCError.nilError()
                         }
                     } catch {
-                        DataU.shared.handleFailure(function: "ChannelDC.receivedCDResult", err: error)
                         ack.with(error.localizedDescription)
                     }
                 }
@@ -319,19 +301,17 @@ extension ChannelDC {
             
             Task {
                 do {
-                    guard let data = data.first as? Data else { throw DCError.typecastError(func: "ChannelDC.deleteUserTrace", err: "data failed to typecast to Data or is nil") }
+                    guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
                     
                     let deletionData = try DataU.shared.jsonDataToDictionary(data)
                     
-                    guard let userID = deletionData["userID"] as? String else { throw DCError.jsonError(func: "ChannelDC.deleteUserTrace") }
+                    guard let userID = deletionData["userID"] as? String else { throw DCError.jsonError() }
                     
                     try await self.deleteUserTrace(userID: userID)
                     
                     ack.with(NSNull())
                     
-                    DataU.shared.handleSuccess(function: "ChannelDC.deleteUserTrace")
                 } catch {
-                    DataU.shared.handleFailure(function: "ChannelDC.deleteUserTrace", err: error)
                     ack.with(error.localizedDescription)
                 }
             }

@@ -12,97 +12,119 @@ extension DataPC {
     
     /// Generic Delete Functions
     ///
-    public func fetchDeleteMO<T1: NSManagedObject,
-                              T2: CVarArg>(entity: T1.Type,
-                                           queue: String = "background",
-                                           predicateProperty: String? = nil,
-                                           predicateValue: T2? = "",
-                                           customPredicate: NSPredicate? = nil) async throws {
-        var contextQueue = self.backgroundContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
+    public func deleteMO<T: NSManagedObject> (
+        entity: T.Type,
+        queue: String = "background",
+        useSync: Bool = false,
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        customPredicate: NSPredicate? = nil
+    ) async throws {
         do {
-            try await contextQueue.perform {
-                
-                let MOs = try contextQueue.fetch(fetchRequest)
-                
-                if MOs.count > 1 { throw PError.multipleRecords(func: "DataPC.fetchDeleteMO", err: "entity: \(String(describing: entity))") }
-                guard let MO = MOs.first else { throw PError.noRecordExists(func: "DataPC.fetchDeleteMO", err: "entity: \(String(describing: entity))") }
-                
-                contextQueue.delete(MO)
-                
-                try contextQueue.save()
-                
-#if DEBUG
-                DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMO", info: "entity: \(String(describing: entity))") 
-#endif
-            }
-        } catch {
-            if let error = error as? PError {
-                throw error
+            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
+            
+            let MO = try await self.fetchMO(entity: entity,
+                                            queue: queue,
+                                            predObject: predObject,
+                                            predObjectNotEqual: predObjectNotEqual,
+                                            customPredicate: customPredicate)
+            
+            if useSync {
+                try contextQueue.performAndWait {
+                    
+                    contextQueue.delete(MO)
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                }
             } else {
-                throw PError.persistenceError(func: "DataPC.fetchDeleteMO", err: error.localizedDescription)
+                try await contextQueue.perform {
+                    
+                    contextQueue.delete(MO)
+                    
+                    if contextQueue == self.mainContext {
+                        try self.mainSave()
+                    } else {
+                        try self.backgroundSave()
+                    }
+                }
             }
+            
+            log.debug(message: "deleted MO", function: "DataPC.deleteMO", info: "entity: \(String(describing: entity))")
+        } catch {
+            log.error(message: "failed to delete MO", function: "DataPC.deleteMO", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
     
-    public func fetchDeleteMOs<T1: NSManagedObject,
-                               T2: CVarArg>(entity: T1.Type,
-                                            queue: String = "background",
-                                            predicateProperty: String? = nil,
-                                            predicateValue: T2? = "",
-                                            customPredicate: NSPredicate? = nil) async throws {
-        var contextQueue = self.backgroundContext
-        
-        if queue=="main" {
-            contextQueue = self.mainContext
-        }
-        
-        let entityName = String(describing: entity)
-        
-        let fetchRequest = NSFetchRequest<T1>(entityName: entityName)
-        
-        if let predicateProperty=predicateProperty,
-           let predicateValue=predicateValue {
-            fetchRequest.predicate = NSPredicate(format: "\(predicateProperty) == %@", predicateValue)
-        } else if let customPredicate = customPredicate {
-            fetchRequest.predicate = customPredicate
-        }
-        
-        do {
-            try await contextQueue.perform {
-                let MOs = try contextQueue.fetch(fetchRequest)
+    public func deleteMOs<T: NSManagedObject>(
+        entity: T.Type,
+        queue: String = "background",
+        useSync: Bool = false,
+        predObject: [String: Any] = [:],
+        predObjectNotEqual: [String: Any] = [:],
+        datePredicates: [DatePredicate] = [],
+        customPredicate: NSPredicate? = nil,
+        fetchLimit: Int? = nil,
+        sortKey: String? = nil,
+        sortAscending: Bool = false,
+        errorOnEmpty: Bool = false
+    ) async throws {
+            do {
+                let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
                 
-                for MO in MOs {
-                    contextQueue.delete(MO)
+                let MOs = try await self.fetchMOs(
+                    entity: entity,
+                    queue: queue,
+                    predObject: predObject,
+                    predObjectNotEqual: predObjectNotEqual,
+                    datePredicates: datePredicates,
+                    customPredicate: customPredicate,
+                    fetchLimit: fetchLimit,
+                    sortKey: sortKey,
+                    sortAscending: sortAscending,
+                    errorOnEmpty: errorOnEmpty
+                )
+                
+                var MOCount = 0
+                
+                if useSync {
+                    try contextQueue.performAndWait {
+                        
+                        for MO in MOs {
+                            contextQueue.delete(MO)
+                            MOCount += 1
+                        }
+                        
+                        if contextQueue == self.mainContext {
+                            try self.mainSave()
+                        } else {
+                            try self.backgroundSave()
+                        }
+                    }
+                } else {
+                    try await contextQueue.perform {
+                        
+                        for MO in MOs {
+                            contextQueue.delete(MO)
+                            MOCount += 1
+                        }
+                        
+                        if contextQueue == self.mainContext {
+                            try self.mainSave()
+                        } else {
+                            try self.backgroundSave()
+                        }
+                    }
                 }
-                
-                try contextQueue.save()
-                
-#if DEBUG
-                DataU.shared.handleSuccess(function: "DataPC.fetchDeleteMOs", info: "entity: \(String(describing: entity)), deleted: \(MOs.count)")
-#endif
-            }
+            
+            log.debug(message: "deleted MOs", function: "DataPC.deleteMOs", info: "entity: \(String(describing: entity)), deleted: \(MOCount)")
         } catch {
-            if let error = error as? PError {
-                throw error
-            } else {
-                throw PError.persistenceError(func: "DataPC.fetchDeleteMOs", err: error.localizedDescription)
-            }
+            log.error(message: "failed to delete MOs", function: "DataPC.deleteMOs", error: error, info: "entity: \(String(describing: entity))")
+            throw error
         }
     }
 }

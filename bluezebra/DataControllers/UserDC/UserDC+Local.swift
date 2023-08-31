@@ -11,25 +11,25 @@ extension UserDC {
     
     /// Local Create Functions
     ///
-    func createUserLocally(userID: String = UUID().uuidString,
+    func createUserLocally(UID: String = UUID().uuidString,
                            username: String,
                            pin: String,
                            avatar: String,
                            creationDate: Date = DateU.shared.currDT) async throws -> (SUser, String, Data, SSettings, SChannel) {
         
-        let userdata = try await DataPC.shared.createUser(userID: userID,
+        let userdata = try await DataPC.shared.createUser(UID: UID,
                                                        username: username,
                                                        creationDate: creationDate,
                                                        avatar: avatar)
         
-        let password = SecurityU.shared.generateRandPass(length: 12)
+        let password = SecurityU.shared.generateRandPass(length: 20)
         
         try DataPC.shared.storePassword(account: "userPassword", password: password)
          
         let keys = try SecurityU.shared.generateKeyPair()
         
         guard let privateKey = keys["privateKey"],
-              let publicKey = keys["publicKey"] else { throw DCError.nilError(func: "UserDC.createUserLocally") }
+              let publicKey = keys["publicKey"] else { throw DCError.nilError(err: "public or private key is nil") }
         
         try DataPC.shared.storeKey(keyData: privateKey, account: "userPrivateKey", isPublic: false)
         try DataPC.shared.storeKey(keyData: publicKey, account: "userPublicKey", isPublic: true)
@@ -37,7 +37,7 @@ extension UserDC {
         let userSettings = try await DataPC.shared.createSettings(pin: pin)
         
         let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
-                                                             userID: userID,
+                                                             UID: UID,
                                                              creationDate: creationDate)
         
         try await DataPC.shared.createChannelDir(channelID: "personal")
@@ -45,12 +45,21 @@ extension UserDC {
         return (userdata, password, publicKey, userSettings, personalChannel)
     }
     
+    /// Local Delete Functions
+    ///
+    func deleteUserLocally() async throws {
+        try await DataPC.shared.deletePCData()
+        self.resetState()
+        ChannelDC.shared.resetState()
+        MessageDC.shared.resetState()
+    }
+    
     /// Local Sync Functions
     ///
-    func syncUserData() async throws {
+    func syncUserdata() async throws {
         let SMO = try await DataPC.shared.fetchSMO(entity: User.self)
         
-        self.syncUser(userData: SMO)
+        self.syncUserdata(userdata: SMO)
     }
     
     func syncUserSettings() async throws {
@@ -61,9 +70,9 @@ extension UserDC {
     
     /// SMO Sync Functions
     ///
-    func syncUser(userData: SUser) {
+    func syncUserdata(userdata: SUser) {
         DispatchQueue.main.async {
-            self.userData = userData
+            self.userdata = userdata
         }
     }
     
@@ -73,45 +82,49 @@ extension UserDC {
         }
     }
     
-    /// updateLastOnline
-    ///
+    func syncUserConnected(result: Bool) {
+        DispatchQueue.main.async {
+            self.userConnected = result
+        }
+    }
+    
+    func syncReceivedPendingEvents(result: Bool) {
+        DispatchQueue.main.async {
+            self.receivedPendingEvents = result
+        }
+    }
+    
     func updateLastOnline(datetime: Date = DateU.shared.currDT) async throws {
         
         let SMO = try await DataPC.shared.updateMO(entity: User.self,
                                                    property: ["lastOnline"],
                                                    value: [datetime])
-        self.syncUser(userData: SMO)
+        
+        self.syncUserdata(userdata: SMO)
     }
     
     func offline() {
         DispatchQueue.main.async {
-            if self.userOnline != false { self.userOnline = false }
-            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
+            if self.userConnected != false { self.userConnected = false }
+            if self.receivedPendingEvents != false { self.receivedPendingEvents = false }
         }
     }
     
     func shutdown() {
         DispatchQueue.main.async {
             if self.loggedIn != false { self.loggedIn = false }
-            if self.userOnline != false { self.userOnline = false }
-            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
+            if self.userConnected != false { self.userConnected = false }
+            if self.receivedPendingEvents != false { self.receivedPendingEvents = false }
         }
     }
     
     func resetState() {
         DispatchQueue.main.async {
-            if self.userData != nil { self.userData = nil }
+            if self.userdata != nil { self.userdata = nil }
             if self.userSettings != nil { self.userSettings = nil }
             if self.loggedIn != false { self.loggedIn = false }
-            if self.userOnline != false { self.userOnline = false }
-            if self.emittedPendingEvents != false { self.emittedPendingEvents = false }
+            if self.userConnected != false { self.userConnected = false }
+            if self.receivedPendingEvents != false { self.receivedPendingEvents = false }
         }
-    }
-    
-    func deleteUserLocally() async throws {
-        try await DataPC.shared.deletePCData()
-        self.resetState()
-        ChannelDC.shared.resetState()
-        MessageDC.shared.resetState()
     }
 }

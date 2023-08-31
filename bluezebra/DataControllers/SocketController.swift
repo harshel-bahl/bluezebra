@@ -19,9 +19,7 @@ class SocketController: NSObject, ObservableObject {
     
     @Published var connected = false {
         didSet {
-#if DEBUG
-            DataU.shared.handleSuccess(info: "SocketController.connected: \(connected)")
-#endif
+            log.info(message: "socket connected", info: "SocketController.connected: \(connected)")
         }
     }
     
@@ -34,10 +32,8 @@ class SocketController: NSObject, ObservableObject {
     }
     
     func createConnectionHandlers() {
+        
         clientSocket.on(clientEvent: .connect) { [weak self] data, ack in
-#if DEBUG
-            DataU.shared.handleSuccess(info: "clientSocket.on(clientEvent: .connect)")
-#endif
             
             guard let self = self else { return }
             
@@ -45,9 +41,6 @@ class SocketController: NSObject, ObservableObject {
         }
         
         clientSocket.on(clientEvent: .disconnect) { [weak self] data, ack in
-#if DEBUG
-            DataU.shared.handleSuccess(info: "clientSocket.on(clientEvent: .disconnect)")
-#endif
             
             guard let self = self else { return }
             
@@ -55,14 +48,14 @@ class SocketController: NSObject, ObservableObject {
         }
         
         clientSocket.on(clientEvent: .error) { [weak self] data, ack in
-#if DEBUG
-            DataU.shared.handleFailure(info: "clientSocket.on(clientEvent: .error), err: \((data[0] as? String) ?? "-")")
-#endif
+            
+            log.error(message: "socket connection errored", info: "clientSocket.on(clientEvent: .error), err: \((data[0] as? String) ?? "-")")
             
             guard let self = self else { return }
             
             self.connected = false
         }
+        
     }
     
     func establishConnection() {

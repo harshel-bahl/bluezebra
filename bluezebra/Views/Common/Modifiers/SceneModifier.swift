@@ -30,9 +30,8 @@ struct SceneModifier: ViewModifier {
             .onChange(of: env.scenePhase) { phase in
                 switch phase {
                 case .active:
-                    #if DEBUG
-                    DataU.shared.handleSuccess(info: "scenePhase: active")
-                    #endif
+                    
+                    log.info(message: "scenePhase: active")
                     
                     if phase == .active {
                         activeAction()
@@ -40,9 +39,8 @@ struct SceneModifier: ViewModifier {
                     }
                     
                 case .inactive:
-                    #if DEBUG
-                    DataU.shared.handleSuccess(info: "scenePhase: inactive")
-                    #endif
+                    
+                    log.info(message: "scenePhase: inactive")
                     
                     if phase == .inactive && scene == .active {
                         inactiveAction()
@@ -50,9 +48,8 @@ struct SceneModifier: ViewModifier {
                     }
                     
                 case .background:
-                    #if DEBUG
-                    DataU.shared.handleSuccess(info: "scenePhase: background")
-                    #endif
+                    
+                    log.info(message: "scenePhase: background")
                     
                     if phase == .background {
                         backgroundAction()
