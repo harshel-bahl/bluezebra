@@ -18,9 +18,12 @@ class DataPC: ObservableObject {
     
     init() {
         self.container = NSPersistentContainer(name: "Data")
+        
         self.container.loadPersistentStores { description, error in
             if let error = error {
-                fatalError("Error: \(error.localizedDescription)")
+                log.error(message: "DataPC failed to load persistent stores", function: "DataPC.loadPersistentStores", error: error)
+            } else {
+                log.debug(message: "DataPC loaded persistent stores", function: "DataPC.loadPersistentStores", info: description.description)
             }
         }
         
@@ -28,7 +31,7 @@ class DataPC: ObservableObject {
         self.backgroundContext = self.container.newBackgroundContext()
     }
     
-    /// Helper Functions
+    /// Save Functions
     ///
     internal func mainSave() throws {
         do {
@@ -49,6 +52,10 @@ class DataPC: ObservableObject {
             throw PError.persistenceError(err: error.localizedDescription)
         }
     }
+    
+    /// Scheduling Functions
+    ///
+    internal func performOnMain(
 }
 
 

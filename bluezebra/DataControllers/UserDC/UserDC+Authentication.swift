@@ -126,7 +126,6 @@ extension UserDC {
         DispatchQueue.main.async {
             self.userSettings = SMO
         }
-        
     }
 }
 

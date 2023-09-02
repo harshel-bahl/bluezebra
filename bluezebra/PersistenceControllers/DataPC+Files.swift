@@ -261,12 +261,11 @@ extension DataPC {
             let fileAttributes = try fileManager.attributesOfItem(atPath: fileURL.path)
             
             if let fileSize = fileAttributes[.size] as? Int64 {
+                log.debug(message: "fetched file size", function: "DataPC.getFileSize", info: "fileURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileURL.lastPathComponent)")
                 return fileSize
             } else {
                 throw PError.typecastError(err: "fileAttributes failed to convert to Int64")
             }
-            
-            log.debug(message: "fetched file size", function: "DataPC.getFileSize", info: "fileURL: \(intermidDirs?.joined(separator: "/") ?? "")/\(fileURL.lastPathComponent)")
         } catch {
             log.error(message: "failed to fetch file size", function: "DataPC.getFileSize", error: error, info: "filename: \(fileName)")
             throw error

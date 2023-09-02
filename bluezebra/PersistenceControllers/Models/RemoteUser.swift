@@ -24,6 +24,9 @@ class RemoteUser: NSManagedObject {
     @NSManaged var creationDate: Date?
     @NSManaged var lastOnline: Date?
     @NSManaged var blocked: Bool
+    
+//    @NSManaged var CR: ChannelRequest
+//    @NSManaged var channel: Channel?
 }
 
 extension RemoteUser: ToSafeObject {

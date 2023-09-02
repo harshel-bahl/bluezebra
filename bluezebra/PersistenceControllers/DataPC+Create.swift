@@ -41,7 +41,7 @@ extension DataPC {
                 return SMO
             }
             
-            log.debug(message: "created user", function: "DataPC.createUser", UID: UID)
+            log.debug(message: "created user", function: "DataPC.createUser", info: "UID: \(UID)")
             
             return SMO
         } catch {
@@ -90,8 +90,7 @@ extension DataPC {
                          blocked: Bool = false) async throws -> SRemoteUser {
         do {
             let fetchedMO = try? await fetchMO(entity: RemoteUser.self,
-                                               predicateProperty: "userID",
-                                               predicateValue: UID)
+                                               predObject: ["userID": UID])
             
             if fetchedMO != nil { throw PError.recordExists() }
             
@@ -128,8 +127,7 @@ extension DataPC {
                          isSender: Bool) async throws -> SChannelRequest {
         do {
             let checkMO = try? await fetchMO(entity: ChannelRequest.self,
-                                             predicateProperty: "requestID",
-                                             predicateValue: requestID)
+                                             predObject: ["requestID": requestID])
             
             if checkMO != nil { throw PError.recordExists() }
             
@@ -164,8 +162,7 @@ extension DataPC {
                               lastMessageDate: Date? = nil) async throws -> SChannel {
         do {
             let checkMO = try? await fetchMO(entity: Channel.self,
-                                             predicateProperty: "channelID",
-                                             predicateValue: channelID)
+                                             predObject: ["channelID": channelID])
             
             if checkMO != nil { throw PError.recordExists() }
             
@@ -202,12 +199,11 @@ extension DataPC {
                          name: String,
                          icon: String,
                          nUsers: Int16,
-                         toDeleteUserIDs: [String]? = nil,
+                         toDeleteUIDs: [String]? = nil,
                          isOrigin: Bool) async throws -> SChannelDeletion {
         do {
             let checkMO = try? await fetchMO(entity: ChannelDeletion.self,
-                                             predicateProperty: "deletionID",
-                                             predicateValue: deletionID)
+                                             predObject: ["deletionID": deletionID])
             
             if checkMO != nil { throw PError.recordExists() }
             
@@ -221,8 +217,8 @@ extension DataPC {
                 MO.icon = icon
                 MO.nUsers = nUsers
                 
-                if let toDeleteUserIDs = toDeleteUserIDs {
-                    MO.toDeleteUserIDs = toDeleteUserIDs.joined(separator: ",")
+                if let toDeleteUIDs = toDeleteUIDs {
+                    MO.toDeleteUIDs = toDeleteUIDs.joined(separator: ",")
                 }
                 
                 MO.isOrigin = isOrigin
@@ -261,8 +257,7 @@ extension DataPC {
                               remoteDeleted: [String]? = nil) async throws -> SMessage {
         do {
             let checkMO = try? await fetchMO(entity: Message.self,
-                                             predicateProperty: "messageID",
-                                             predicateValue: messageID)
+                                             predObject: ["messageID": messageID])
             
             if checkMO != nil { throw PError.recordExists() }
             
@@ -309,8 +304,7 @@ extension DataPC {
                             packet: Data) async throws -> SEvent {
         do {
             let checkMO = try? await fetchMO(entity: Event.self,
-                                             predicateProperty: "eventID",
-                                             predicateValue: eventID)
+                                             predObject: ["eventID": eventID])
             
             if checkMO != nil { throw PError.recordExists() }
             

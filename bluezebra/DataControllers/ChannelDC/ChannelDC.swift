@@ -34,11 +34,11 @@ class ChannelDC: ObservableObject {
                     MessageDC.shared.channelMessages[channelID] = [SMessage]()
                 }
                 
-                let userID = channel.userID
+                let UID = channel.UID
                 
-                if !self.RUs.keys.contains(userID) {
+                if !self.RUs.keys.contains(UID) {
                     Task {
-                        if let SRU = try? await self.fetchRUOffOn(userID: userID) {
+                        if let SRU = try? await self.fetchRUOffOn(UID: UID) {
                             self.syncRU(RU: SRU)
                         }
                     }
@@ -55,11 +55,11 @@ class ChannelDC: ObservableObject {
     @Published var CRs = [SChannelRequest]() {
         didSet {
             for CR in CRs {
-                let userID = CR.userID
+                let UID = CR.UID
                 
-                if !self.RUs.keys.contains(userID) {
+                if !self.RUs.keys.contains(UID) {
                     Task {
-                        if let SRU = try? await self.fetchRUOffOn(userID: userID) {
+                        if let SRU = try? await self.fetchRUOffOn(UID: UID) {
                             self.syncRU(RU: SRU)
                         }
                     }

@@ -21,6 +21,9 @@ class Channel: NSManagedObject {
     @NSManaged var userID: String?
     @NSManaged var creationDate: Date?
     @NSManaged var lastMessageDate: Date?
+    
+    @NSManaged var RU: RemoteUser?
+    @NSManaged var messages: Set<Message>?
 }
 
 extension Channel: ToSafeObject {

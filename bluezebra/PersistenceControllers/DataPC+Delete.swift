@@ -17,8 +17,7 @@ extension DataPC {
         queue: String = "background",
         useSync: Bool = false,
         predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        customPredicate: NSPredicate? = nil
+        predObjectNotEqual: [String: Any] = [:]
     ) async throws {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
@@ -26,8 +25,7 @@ extension DataPC {
             let MO = try await self.fetchMO(entity: entity,
                                             queue: queue,
                                             predObject: predObject,
-                                            predObjectNotEqual: predObjectNotEqual,
-                                            customPredicate: customPredicate)
+                                            predObjectNotEqual: predObjectNotEqual)
             
             if useSync {
                 try contextQueue.performAndWait {
@@ -67,7 +65,6 @@ extension DataPC {
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
         datePredicates: [DatePredicate] = [],
-        customPredicate: NSPredicate? = nil,
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
         sortAscending: Bool = false,
@@ -82,7 +79,6 @@ extension DataPC {
                     predObject: predObject,
                     predObjectNotEqual: predObjectNotEqual,
                     datePredicates: datePredicates,
-                    customPredicate: customPredicate,
                     fetchLimit: fetchLimit,
                     sortKey: sortKey,
                     sortAscending: sortAscending,

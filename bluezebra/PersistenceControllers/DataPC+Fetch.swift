@@ -51,33 +51,29 @@ extension DataPC {
         entity: T.Type,
         queue: String = "background",
         predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        customPredicate: NSPredicate? = nil
+        predObjectNotEqual: [String: Any] = [:]
     ) async throws -> T {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
-            
-            var predicates: [NSPredicate] = []
-            
-            if !predObject.isEmpty {
-                predicates.append(try createPredicate(predObject, comparison: "=="))
-            }
-            
-            if !predObjectNotEqual.isEmpty {
-                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
-            }
-            
-            if let customPredicate = customPredicate {
-                predicates.append(customPredicate)
-            }
-            
-            if !predicates.isEmpty {
-                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            }
-            
             let MOs = try await contextQueue.perform {
+                
+                let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
+                
+                var predicates: [NSPredicate] = []
+                
+                if !predObject.isEmpty {
+                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
+                }
+                
+                if !predObjectNotEqual.isEmpty {
+                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+                }
+                
+                if !predicates.isEmpty {
+                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+                }
+                
                 return try contextQueue.fetch(fetchRequest)
             }
             
@@ -100,7 +96,6 @@ extension DataPC {
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
         datePredicates: [DatePredicate] = [],
-        customPredicate: NSPredicate? = nil,
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
         sortAscending: Bool = false,
@@ -109,35 +104,32 @@ extension DataPC {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
-            
-            var predicates: [NSPredicate] = []
-            
-            if !predObject.isEmpty {
-                predicates.append(try createPredicate(predObject, comparison: "=="))
-            }
-            
-            if !predObjectNotEqual.isEmpty {
-                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
-            }
-            
-            predicates += datePredicates.map { createDatePredicate($0) }
-            
-            if let customPredicate = customPredicate {
-                predicates.append(customPredicate)
-            }
-            
-            if !predicates.isEmpty {
-                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            }
-            
-            fetchRequest.fetchLimit = fetchLimit ?? 0
-            
-            if let sortKey = sortKey {
-                fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-            }
-            
             let MOs = try await contextQueue.perform {
+                
+                let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+                
+                var predicates: [NSPredicate] = []
+                
+                if !predObject.isEmpty {
+                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
+                }
+                
+                if !predObjectNotEqual.isEmpty {
+                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+                }
+                
+                predicates += datePredicates.map { self.createDatePredicate($0) }
+                
+                if !predicates.isEmpty {
+                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+                }
+                
+                fetchRequest.fetchLimit = fetchLimit ?? 0
+                
+                if let sortKey = sortKey {
+                    fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+                }
+                
                 return try contextQueue.fetch(fetchRequest)
             }
             
@@ -158,33 +150,29 @@ extension DataPC {
         entity: T1.Type,
         queue: String = "main",
         predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        customPredicate: NSPredicate? = nil
+        predObjectNotEqual: [String: Any] = [:]
     ) async throws -> T1.SafeType {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
-            
-            var predicates: [NSPredicate] = []
-            
-            if !predObject.isEmpty {
-                predicates.append(try createPredicate(predObject, comparison: "=="))
-            }
-            
-            if !predObjectNotEqual.isEmpty {
-                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
-            }
-            
-            if let customPredicate = customPredicate {
-                predicates.append(customPredicate)
-            }
-            
-            if !predicates.isEmpty {
-                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            }
-            
             let MOs = try await contextQueue.perform {
+                
+                let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+                
+                var predicates: [NSPredicate] = []
+                
+                if !predObject.isEmpty {
+                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
+                }
+                
+                if !predObjectNotEqual.isEmpty {
+                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+                }
+                
+                if !predicates.isEmpty {
+                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+                }
+                
                 return try contextQueue.fetch(fetchRequest)
             }
             
@@ -213,7 +201,6 @@ extension DataPC {
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
         datePredicates: [DatePredicate] = [],
-        customPredicate: NSPredicate? = nil,
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
         sortAscending: Bool = false
@@ -221,35 +208,32 @@ extension DataPC {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
-            
-            var predicates: [NSPredicate] = []
-            
-            if !predObject.isEmpty {
-                predicates.append(try createPredicate(predObject, comparison: "=="))
-            }
-            
-            if !predObjectNotEqual.isEmpty {
-                predicates.append(try createPredicate(predObjectNotEqual, comparison: "!="))
-            }
-            
-            predicates += datePredicates.map { createDatePredicate($0) }
-            
-            if let customPredicate = customPredicate {
-                predicates.append(customPredicate)
-            }
-            
-            if !predicates.isEmpty {
-                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            }
-            
-            fetchRequest.fetchLimit = fetchLimit ?? 0
-            
-            if let sortKey = sortKey {
-                fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-            }
-            
             let MOs = try await contextQueue.perform {
+                
+                let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+                
+                var predicates: [NSPredicate] = []
+                
+                if !predObject.isEmpty {
+                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
+                }
+                
+                if !predObjectNotEqual.isEmpty {
+                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+                }
+                
+                predicates += datePredicates.map { self.createDatePredicate($0) }
+                
+                if !predicates.isEmpty {
+                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+                }
+                
+                fetchRequest.fetchLimit = fetchLimit ?? 0
+                
+                if let sortKey = sortKey {
+                    fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+                }
+                
                 return try contextQueue.fetch(fetchRequest)
             }
             

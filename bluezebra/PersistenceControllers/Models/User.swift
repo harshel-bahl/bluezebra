@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 struct SUser {
-    let UID: String
+    let uID: String
     let username: String
     let creationDate: Date
     let avatar: String
@@ -17,7 +17,7 @@ struct SUser {
 }
 
 class User: NSManagedObject {
-    @NSManaged var userID: String?
+    @NSManaged var uid: String?
     @NSManaged var username: String?
     @NSManaged var creationDate: Date?
     @NSManaged var avatar: String?
@@ -28,7 +28,7 @@ extension User: ToSafeObject {
     
     func safeObject() throws -> SUser {
         
-        guard let UID = self.userID,
+        guard let UID = self.uid,
               let username = self.username,
               let creationDate = self.creationDate,
               let avatar = self.avatar else {

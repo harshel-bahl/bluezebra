@@ -11,7 +11,7 @@ import SocketIO
 extension UserDC {
     
     /// checkUsername
-    /// Request operation - sends request to server and waits for response
+    /// 
     func checkUsername(username: String) async throws -> Bool {
         do {
             try checkSocketConnected()
@@ -49,10 +49,7 @@ extension UserDC {
     }
     
     /// createUser
-    /// Create operation
-    /// - Creates 3 objects to ensure error-free operations before request is sent
-    /// - Receives ack, if successful then objects remain
-    /// - Receives ack, if server failure or timeOut then obejcts are removed and error logged
+    ///
     func createUser(username: String,
                     pin: String,
                     avatar: String) async throws -> (SUser, SSettings, SChannel) {
@@ -103,10 +100,7 @@ extension UserDC {
     }
     
     /// deleteUser
-    /// Delete Operation
-    /// - Sends request to server
-    /// - On successful ack, local delete operations will occur
-    /// - On failure or timeOut, nothing happens
+    ///
     func deleteUser() async throws {
         do {
             try checkSocketConnected()
@@ -140,9 +134,9 @@ extension UserDC {
             
             try await self.deleteUserLocally()
             
-            log.debug(message: "successfully deleted user", function: "UserDC.deleteUser", event: "deleteUser", info: "UID: \(String(describing: self.userdata?.UID))")
+            log.debug(message: "successfully deleted user", function: "UserDC.deleteUser", event: "deleteUser")
         } catch {
-            log.error(message: "failed to delete user", function: "UserDC.deleteUser", event: "deleteUser", error: error, info: "UID: \(String(describing: self.userdata?.UID))")
+            log.error(message: "failed to delete user", function: "UserDC.deleteUser", event: "deleteUser", error: error)
             throw error
         }
     }
@@ -187,8 +181,10 @@ extension UserDC {
             
             self.syncUserConnected(result: true)
             
+            log.debug(message: "successfully connected user", function: "UserDC.connectUser", event: "connectUser")
         } catch {
             self.syncUserConnected(result: false)
+            log.error(message: "failed to connect user", function: "UserDC.connectUser", event: "connectUser", error: error)
             throw error
         }
     }

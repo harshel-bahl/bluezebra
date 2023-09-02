@@ -24,6 +24,8 @@ extension UserDC {
             
             self.syncReceivedPendingEvents(result: true)
             
+            log.info(message: "received pending events successful", event: "receivedPendingEvents")
+            
             ack.with(NSNull())
         }
     }

@@ -17,8 +17,7 @@ extension DataPC {
         property: [String],
         value: [Any?],
         predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        customPredicate: NSPredicate? = nil
+        predObjectNotEqual: [String: Any] = [:]
     ) async throws -> T.SafeType {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
@@ -26,8 +25,7 @@ extension DataPC {
             let MO = try await self.fetchMO(entity: entity,
                                             queue: queue,
                                             predObject: predObject,
-                                            predObjectNotEqual: predObjectNotEqual,
-                                            customPredicate: customPredicate)
+                                            predObjectNotEqual: predObjectNotEqual)
             
             let SMO: T.SafeType
             
@@ -81,7 +79,6 @@ extension DataPC {
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
         datePredicates: [DatePredicate] = [],
-        customPredicate: NSPredicate? = nil,
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
         sortAscending: Bool = false,
@@ -96,7 +93,6 @@ extension DataPC {
                 predObject: predObject,
                 predObjectNotEqual: predObjectNotEqual,
                 datePredicates: datePredicates,
-                customPredicate: customPredicate,
                 fetchLimit: fetchLimit,
                 sortKey: sortKey,
                 sortAscending: sortAscending,
