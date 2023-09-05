@@ -21,11 +21,11 @@ extension UserDC {
                                                                                       rollbackOnErr: true) {
             
             let userdataMO = try DataPC.shared.createUser(uID: uID,
-                                                    username: username,
-                                                    creationDate: creationDate,
-                                                    avatar: avatar)
+                                                          username: username,
+                                                          creationDate: creationDate,
+                                                          avatar: avatar)
             
-            let userSettingsMO = try DataPC.shared.createSettings()
+            let userSettingsMO = try DataPC.shared.createSettings(user: userdataMO)
             
             let userdata = try userdataMO.safeObject()
             let userSettings = try userSettingsMO.safeObject()
@@ -36,7 +36,7 @@ extension UserDC {
         let password = SecurityU.shared.generateRandPass(length: 20)
         
         try DataPC.shared.storePassword(account: "userPassword", password: password)
-         
+        
         let keys = try SecurityU.shared.generateKeyPair()
         
         guard let privateKey = keys["privateKey"],
@@ -45,13 +45,13 @@ extension UserDC {
         try DataPC.shared.storeKey(keyData: privateKey, account: "userPrivateKey", isPublic: false)
         try DataPC.shared.storeKey(keyData: publicKey, account: "userPublicKey", isPublic: true)
         
-//        let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
-//                                                             UID: UID,
-//                                                             creationDate: creationDate)
+        let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
+                                                                    uID: uID,
+                                                                    creationDate: creationDate)
         
         try await DataPC.shared.createChannelDir(channelID: "personal")
         
-//        return (userdata, password, publicKey, userSettings, personalChannel)
+        return (userdata, password, publicKey, userSettings, personalChannel)
     }
     
     /// Local Delete Functions

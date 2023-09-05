@@ -43,11 +43,11 @@ extension DataPC {
                 return MO
             }
             
-            log.debug(message: "created user and settings objects in database", function: "DataPC.createUser", info: "uID: \(uID)")
+            log.debug(message: "created user object in database", function: "DataPC.createUser", info: "uID: \(uID)")
             
             return SMO
         } catch {
-            log.error(message: "failed to create user and settings objects in database", function: "DataPC.createUser", error: error, info: "uID: \(uID)")
+            log.error(message: "failed to create user object in database", function: "DataPC.createUser", error: error, info: "uID: \(uID)")
             throw error
         }
     }
@@ -89,9 +89,11 @@ extension DataPC {
                          avatar: String,
                          creationDate: Date,
                          lastOnline: Date? = nil,
-                         blocked: Bool = false) async throws -> SRemoteUser {
+                         blocked: Bool = false,
+                         channel: Channel? = nil,
+                         channelRequest: ChannelRequest? = nil) throws -> RemoteUser {
         do {
-            let SMO = try self.backgroundPerformSync() {
+            let MO = try self.backgroundContext.performAndWait {
                 
                 let checkMO = try? fetchMOSync(entity: RemoteUser.self,
                                                predObject: ["uID": uID])
@@ -106,15 +108,20 @@ extension DataPC {
                 MO.lastOnline = lastOnline
                 MO.blocked = blocked
                 
-                let SMO = try MO.safeObject()
+                if let channel = channel {
+                    MO.channel = channel
+                }
                 
-                return SMO
-            
+                if let channelRequest = channelRequest {
+                    MO.channelRequest = channelRequest
+                }
+                
+                return MO
             }
             
             log.debug(message: "created RU", function: "DataPC.createRU", info: "uID: \(uID)")
             
-            return SMO
+            return MO
         } catch {
             log.error(message: "failed to create RU", function: "DataPC.createRU", error: error, info: "uID: \(uID)")
             throw error
@@ -124,11 +131,11 @@ extension DataPC {
     /// createCR
     ///
     public func createCR(requestID: String,
-                         UID: String,
+                         uID: UUID,
                          date: Date,
-                         isSender: Bool) async throws -> SChannelRequest {
+                         isSender: Bool) throws -> ChannelRequest {
         do {
-            let checkMO = try? await fetchMO(entity: ChannelRequest.self,
+            let checkMO = try? fetchMOSync(entity: ChannelRequest.self,
                                              predObject: ["requestID": requestID])
             
             if checkMO != nil { throw PError.recordExists() }
@@ -159,7 +166,7 @@ extension DataPC {
     /// createChannel
     /// - Creates a channel attributed to one userID, so no duplicates
     public func createChannel(channelID: String,
-                              UID: String,
+                              uID: UUID,
                               creationDate: Date,
                               lastMessageDate: Date? = nil) async throws -> SChannel {
         do {
@@ -172,7 +179,7 @@ extension DataPC {
                 
                 let MO = Channel(context: self.backgroundContext)
                 MO.channelID = channelID
-                MO.userID = UID
+                MO.uID = uID
                 MO.creationDate = creationDate
                 MO.lastMessageDate = lastMessageDate
                 

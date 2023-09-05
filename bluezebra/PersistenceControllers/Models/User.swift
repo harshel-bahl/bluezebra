@@ -17,10 +17,10 @@ struct SUser {
 }
 
 class User: NSManagedObject {
-    @NSManaged var uID: UUID?
-    @NSManaged var username: String?
-    @NSManaged var creationDate: Date?
-    @NSManaged var avatar: String?
+    @NSManaged var uID: UUID
+    @NSManaged var username: String
+    @NSManaged var creationDate: Date
+    @NSManaged var avatar: String
     @NSManaged var lastOnline: Date?
     
     @NSManaged var settings: Settings?

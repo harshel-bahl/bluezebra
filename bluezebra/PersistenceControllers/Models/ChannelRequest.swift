@@ -17,7 +17,7 @@ struct SChannelRequest {
 
 class ChannelRequest: NSManagedObject {
     @NSManaged var requestID: UUID?
-    @NSManaged var uID: UUID?
+    @NSManaged var uID: UUID
     @NSManaged var date: Date?
     @NSManaged var isSender: Bool
 }
