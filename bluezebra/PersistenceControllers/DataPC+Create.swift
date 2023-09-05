@@ -16,105 +16,107 @@ extension DataPC {
     
     /// createUser
     ///
-    public func createUser(UID: String,
+    public func createUser(uID: UUID,
                            username: String,
                            creationDate: Date,
                            avatar: String,
-                           lastOnline: Date? = nil) async throws -> SUser {
+                           lastOnline: Date? = nil,
+                           settings: Settings? = nil) throws -> User {
         do {
-            let checkMO = try? await self.fetchMO(entity: User.self)
-            
-            if checkMO != nil { throw PError.recordExists() }
-            
-            let SMO = try await self.backgroundContext.perform {
+            let SMO = try self.backgroundContext.performAndWait {
+                
+                let checkMO = try? self.fetchMOSync(entity: User.self)
+                
+                if checkMO != nil { throw PError.recordExists(err: "user object already exists in database") }
+                
                 let MO = User(context: self.backgroundContext)
-                MO.userID = UID
+                MO.uID = uID
                 MO.username = username
                 MO.creationDate = creationDate
                 MO.avatar = avatar
                 MO.lastOnline = lastOnline
                 
-                try self.backgroundSave()
+                if let settings = settings {
+                    MO.settings = settings
+                }
                 
-                let SMO = try MO.safeObject()
-                
-                return SMO
+                return MO
             }
             
-            log.debug(message: "created user", function: "DataPC.createUser", info: "UID: \(UID)")
+            log.debug(message: "created user and settings objects in database", function: "DataPC.createUser", info: "uID: \(uID)")
             
             return SMO
         } catch {
-            log.error(message: "failed to create user", function: "DataPC.createUser", error: error, info: "UID: \(UID)")
+            log.error(message: "failed to create user and settings objects in database", function: "DataPC.createUser", error: error, info: "uID: \(uID)")
             throw error
         }
     }
     
     /// createSettings
     ///
-    public func createSettings(pin: String,
-                               biometricSetup: String? = nil) async throws -> SSettings {
+    public func createSettings(biometricSetup: String? = nil,
+                               user: User? = nil) throws -> Settings {
         do {
-            let checkMO = try? await self.fetchMO(entity: Settings.self)
-            
-            if checkMO != nil { throw PError.recordExists() }
-            
-            let SMO = try await self.backgroundContext.perform {
+            let MO = try self.backgroundContext.performAndWait {
+                
+                let checkMO = try? self.fetchMOSync(entity: Settings.self)
+                
+                if checkMO != nil { throw PError.recordExists(err: "settings object already exists in database") }
+                
                 let MO = Settings(context: self.backgroundContext)
-                MO.pin = pin
                 MO.biometricSetup = biometricSetup
                 
-                try self.backgroundSave()
+                if let user = user {
+                    MO.user = user
+                }
                 
-                let SMO = try MO.safeObject()
-                
-                return SMO
+                return MO
             }
             
-            log.debug(message: "created settings", function: "DataPC.createSettings")
+            log.debug(message: "created settings object in database", function: "DataPC.createSettings")
             
-            return SMO
+            return MO
         } catch {
-            log.error(message: "failed to create settings", function: "DataPC.createSettings", error: error)
+            log.error(message: "failed to create settings object in database", function: "DataPC.createSettings", error: error)
             throw error
         }
     }
     
     /// createRU
     ///
-    public func createRU(UID: String,
+    public func createRU(uID: UUID,
                          username: String,
                          avatar: String,
                          creationDate: Date,
                          lastOnline: Date? = nil,
                          blocked: Bool = false) async throws -> SRemoteUser {
         do {
-            let fetchedMO = try? await fetchMO(entity: RemoteUser.self,
-                                               predObject: ["userID": UID])
-            
-            if fetchedMO != nil { throw PError.recordExists() }
-            
-            let sMO = try await self.backgroundContext.perform {
+            let SMO = try self.backgroundPerformSync() {
+                
+                let checkMO = try? fetchMOSync(entity: RemoteUser.self,
+                                               predObject: ["uID": uID])
+                
+                if checkMO != nil { throw PError.recordExists(err: "RU object already exists in database") }
+                
                 let MO = RemoteUser(context: self.backgroundContext)
-                MO.userID = UID
+                MO.uID = uID
                 MO.username = username
                 MO.avatar = avatar
                 MO.creationDate = creationDate
                 MO.lastOnline = lastOnline
                 MO.blocked = blocked
                 
-                try self.backgroundSave()
+                let SMO = try MO.safeObject()
                 
-                let sMO = try MO.safeObject()
-                
-                return sMO
+                return SMO
+            
             }
             
-            log.debug(message: "created RU", function: "DataPC.createRU", info: "RUID: \(UID)")
+            log.debug(message: "created RU", function: "DataPC.createRU", info: "uID: \(uID)")
             
-            return sMO
+            return SMO
         } catch {
-            log.error(message: "failed to create RU", function: "DataPC.createRU", error: error, info: "RUID: \(UID)")
+            log.error(message: "failed to create RU", function: "DataPC.createRU", error: error, info: "uID: \(uID)")
             throw error
         }
     }

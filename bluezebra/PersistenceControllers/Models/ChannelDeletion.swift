@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 struct SChannelDeletion {
-    var deletionID: String
+    var deletionID: UUID
     var channelType: String
     var deletionDate: Date
     var type: String
@@ -22,7 +22,7 @@ struct SChannelDeletion {
 }
 
 class ChannelDeletion: NSManagedObject {
-    @NSManaged var deletionID: String?
+    @NSManaged var deletionID: UUID?
     @NSManaged var channelType: String?
     @NSManaged var deletionDate: Date?
     @NSManaged var type: String?

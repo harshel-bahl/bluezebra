@@ -12,7 +12,7 @@ struct SEvent {
     let eventID: String
     let eventName: String
     let date: Date
-    let userID: String
+    let uID: String
     let attempts: Int16
     let packet: Data?
 }
@@ -21,7 +21,7 @@ class Event: NSManagedObject {
     @NSManaged var eventID: String?
     @NSManaged var eventName: String?
     @NSManaged var date: Date?
-    @NSManaged var userID: String?
+    @NSManaged var uID: String?
     @NSManaged var attempts: Int16
     @NSManaged var packet: Data?
 }
@@ -33,14 +33,14 @@ extension Event: ToSafeObject {
         guard let eventID = self.eventID,
               let eventName = self.eventName,
               let date = self.date,
-              let userID = self.userID else {
+              let uID = self.uID else {
             throw PError.safeMapError()
         }
         
         return SEvent(eventID: eventID,
                       eventName: eventName,
                       date: date,
-                      userID: userID,
+                      uID: uID,
                       attempts: self.attempts,
                       packet: self.packet)
     }

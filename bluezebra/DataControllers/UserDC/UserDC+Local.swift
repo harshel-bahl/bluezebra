@@ -11,16 +11,27 @@ extension UserDC {
     
     /// Local Create Functions
     ///
-    func createUserLocally(UID: String = UUID().uuidString,
+    func createUserLocally(uID: UUID = UUID(),
                            username: String,
                            pin: String,
                            avatar: String,
                            creationDate: Date = DateU.shared.currDT) async throws -> (SUser, String, Data, SSettings, SChannel) {
         
-        let userdata = try await DataPC.shared.createUser(UID: UID,
-                                                       username: username,
-                                                       creationDate: creationDate,
-                                                       avatar: avatar)
+        let (userdata, userSettings) = try await DataPC.shared.backgroundPerformAsync(saveOnComplete: true,
+                                                                                      rollbackOnErr: true) {
+            
+            let userdataMO = try DataPC.shared.createUser(uID: uID,
+                                                    username: username,
+                                                    creationDate: creationDate,
+                                                    avatar: avatar)
+            
+            let userSettingsMO = try DataPC.shared.createSettings()
+            
+            let userdata = try userdataMO.safeObject()
+            let userSettings = try userSettingsMO.safeObject()
+            
+            return (userdata, userSettings)
+        }
         
         let password = SecurityU.shared.generateRandPass(length: 20)
         
@@ -34,15 +45,13 @@ extension UserDC {
         try DataPC.shared.storeKey(keyData: privateKey, account: "userPrivateKey", isPublic: false)
         try DataPC.shared.storeKey(keyData: publicKey, account: "userPublicKey", isPublic: true)
         
-        let userSettings = try await DataPC.shared.createSettings(pin: pin)
-        
-        let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
-                                                             UID: UID,
-                                                             creationDate: creationDate)
+//        let personalChannel = try await DataPC.shared.createChannel(channelID: "personal",
+//                                                             UID: UID,
+//                                                             creationDate: creationDate)
         
         try await DataPC.shared.createChannelDir(channelID: "personal")
         
-        return (userdata, password, publicKey, userSettings, personalChannel)
+//        return (userdata, password, publicKey, userSettings, personalChannel)
     }
     
     /// Local Delete Functions

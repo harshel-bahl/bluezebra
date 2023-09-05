@@ -33,7 +33,7 @@ class DataPC: ObservableObject {
     
     /// Save Functions
     ///
-    internal func mainSave() throws {
+    func mainSave() throws {
         do {
             if self.mainContext.hasChanges {
                 try self.mainContext.save()
@@ -43,7 +43,7 @@ class DataPC: ObservableObject {
         }
     }
     
-    internal func backgroundSave() throws {
+    func backgroundSave() throws {
         do {
             if self.backgroundContext.hasChanges {
                 try self.backgroundContext.save()
@@ -55,7 +55,90 @@ class DataPC: ObservableObject {
     
     /// Scheduling Functions
     ///
-    internal func performOnMain(
+    func mainPerformSync<T>(
+        saveOnComplete: Bool = true,
+        rollbackOnErr: Bool = true,
+        oper: () throws -> T
+    ) throws -> T {
+        do {
+             let result = try self.mainContext.performAndWait() {
+                 let result = try oper()
+                 
+                 if saveOnComplete { try self.mainSave() }
+                 
+                 return result
+             }
+            
+            return result
+        } catch {
+            if rollbackOnErr { self.mainContext.rollback() }
+            throw error
+        }
+    }
+
+    func mainPerformAsync<T>(
+        saveOnComplete: Bool = true,
+        rollbackOnErr: Bool = true,
+        oper: @escaping () throws -> T
+    ) async throws -> T {
+        do {
+            let result = try await self.mainContext.perform {
+                let result = try oper()
+                
+                if saveOnComplete { try self.mainSave() }
+                
+                return result
+            }
+            
+            return result
+        } catch {
+            if rollbackOnErr { self.mainContext.rollback() }
+            throw error
+        }
+    }
+
+    func backgroundPerformSync<T>(
+        saveOnComplete: Bool = true,
+        rollbackOnErr: Bool = true,
+        oper: () throws -> T
+    ) throws -> T {
+        do {
+            let result = try self.backgroundContext.performAndWait {
+                let result = try oper()
+                
+                if saveOnComplete { try self.backgroundSave() }
+                
+                return result
+            }
+            
+            return result
+        } catch {
+            if rollbackOnErr { self.backgroundContext.rollback() }
+            throw error
+        }
+    }
+    
+    func backgroundPerformAsync<T>(
+        saveOnComplete: Bool = true,
+        rollbackOnErr: Bool = true,
+        oper: @escaping () throws -> T
+    ) async throws -> T {
+        do {
+            let result = try await self.backgroundContext.perform {
+                let result = try oper()
+                
+                if saveOnComplete { try self.backgroundSave() }
+                
+                return result
+            }
+            
+            return result
+        } catch {
+            if rollbackOnErr { self.backgroundContext.rollback() }
+            throw error
+            
+        }
+    }
 }
 
 

@@ -9,10 +9,9 @@ import Foundation
 import CoreData
 
 struct SMessage: Equatable {
-    var messageID: String = UUID().uuidString
-    var channelID: String
-    var UID: String
-    var type: String
+    var messageID: UUID
+    var channelID: UUID
+    var uID: UUID
     var date: Date
     var isSender: Bool
     var message: String?
@@ -26,10 +25,9 @@ struct SMessage: Equatable {
 }
 
 class Message: NSManagedObject {
-    @NSManaged var messageID: String?
-    @NSManaged var channelID: String?
-    @NSManaged var userID: String?
-    @NSManaged var type: String?
+    @NSManaged var messageID: UUID?
+    @NSManaged var channelID: UUID?
+    @NSManaged var uID: UUID?
     @NSManaged var date: Date?
     @NSManaged var isSender: Bool
     @NSManaged var message: String?
@@ -40,6 +38,9 @@ class Message: NSManagedObject {
     @NSManaged var read: String?
     @NSManaged var localDeleted: Bool
     @NSManaged var remoteDeleted: String?
+    
+    @NSManaged var channel: Channel
+    @NSManaged var remoteUser: RemoteUser
 }
 
 extension Message: ToSafeObject {
@@ -47,16 +48,14 @@ extension Message: ToSafeObject {
     func safeObject() throws -> SMessage {
         guard let messageID = self.messageID,
               let channelID = self.channelID,
-              let UID = self.userID,
-              let type = self.type,
+              let uID = self.uID,
               let date = self.date else {
             throw PError.safeMapError(err: "Message required property(s) nil")
         }
         
         return SMessage(messageID: messageID,
                         channelID: channelID,
-                        UID: UID,
-                        type: type,
+                        uID: uID,
                         date: date,
                         isSender: self.isSender,
                         message: self.message,

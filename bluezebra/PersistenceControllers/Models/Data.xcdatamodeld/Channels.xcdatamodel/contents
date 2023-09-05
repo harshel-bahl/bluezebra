@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22D68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Channel" representedClassName=".Channel" syncable="YES">
-        <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="channelID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="channelID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastMessageDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Message" inverseName="channel" inverseEntity="Message"/>
+        <attribute name="uID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="message" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="channel" inverseEntity="Message"/>
         <relationship name="remoteUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RemoteUser" inverseName="channel" inverseEntity="RemoteUser"/>
     </entity>
     <entity name="ChannelDeletion" representedClassName=".ChannelDeletion" syncable="YES">
@@ -26,7 +25,7 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isSender" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="requestID" optional="YES" attributeType="String"/>
-        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="uID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="remoteUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RemoteUser" inverseName="channelRequest" inverseEntity="RemoteUser"/>
     </entity>
     <entity name="Event" representedClassName=".Event" syncable="YES">
@@ -35,7 +34,7 @@
         <attribute name="eventID" optional="YES" attributeType="String"/>
         <attribute name="eventName" optional="YES" attributeType="String"/>
         <attribute name="packet" optional="YES" attributeType="Binary"/>
-        <attribute name="uid" optional="YES" attributeType="String"/>
+        <attribute name="uID" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Message" representedClassName=".Message" syncable="YES">
         <attribute name="channelID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -50,30 +49,31 @@
         <attribute name="read" optional="YES" attributeType="String"/>
         <attribute name="remoteDeleted" optional="YES" attributeType="String"/>
         <attribute name="sent" optional="YES" attributeType="String"/>
-        <attribute name="type" optional="YES" attributeType="String"/>
-        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="channel" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Channel" inverseName="message" inverseEntity="Channel"/>
-        <relationship name="remoteUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RemoteUser" inverseName="message" inverseEntity="RemoteUser"/>
+        <attribute name="uID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="channel" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Channel" inverseName="message" inverseEntity="Channel"/>
+        <relationship name="remoteUser" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="RemoteUser" inverseName="message" inverseEntity="RemoteUser"/>
     </entity>
     <entity name="RemoteUser" representedClassName=".RemoteUser" syncable="YES">
         <attribute name="avatar" optional="YES" attributeType="String"/>
         <attribute name="blocked" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="uID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="username" optional="YES" attributeType="String"/>
-        <relationship name="channel" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Channel" inverseName="remoteUser" inverseEntity="Channel"/>
+        <relationship name="channel" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Channel" inverseName="remoteUser" inverseEntity="Channel"/>
         <relationship name="channelRequest" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ChannelRequest" inverseName="remoteUser" inverseEntity="ChannelRequest"/>
-        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Message" inverseName="remoteUser" inverseEntity="Message"/>
+        <relationship name="message" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="remoteUser" inverseEntity="Message"/>
     </entity>
     <entity name="Settings" representedClassName=".Settings" syncable="YES">
         <attribute name="biometricSetup" optional="YES" attributeType="String"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="settings" inverseEntity="User"/>
     </entity>
     <entity name="User" representedClassName=".User" syncable="YES">
-        <attribute name="avatar" optional="YES" attributeType="String"/>
-        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="avatar" attributeType="String"/>
+        <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="uID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="username" optional="YES" attributeType="String"/>
+        <attribute name="uID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="username" attributeType="String"/>
+        <relationship name="settings" maxCount="1" deletionRule="Cascade" destinationEntity="Settings" inverseName="user" inverseEntity="Settings"/>
     </entity>
 </model>
