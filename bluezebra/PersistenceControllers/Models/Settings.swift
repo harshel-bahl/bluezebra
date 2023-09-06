@@ -15,17 +15,12 @@ struct SSettings {
 class Settings: NSManagedObject {
     @NSManaged var biometricSetup: String?
     
-    @NSManaged var user: User?
+    @NSManaged var user: User
 }
 
 extension Settings: ToSafeObject {
     
     func safeObject() throws -> SSettings {
-        
-//        guard else {
-//            throw PError.safeMapError(err: "Settings required property(s) nil")
-//        }
-        
         return SSettings(biometricSetup: self.biometricSetup)
     }
 }

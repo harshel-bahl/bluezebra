@@ -16,24 +16,20 @@ struct SChannelRequest {
 }
 
 class ChannelRequest: NSManagedObject {
-    @NSManaged var requestID: UUID?
+    @NSManaged var requestID: UUID
     @NSManaged var uID: UUID
-    @NSManaged var date: Date?
+    @NSManaged var date: Date
     @NSManaged var isSender: Bool
+    
+    @NSManaged var remoteUser: RemoteUser
 }
 
 extension ChannelRequest: ToSafeObject {
     
     func safeObject() throws -> SChannelRequest {
-        guard let requestID = self.requestID,
-              let uID = self.uID,
-              let date = self.date else {
-            throw PError.safeMapError(err: "ChannelRequest required property(s) nil")
-        }
-        
-        return SChannelRequest(requestID: requestID,
-                               uID: uID,
-                               date: date,
+        return SChannelRequest(requestID: self.requestID,
+                               uID: self.uID,
+                               date: self.date,
                                isSender: self.isSender)
     }
 }

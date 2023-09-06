@@ -18,10 +18,10 @@ struct SRemoteUser {
 }
 
 class RemoteUser: NSManagedObject {
-    @NSManaged var uID: UUID?
-    @NSManaged var username: String?
-    @NSManaged var avatar: String?
-    @NSManaged var creationDate: Date?
+    @NSManaged var uID: UUID
+    @NSManaged var username: String
+    @NSManaged var avatar: String
+    @NSManaged var creationDate: Date
     @NSManaged var lastOnline: Date?
     @NSManaged var blocked: Bool
     
@@ -33,17 +33,10 @@ class RemoteUser: NSManagedObject {
 extension RemoteUser: ToSafeObject {
     
     func safeObject() throws -> SRemoteUser {
-        guard let uID = self.uID,
-              let username = self.username,
-              let avatar = self.avatar,
-              let creationDate = self.creationDate else {
-            throw PError.safeMapError(err: "RemoteUser required property(s) nil")
-        }
-        
-        return SRemoteUser(uID: uID,
-                           username: username,
-                           avatar: avatar,
-                           creationDate: creationDate,
+        return SRemoteUser(uID: self.uID,
+                           username: self.username,
+                           avatar: self.avatar,
+                           creationDate: self.creationDate,
                            lastOnline: self.lastOnline,
                            blocked: self.blocked)
     }

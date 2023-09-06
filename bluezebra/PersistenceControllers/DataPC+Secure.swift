@@ -246,7 +246,7 @@ extension DataPC {
         }
     }
     
-    func deleteAllItems() throws {
+    func deleteAllKeychainItems() throws {
         
         let keychainClasses: [CFString] = [
             kSecClassKey,

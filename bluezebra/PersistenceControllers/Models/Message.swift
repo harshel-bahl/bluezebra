@@ -25,10 +25,10 @@ struct SMessage: Equatable {
 }
 
 class Message: NSManagedObject {
-    @NSManaged var messageID: UUID?
-    @NSManaged var channelID: UUID?
-    @NSManaged var uID: UUID?
-    @NSManaged var date: Date?
+    @NSManaged var messageID: UUID
+    @NSManaged var channelID: UUID
+    @NSManaged var uID: UUID
+    @NSManaged var date: Date
     @NSManaged var isSender: Bool
     @NSManaged var message: String?
     @NSManaged var imageIDs: String?
@@ -46,17 +46,10 @@ class Message: NSManagedObject {
 extension Message: ToSafeObject {
     
     func safeObject() throws -> SMessage {
-        guard let messageID = self.messageID,
-              let channelID = self.channelID,
-              let uID = self.uID,
-              let date = self.date else {
-            throw PError.safeMapError(err: "Message required property(s) nil")
-        }
-        
-        return SMessage(messageID: messageID,
-                        channelID: channelID,
-                        uID: uID,
-                        date: date,
+        return SMessage(messageID: self.messageID,
+                        channelID: self.channelID,
+                        uID: self.uID,
+                        date: self.date,
                         isSender: self.isSender,
                         message: self.message,
                         imageIDs: self.imageIDs,

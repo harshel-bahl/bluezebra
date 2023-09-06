@@ -59,20 +59,27 @@ class DataPC: ObservableObject {
         saveOnComplete: Bool = true,
         rollbackOnErr: Bool = true,
         oper: () throws -> T
-    ) throws -> T {
-        do {
-             let result = try self.mainContext.performAndWait() {
-                 let result = try oper()
-                 
-                 if saveOnComplete { try self.mainSave() }
-                 
-                 return result
-             }
-            
-            return result
-        } catch {
-            if rollbackOnErr { self.mainContext.rollback() }
-            throw error
+    ) async throws -> T {
+        return try await withCheckedThrowingContinuation() { continuation in
+            do {
+                let result = try self.mainContext.performAndWait() {
+                    let result = try oper()
+                    
+                    if saveOnComplete { try self.mainSave() }
+                    
+                    return result
+                }
+                
+                log.debug(message: "successfully saved main context", function: "DataPC.mainPerformSync")
+                
+                continuation.resume(returning: result)
+            } catch {
+                log.error(message: "failed to save main context", function: "DataPC.mainPerformSync", error: error)
+                
+                if rollbackOnErr { self.mainContext.rollback() }
+                
+                continuation.resume(throwing: error)
+            }
         }
     }
 
@@ -90,9 +97,14 @@ class DataPC: ObservableObject {
                 return result
             }
             
+            log.debug(message: "successfully saved main context", function: "DataPC.mainPerformAsync")
+            
             return result
         } catch {
+            log.error(message: "failed to save main context", function: "DataPC.mainPerformAsync", error: error)
+            
             if rollbackOnErr { self.mainContext.rollback() }
+            
             throw error
         }
     }
@@ -101,20 +113,27 @@ class DataPC: ObservableObject {
         saveOnComplete: Bool = true,
         rollbackOnErr: Bool = true,
         oper: () throws -> T
-    ) throws -> T {
-        do {
-            let result = try self.backgroundContext.performAndWait {
-                let result = try oper()
+    ) async throws -> T {
+        return try await withCheckedThrowingContinuation() { continuation in
+            do {
+                let result = try self.backgroundContext.performAndWait {
+                    let result = try oper()
+                    
+                    if saveOnComplete { try self.backgroundSave() }
+                    
+                    return result
+                }
                 
-                if saveOnComplete { try self.backgroundSave() }
+                log.debug(message: "successfully saved background context", function: "DataPC.backgroundPerformSync")
                 
-                return result
+                continuation.resume(returning: result)
+            } catch {
+                log.error(message: "failed to save background context", function: "DataPC.backgroundPerformSync", error: error)
+                
+                if rollbackOnErr { self.backgroundContext.rollback() }
+                
+                continuation.resume(throwing: error)
             }
-            
-            return result
-        } catch {
-            if rollbackOnErr { self.backgroundContext.rollback() }
-            throw error
         }
     }
     
@@ -132,12 +151,26 @@ class DataPC: ObservableObject {
                 return result
             }
             
+            log.debug(message: "successfully saved background context", function: "DataPC.backgroundPerformAsync")
+            
             return result
         } catch {
+            log.error(message: "failed to save background context", function: "DataPC.backgroundPerformAsync", error: error)
+            
             if rollbackOnErr { self.backgroundContext.rollback() }
+            
             throw error
             
         }
+    }
+    
+    func getObjectIDs<T: NSManagedObject>(
+        objects: [T]
+    ) -> [NSManagedObjectID] {
+       
+        let objectIDs = objects.map { $0.objectID }
+        
+        return objectIDs
     }
 }
 

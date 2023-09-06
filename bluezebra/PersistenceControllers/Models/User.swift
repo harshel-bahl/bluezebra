@@ -23,24 +23,16 @@ class User: NSManagedObject {
     @NSManaged var avatar: String
     @NSManaged var lastOnline: Date?
     
-    @NSManaged var settings: Settings?
+    @NSManaged var settings: Settings
 }
 
 extension User: ToSafeObject {
     
     func safeObject() throws -> SUser {
-        
-        guard let uID = self.uID,
-              let username = self.username,
-              let creationDate = self.creationDate,
-              let avatar = self.avatar else {
-            throw PError.safeMapError(err: "User required property(s) nil")
-        }
-        
-        return SUser(uID: uID,
-                     username: username,
-                     creationDate: creationDate,
-                     avatar: avatar,
+        return SUser(uID: self.uID,
+                     username: self.username,
+                     creationDate: self.creationDate,
+                     avatar: self.avatar,
                      lastOnline: self.lastOnline)
     }
 }

@@ -15,45 +15,22 @@ extension DataPC {
     public func deleteMO<T: NSManagedObject> (
         entity: T.Type,
         queue: String = "background",
-        useSync: Bool = false,
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:]
-    ) async throws {
+    ) throws {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let MO = try await self.fetchMO(entity: entity,
+            let MO = try self.fetchMO(entity: entity,
                                             queue: queue,
-                                            predObject: predObject,
-                                            predObjectNotEqual: predObjectNotEqual)
+            predObject: predObject,
+            predObjectNotEqual: predObjectNotEqual)
             
-            if useSync {
-                try contextQueue.performAndWait {
-                    
-                    contextQueue.delete(MO)
-                    
-                    if contextQueue == self.mainContext {
-                        try self.mainSave()
-                    } else {
-                        try self.backgroundSave()
-                    }
-                }
-            } else {
-                try await contextQueue.perform {
-                    
-                    contextQueue.delete(MO)
-                    
-                    if contextQueue == self.mainContext {
-                        try self.mainSave()
-                    } else {
-                        try self.backgroundSave()
-                    }
-                }
-            }
+            contextQueue.delete(MO)
             
-            log.debug(message: "deleted MO", function: "DataPC.deleteMO", info: "entity: \(String(describing: entity))")
+            log.debug(message: "deleted MO from context", function: "DataPC.deleteMO", info: "entity: \(String(describing: entity))")
         } catch {
-            log.error(message: "failed to delete MO", function: "DataPC.deleteMO", error: error, info: "entity: \(String(describing: entity))")
+            log.error(message: "failed to delete MO from context", function: "DataPC.deleteMO", error: error, info: "entity: \(String(describing: entity))")
             throw error
         }
     }
@@ -61,60 +38,30 @@ extension DataPC {
     public func deleteMOs<T: NSManagedObject>(
         entity: T.Type,
         queue: String = "background",
-        useSync: Bool = false,
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
         datePredicates: [DatePredicate] = [],
         fetchLimit: Int? = nil,
-        sortKey: String? = nil,
-        sortAscending: Bool = false,
-        errorOnEmpty: Bool = false
-    ) async throws {
+        errOnEmpty: Bool = false
+    ) throws {
             do {
                 let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
                 
-                let MOs = try await self.fetchMOs(
+                let MOs = try self.fetchMOs(
                     entity: entity,
                     queue: queue,
                     predObject: predObject,
                     predObjectNotEqual: predObjectNotEqual,
                     datePredicates: datePredicates,
                     fetchLimit: fetchLimit,
-                    sortKey: sortKey,
-                    sortAscending: sortAscending,
-                    errorOnEmpty: errorOnEmpty
+                    errOnEmpty: errOnEmpty
                 )
                 
                 var MOCount = 0
                 
-                if useSync {
-                    try contextQueue.performAndWait {
-                        
-                        for MO in MOs {
-                            contextQueue.delete(MO)
-                            MOCount += 1
-                        }
-                        
-                        if contextQueue == self.mainContext {
-                            try self.mainSave()
-                        } else {
-                            try self.backgroundSave()
-                        }
-                    }
-                } else {
-                    try await contextQueue.perform {
-                        
-                        for MO in MOs {
-                            contextQueue.delete(MO)
-                            MOCount += 1
-                        }
-                        
-                        if contextQueue == self.mainContext {
-                            try self.mainSave()
-                        } else {
-                            try self.backgroundSave()
-                        }
-                    }
+                for MO in MOs {
+                    contextQueue.delete(MO)
+                    MOCount += 1
                 }
             
             log.debug(message: "deleted MOs", function: "DataPC.deleteMOs", info: "entity: \(String(describing: entity)), deleted: \(MOCount)")

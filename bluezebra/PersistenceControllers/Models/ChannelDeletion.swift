@@ -16,20 +16,20 @@ struct SChannelDeletion {
     var name: String
     var icon: String
     var nUsers: Int16
-    var toDeleteUIDs: String?
+    var toDeleteUIDs: String
     var isOrigin: Bool
     var remoteDeletedDate: Date?
 }
 
 class ChannelDeletion: NSManagedObject {
-    @NSManaged var deletionID: UUID?
-    @NSManaged var channelType: String?
-    @NSManaged var deletionDate: Date?
-    @NSManaged var type: String?
-    @NSManaged var name: String?
-    @NSManaged var icon: String?
+    @NSManaged var deletionID: UUID
+    @NSManaged var channelType: String
+    @NSManaged var deletionDate: Date
+    @NSManaged var type: String
+    @NSManaged var name: String
+    @NSManaged var icon: String
     @NSManaged var nUsers: Int16
-    @NSManaged var toDeleteUIDs: String?
+    @NSManaged var toDeleteUIDs: String
     @NSManaged var isOrigin: Bool
     @NSManaged var remoteDeletedDate: Date?
 }
@@ -37,21 +37,12 @@ class ChannelDeletion: NSManagedObject {
 extension ChannelDeletion: ToSafeObject {
     
     func safeObject() throws -> SChannelDeletion {
-        guard let deletionID = self.deletionID,
-              let channelType = self.channelType,
-              let deletionDate = self.deletionDate,
-              let type = self.type,
-              let name = self.name,
-              let icon = self.icon else {
-            throw PError.safeMapError(err: "Channel Deletion required property(s) nil")
-        }
-        
-        return SChannelDeletion(deletionID: deletionID,
-                                channelType: channelType,
-                                deletionDate: deletionDate,
-                                type: type,
-                                name: name,
-                                icon: icon,
+        return SChannelDeletion(deletionID: self.deletionID,
+                                channelType: self.channelType,
+                                deletionDate: self.deletionDate,
+                                type: self.type,
+                                name: self.name,
+                                icon: self.icon,
                                 nUsers: self.nUsers,
                                 toDeleteUIDs: self.toDeleteUIDs,
                                 isOrigin: self.isOrigin,

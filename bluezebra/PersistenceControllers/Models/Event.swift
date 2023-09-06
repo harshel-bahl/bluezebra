@@ -9,39 +9,28 @@ import Foundation
 import CoreData
 
 struct SEvent {
-    let eventID: String
+    let eventID: UUID
     let eventName: String
     let date: Date
-    let uID: String
-    let attempts: Int16
+    let recUID: UUID
     let packet: Data?
 }
 
 class Event: NSManagedObject {
-    @NSManaged var eventID: String?
-    @NSManaged var eventName: String?
-    @NSManaged var date: Date?
-    @NSManaged var uID: String?
-    @NSManaged var attempts: Int16
+    @NSManaged var eventID: UUID
+    @NSManaged var eventName: String
+    @NSManaged var date: Date
+    @NSManaged var recUID: UUID
     @NSManaged var packet: Data?
 }
 
 extension Event: ToSafeObject {
     
     func safeObject() throws -> SEvent {
-        
-        guard let eventID = self.eventID,
-              let eventName = self.eventName,
-              let date = self.date,
-              let uID = self.uID else {
-            throw PError.safeMapError()
-        }
-        
-        return SEvent(eventID: eventID,
-                      eventName: eventName,
-                      date: date,
-                      uID: uID,
-                      attempts: self.attempts,
+        return SEvent(eventID: self.eventID,
+                      eventName: self.eventName,
+                      date: self.date,
+                      recUID: self.recUID,
                       packet: self.packet)
     }
 }

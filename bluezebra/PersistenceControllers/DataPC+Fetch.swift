@@ -17,13 +17,13 @@ extension DataPC {
         var date: Date
         var isAbove: Bool
     }
-
+    
     internal func createDatePredicate(_ datePredicate: DatePredicate) -> NSPredicate {
         let comparison = datePredicate.isAbove ? ">=" : "<="
         let predicateFormat = "\(datePredicate.key) \(comparison) %@"
         return NSPredicate(format: predicateFormat, argumentArray: [datePredicate.date])
     }
-
+    
     internal func createPredicate(_ predObject: [String: Any], comparison: String) throws -> NSPredicate {
         
         let subpredicates = try predObject.map { key, value -> NSPredicate in
@@ -52,31 +52,33 @@ extension DataPC {
         queue: String = "main",
         predObject: [String: Any] = [:],
         predObjectNotEqual: [String: Any] = [:],
-        errOnMultiple: Bool = true
-    ) async throws -> T {
+        errOnMultiple: Bool = true,
+        prefetchKeyPaths: [String]? = nil
+    ) throws -> T {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let MOs = try await contextQueue.perform {
-                
-                let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
-                
-                var predicates: [NSPredicate] = []
-                
-                if !predObject.isEmpty {
-                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
-                }
-                
-                if !predObjectNotEqual.isEmpty {
-                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
-                }
-                
-                if !predicates.isEmpty {
-                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-                }
-                
-                return try contextQueue.fetch(fetchRequest)
+            let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try self.createPredicate(predObject, comparison: "=="))
             }
+            
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
+            if let prefetchKeyPaths = prefetchKeyPaths {
+                fetchRequest.relationshipKeyPathsForPrefetching = prefetchKeyPaths
+            }
+            
+            let MOs = try contextQueue.fetch(fetchRequest)
             
             if MOs.count > 1 && errOnMultiple { throw PError.multipleRecords() }
             
@@ -90,7 +92,7 @@ extension DataPC {
             throw error
         }
     }
-
+    
     public func fetchMOs<T1: NSManagedObject>(
         entity: T1.Type,
         queue: String = "main",
@@ -100,41 +102,48 @@ extension DataPC {
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
         sortAscending: Bool = false,
-        errorOnEmpty: Bool = false
-    ) async throws -> [T1] {
+        prefetchKeyPaths: [String]? = nil,
+        batchSize: Int? = nil,
+        errOnEmpty: Bool = false
+    ) throws -> [T1] {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let MOs = try await contextQueue.perform {
-                
-                let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
-                
-                var predicates: [NSPredicate] = []
-                
-                if !predObject.isEmpty {
-                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
-                }
-                
-                if !predObjectNotEqual.isEmpty {
-                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
-                }
-                
-                predicates += datePredicates.map { self.createDatePredicate($0) }
-                
-                if !predicates.isEmpty {
-                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-                }
-                
-                fetchRequest.fetchLimit = fetchLimit ?? 0
-                
-                if let sortKey = sortKey {
-                    fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-                }
-                
-                return try contextQueue.fetch(fetchRequest)
+            let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
+            
+            var predicates: [NSPredicate] = []
+            
+            if !predObject.isEmpty {
+                predicates.append(try self.createPredicate(predObject, comparison: "=="))
             }
             
-            if errorOnEmpty {
+            if !predObjectNotEqual.isEmpty {
+                predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
+            }
+            
+            predicates += datePredicates.map { self.createDatePredicate($0) }
+            
+            if !predicates.isEmpty {
+                fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            }
+            
+            fetchRequest.fetchLimit = fetchLimit ?? 0
+            
+            if let sortKey = sortKey {
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
+            }
+            
+            if let prefetchKeyPaths = prefetchKeyPaths {
+                fetchRequest.relationshipKeyPathsForPrefetching = prefetchKeyPaths
+            }
+
+            if let batchSize = batchSize {
+                fetchRequest.fetchBatchSize = batchSize
+            }
+            
+            let MOs = try contextQueue.fetch(fetchRequest)
+            
+            if errOnEmpty {
                 guard MOs.isEmpty else { throw PError.noRecordExists() }
             }
             
@@ -147,117 +156,17 @@ extension DataPC {
         }
     }
     
-    public func fetchMOSync<T: NSManagedObject>(
-        entity: T.Type,
-        queue: String = "main",
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        errOnMultiple: Bool = true
-    ) throws -> T {
-        do {
-            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
-            
-            let MOs = try contextQueue.performAndWait {
-                
-                let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entity))
-                
-                var predicates: [NSPredicate] = []
-                
-                if !predObject.isEmpty {
-                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
-                }
-                
-                if !predObjectNotEqual.isEmpty {
-                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
-                }
-                
-                if !predicates.isEmpty {
-                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-                }
-                
-                return try contextQueue.fetch(fetchRequest)
-            }
-            
-            if MOs.count > 1 && errOnMultiple { throw PError.multipleRecords() }
-            
-            guard let MO = MOs.first else { throw PError.noRecordExists() }
-            
-            log.debug(message: "fetched MO", function: "DataPC.fetchMOSync", info: "entity: \(String(describing: entity))")
-            
-            return MO
-        } catch {
-            log.error(message: "failed to fetch MO", function: "DataPC.fetchMOSync", error: error, info: "entity: \(String(describing: entity))")
-            throw error
-        }
-    }
-    
-    public func fetchMOsSync<T1: NSManagedObject>(
-        entity: T1.Type,
-        queue: String = "main",
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
-        datePredicates: [DatePredicate] = [],
-        fetchLimit: Int? = nil,
-        sortKey: String? = nil,
-        sortAscending: Bool = false,
-        errorOnEmpty: Bool = false
-    ) throws -> [T1] {
-        do {
-            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
-            
-            let MOs = try contextQueue.performAndWait() {
-                
-                let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
-                
-                var predicates: [NSPredicate] = []
-                
-                if !predObject.isEmpty {
-                    predicates.append(try self.createPredicate(predObject, comparison: "=="))
-                }
-                
-                if !predObjectNotEqual.isEmpty {
-                    predicates.append(try self.createPredicate(predObjectNotEqual, comparison: "!="))
-                }
-                
-                predicates += datePredicates.map { self.createDatePredicate($0) }
-                
-                if !predicates.isEmpty {
-                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-                }
-                
-                fetchRequest.fetchLimit = fetchLimit ?? 0
-                
-                if let sortKey = sortKey {
-                    fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
-                }
-                
-                return try contextQueue.fetch(fetchRequest)
-            }
-            
-            if errorOnEmpty {
-                guard MOs.isEmpty else { throw PError.noRecordExists() }
-            }
-            
-            log.debug(message: "fetched MOs", function: "DataPC.fetchMOsSync", info: "entity: \(String(describing: entity))")
-            
-            return MOs
-        } catch {
-            log.error(message: "failed to fetch MOs", function: "DataPC.fetchMOsSync", error: error, info: "entity: \(String(describing: entity))")
-            throw error
-        }
-    }
-    
     public func fetchSMO<T1: NSManagedObject & ToSafeObject>(
         entity: T1.Type,
         queue: String = "main",
         predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:]
+        predObjectNotEqual: [String: Any] = [:],
+        errOnMultiple: Bool = true
     ) async throws -> T1.SafeType {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let MOs = try await contextQueue.perform {
-                
+            let SMO = try await contextQueue.perform {
                 let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
                 
                 var predicates: [NSPredicate] = []
@@ -274,18 +183,20 @@ extension DataPC {
                     fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
                 }
                 
-                return try contextQueue.fetch(fetchRequest)
+                let MOs = try contextQueue.fetch(fetchRequest)
+                
+                if MOs.count > 1 && errOnMultiple {
+                    throw PError.multipleRecords()
+                }
+                
+                guard let MO = MOs.first else {
+                    throw PError.noRecordExists()
+                }
+                
+                let SMO = try MO.safeObject()
+                
+                return SMO
             }
-            
-            if MOs.count > 1 {
-                throw PError.multipleRecords()
-            }
-            
-            guard let MO = MOs.first else {
-                throw PError.noRecordExists()
-            }
-            
-            let SMO = try MO.safeObject()
             
             log.debug(message: "fetched SMO", function: "DataPC.fetchSMO", info: "entity: \(String(describing: entity))")
             
@@ -304,13 +215,13 @@ extension DataPC {
         datePredicates: [DatePredicate] = [],
         fetchLimit: Int? = nil,
         sortKey: String? = nil,
-        sortAscending: Bool = false
+        sortAscending: Bool = false,
+        errOnEmpty: Bool = false
     ) async throws -> [T1.SafeType] {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
-            let MOs = try await contextQueue.perform {
-                
+            let SMOs = try await contextQueue.perform {
                 let fetchRequest = NSFetchRequest<T1>(entityName: String(describing: entity))
                 
                 var predicates: [NSPredicate] = []
@@ -335,14 +246,20 @@ extension DataPC {
                     fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortKey, ascending: sortAscending)]
                 }
                 
-                return try contextQueue.fetch(fetchRequest)
+                let MOs = try contextQueue.fetch(fetchRequest)
+                
+                if errOnEmpty {
+                    guard MOs.isEmpty else { throw PError.noRecordExists() }
+                }
+                
+                let SMOs = try MOs.map {
+                    return try $0.safeObject()
+                }
+                
+                return SMOs
             }
             
             log.debug(message: "fetched SMOs", function: "DataPC.fetchSMOs", info: "entity: \(String(describing: entity))")
-            
-            let SMOs = try MOs.map {
-                return try $0.safeObject()
-            }
             
             return SMOs
         } catch {
