@@ -120,6 +120,7 @@ extension DataPC {
     /// - Creates a channel attributed to one userID, so no duplicates
     public func createChannel(channelID: UUID,
                               uID: UUID,
+                              channelType: String,
                               creationDate: Date,
                               lastMessageDate: Date? = nil,
                               remoteUser: RemoteUser? = nil) throws -> Channel {
@@ -133,6 +134,7 @@ extension DataPC {
             let MO = Channel(context: self.backgroundContext)
             MO.channelID = channelID
             MO.uID = uID
+            MO.channelType = channelType
             MO.creationDate = creationDate
             MO.lastMessageDate = lastMessageDate
             
@@ -191,7 +193,7 @@ extension DataPC {
                          name: String,
                          icon: String,
                          nUsers: Int16,
-                         toDeleteUIDs: [String]? = nil,
+                         toDeleteUIDs: [UUID]? = nil,
                          isOrigin: Bool) throws -> ChannelDeletion {
         do {
             let checkMO = try? fetchMO(entity: ChannelDeletion.self,
@@ -208,7 +210,7 @@ extension DataPC {
                 MO.name = name
                 MO.icon = icon
                 MO.nUsers = nUsers
-                if let toDeleteUIDs = toDeleteUIDs { MO.toDeleteUIDs = toDeleteUIDs.joined(separator: ",") }
+            if let toDeleteUIDs = toDeleteUIDs { MO.toDeleteUIDs = toDeleteUIDs.map({ $0.uuidString }).joined(separator: ",") }
                 MO.isOrigin = isOrigin
             
             log.debug(message: "created CD", function: "DataPC.createCD", info: "deletionID: \(deletionID)")
@@ -228,13 +230,15 @@ extension DataPC {
                               date: Date,
                               isSender: Bool,
                               message: String? = nil,
-                              imageIDs: [String]? = nil,
-                              fileIDs: [String]? = nil,
-                              sent: [String]? = nil,
-                              delivered: [String]? = nil,
-                              read: [String]? = nil,
+                              imageIDs: [UUID]? = nil,
+                              fileIDs: [UUID]? = nil,
+                              sent: [UUID]? = nil,
+                              delivered: [UUID]? = nil,
+                              read: [UUID]? = nil,
                               localDeleted: Bool = false,
-                              remoteDeleted: [String]? = nil) throws -> Message {
+                              remoteDeleted: [UUID]? = nil,
+                              channel: Channel? = nil,
+                              remoteUser: RemoteUser? = nil) throws -> Message {
         do {
             let checkMO = try? fetchMO(entity: Message.self,
                                        queue: "background",
@@ -249,13 +253,21 @@ extension DataPC {
             MO.date = date
             MO.isSender = isSender
             MO.message = message
-            if let imageIDs = imageIDs { MO.imageIDs = imageIDs.joined(separator: ",") }
-            if let fileIDs = fileIDs { MO.fileIDs = fileIDs.joined(separator: ",") }
-            if let sent = sent { MO.sent = sent.joined(separator: ",") }
-            if let delivered = delivered { MO.delivered = delivered.joined(separator: ",") }
-            if let read = read { MO.read = read.joined(separator: ",") }
+            if let imageIDs = imageIDs { MO.imageIDs = imageIDs.map({ $0.uuidString }).joined(separator: ",") }
+            if let fileIDs = fileIDs { MO.fileIDs = fileIDs.map({ $0.uuidString }).joined(separator: ",") }
+            if let sent = sent { MO.sent = sent.map({ $0.uuidString }).joined(separator: ",") }
+            if let delivered = delivered { MO.delivered = delivered.map({ $0.uuidString }).joined(separator: ",") }
+            if let read = read { MO.read = read.map({ $0.uuidString }).joined(separator: ",") }
             MO.localDeleted = localDeleted
-            if let remoteDeleted = remoteDeleted { MO.remoteDeleted = remoteDeleted.joined(separator: ",") }
+            if let remoteDeleted = remoteDeleted { MO.remoteDeleted = remoteDeleted.map({ $0.uuidString }).joined(separator: ",") }
+            
+            if let channel = channel {
+                MO.channel = channel
+            }
+            
+            if let remoteUser = remoteUser {
+                MO.remoteUser = remoteUser
+            }
             
             log.debug(message: "created message", function: "DataPC.createMessage", info: "messageID: \(messageID)")
             

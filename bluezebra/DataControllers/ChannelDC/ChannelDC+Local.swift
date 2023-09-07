@@ -12,15 +12,25 @@ extension ChannelDC {
     
     /// Local Create Functions
     ///
-    func createChannel(channelID: String = UUID().uuidString,
-                       UID: String,
+    func createRUChannel(channelID: UUID = UUID(),
+                       uID: UUID,
                        creationDate: Date = DateU.shared.currDT) async throws {
         
-        let SChannel = try await DataPC.shared.createChannel(channelID: channelID,
-                                                             UID: UID,
-                                                             creationDate: creationDate)
+        let SChannel = try await DataPC.shared.backgroundPerformSync() {
+            
+            let RUMO = try DataPC.shared.fetchMO(entity: RemoteUser.self,
+                                                       predObject: ["uID": uID])
+            
+            let channelMO = try DataPC.shared.createChannel(channelID: channelID,
+                                                            uID: uID,
+                                                            channelType: "RU",
+                                                            creationDate: creationDate,
+            remoteUser: RUMO)
+            
+            return try channelMO.safeObject()
+        }
         
-        try await DataPC.shared.createChannelDir(channelID: channelID)
+        try await DataPC.shared.createChannelDir(channelID: channelID.uuidString)
         
         self.syncChannel(channel: SChannel)
     }
@@ -73,10 +83,9 @@ extension ChannelDC {
             } else {
                 guard let earliestDate = self.RUChannels.last?.creationDate else { return }
                 
-                let predicate = NSPredicate(format: "channelID != %@ AND lastMessageDate < %@", argumentArray: ["personal", earliestDate])
-                
                 let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
-                                                             customPredicate: predicate,
+                                                             predObjectNotEqual: ["channelID": "personal"],
+                                                             datePredicates: [DataPC.DatePredicate(key: "lastMessageDate", date: earliestDate, isAbove: false)],
                                                              fetchLimit: fetchLimit,
                                                              sortKey: "lastMessageDate")
                 
@@ -106,10 +115,8 @@ extension ChannelDC {
             
             let earliestDate = earliestCR.date
             
-            let predicate = NSPredicate(format: "date < %@", argumentArray: [earliestDate])
-            
             let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelRequest.self,
-                                                         customPredicate: predicate,
+                                                         datePredicates: [DataPC.DatePredicate(key: "date", date: earliestDate, isAbove: false)],
                                                          fetchLimit: fetchLimit,
                                                          sortKey: "date")
             
@@ -137,10 +144,8 @@ extension ChannelDC {
             
             let earliestDate = earliestCD.deletionDate
             
-            let predicate = NSPredicate(format: "deletionDate < %@", argumentArray: [earliestDate])
-            
             let SMOs = try await DataPC.shared.fetchSMOs(entity: ChannelDeletion.self,
-                                                         customPredicate: predicate,
+                                                         datePredicates: [DataPC.DatePredicate(key: "deletionDate", date: earliestDate, isAbove: false)],
                                                          fetchLimit: fetchLimit,
                                                          sortKey: "deletionDate")
             
@@ -259,14 +264,14 @@ extension ChannelDC {
     
     func syncRU(RU: SRemoteUser) {
         DispatchQueue.main.async {
-            self.RUs[RU.UID] = RU
+            self.RUs[RU.uID] = RU
         }
     }
     
     
     /// Local Remove Functions
     ///
-    func removeChannel(channelID: String) {
+    func removeChannel(channelID: UUID) {
         DispatchQueue.main.async {
             let channelIndex = self.RUChannels.firstIndex(where: { $0.channelID == channelID })
             
@@ -276,7 +281,7 @@ extension ChannelDC {
         }
     }
     
-    func removeCR(requestID: String) {
+    func removeCR(requestID: UUID) {
         DispatchQueue.main.async {
             let CRIndex = self.CRs.firstIndex(where: { $0.requestID == requestID })
             
@@ -286,7 +291,7 @@ extension ChannelDC {
         }
     }
     
-    func removeCD(deletionID: String) {
+    func removeCD(deletionID: UUID) {
         DispatchQueue.main.async {
             let CDIndex = self.CDs.firstIndex(where: { $0.deletionID == deletionID })
             
@@ -299,45 +304,53 @@ extension ChannelDC {
     
     /// Local Delete Functions
     ///
-    func deleteRU(UID: String) async throws {
-        try await DataPC.shared.deleteMO(entity: RemoteUser.self,
-                                         predObject: ["userID": UID])
+    func deleteRU(uID: UUID) async throws {
+        try await DataPC.shared.backgroundPerformSync() {
+            try DataPC.shared.deleteMO(entity: RemoteUser.self,
+                                             predObject: ["uID": uID])
+        }
     }
     
-    func deleteChannel(channelID: String) async throws {
+    func deleteChannel(channelID: UUID) async throws {
         self.removeChannel(channelID: channelID)
         
-            try await DataPC.shared.deleteMO(entity: RemoteUser.self,
-                                             predObject: ["channelID": channelID])
+        try await DataPC.shared.backgroundPerformSync() {
+            try DataPC.shared.deleteMO(entity: Channel.self,
+                                       predObject: ["channelID": channelID])
+        }
         
-        try await DataPC.shared.removeDir(dir: channelID)
+        try await DataPC.shared.removeDir(dir: channelID.uuidString)
     }
     
-    func deleteCR(requestID: String) async throws {
+    func deleteCR(requestID: UUID) async throws {
         self.removeCR(requestID: requestID)
         
-            try await DataPC.shared.deleteMO(entity: RemoteUser.self,
-                                             predObject: ["requestID": requestID])
+        try await DataPC.shared.backgroundPerformSync() {
+            try DataPC.shared.deleteMO(entity: ChannelRequest.self,
+                                       predObject: ["requestID": requestID])
+        }
     }
     
-    func deleteCD(deletionID: String) async throws {
+    func deleteCD(deletionID: UUID) async throws {
         self.removeCD(deletionID: deletionID)
         
-            try await DataPC.shared.deleteMO(entity: RemoteUser.self,
-                                             predObject: ["deletionID": deletionID])
+        try await DataPC.shared.backgroundPerformSync() {
+            try DataPC.shared.deleteMO(entity: ChannelDeletion.self,
+                                       predObject: ["deletionID": deletionID])
+        }
     }
     
     
     /// Local Fetch Functions
     ///
-    func fetchRULocally(UID: String) async throws -> SRemoteUser {
+    func fetchRULocally(uID: UUID) async throws -> SRemoteUser {
         
         let SMO = try await DataPC.shared.fetchSMO(entity: RemoteUser.self,
-                                                   predObject: ["userID": UID])
+                                                   predObject: ["uID": uID])
         return SMO
     }
     
-    func fetchChannelLocally(channelID: String) async throws -> SChannel {
+    func fetchChannelLocally(channelID: UUID) async throws -> SChannel {
         
         let SMO = try await DataPC.shared.fetchSMO(entity: Channel.self,
                                                    predObject: ["channelID": channelID])
@@ -345,7 +358,7 @@ extension ChannelDC {
         return SMO
     }
     
-    func fetchCRLocally(channelID: String) async throws -> SChannelRequest {
+    func fetchCRLocally(channelID: UUID) async throws -> SChannelRequest {
         
         let SMO = try await DataPC.shared.fetchSMO(entity: ChannelRequest.self,
                                                    predObject: ["channelID": channelID])
@@ -353,7 +366,7 @@ extension ChannelDC {
         return SMO
     }
     
-    func fetchCDLocally(deletionID: String) async throws -> SChannelDeletion {
+    func fetchCDLocally(deletionID: UUID) async throws -> SChannelDeletion {
         
             let SMO = try await DataPC.shared.fetchSMO(entity: ChannelDeletion.self,
                                                        predObject: ["deletionID": deletionID])
@@ -363,36 +376,40 @@ extension ChannelDC {
     
     /// SMO Fetch Functions
     ///
-    func fetchRUOffOn(UID: String) async throws -> SRemoteUser {
+    func fetchRUOffOn(uID: UUID) async throws -> SRemoteUser {
         
-        if let RU = try? await self.fetchRULocally(UID: UID) {
+        if let RU = try? await self.fetchRULocally(uID: uID) {
             return RU
         } else {
-            let RUPacket = try await self.fetchRU(UID: UID)
+            let RUPacket = try await self.fetchRU(uID: uID)
             
-            let SRU = try await DataPC.shared.createRU(UID: RUPacket.UID,
-                                                       username: RUPacket.username,
-                                                       avatar: RUPacket.avatar,
-                                                       creationDate: try DateU.shared.dateFromStringTZ(RUPacket.creationDate))
+            let SRU = try await DataPC.shared.backgroundPerformSync() {
+                let RUMO = try DataPC.shared.createRU(uID: RUPacket.uID,
+                                           username: RUPacket.username,
+                                           avatar: RUPacket.avatar,
+                                           creationDate: try DateU.shared.dateFromStringTZ(RUPacket.creationDate))
+                
+                return try RUMO.safeObject()
+            }
+            
             return SRU
         }
     }
     
     /// Local Check Functions
     ///
-    func checkChannelDir(channelID: String,
+    func checkChannelDir(channelID: UUID,
                          dirs: [String] = ["images", "files"]) async throws {
         for dir in dirs {
             do {
                 let dirCheck = DataPC.shared.checkDir(dir: dir,
-                                                      intermidDirs: [channelID])
+                                                      intermidDirs: [channelID.uuidString])
                 
-                guard dirCheck else { throw DCError.fileSystemFailure( err: "channelID: \(channelID), dir: \(dir)") }
+                guard dirCheck else { throw DCError.fileSystemFailure( err: "channelID: \(channelID.uuidString), dir: \(dir)") }
                 
             } catch {
-                
                 try await DataPC.shared.createDir(dir: dir,
-                                                  intermidDirs: [channelID])
+                                                  intermidDirs: [channelID.uuidString])
             }
         }
     }
@@ -400,118 +417,132 @@ extension ChannelDC {
     
     /// Local Event Functions
     ///
-    func clearChannelData(channelID: String,
+    func clearChannelData(channel: SChannel,
                           RU: SRemoteUser? = nil,
-                          deletionID: String = UUID().uuidString,
+                          deletionID: UUID = UUID(),
                           deletionDate: Date = DateU.shared.currDT,
                           isOrigin: Bool) async throws -> SChannelDeletion {
         
-        if channelID == "personal" {
-            try await MessageDC.shared.clearChannelMessages(channelID: channelID)
+        if channel.channelType == "personal" {
+            try await MessageDC.shared.clearChannelMessages(channelID: channel.channelID)
             
-            let SCD = try await DataPC.shared.createCD(deletionID: deletionID,
-                                                       channelType: "personal",
-                                                       deletionDate: deletionDate,
-                                                       type: "clear",
-                                                       name: UserDC.shared.userdata!.UID,
-                                                       icon: UserDC.shared.userdata!.UID,
-                                                       nUsers: 1,
-                                                       isOrigin: isOrigin)
+            let SCD = try await DataPC.shared.backgroundPerformSync() {
+                let CDMO = try DataPC.shared.createCD(deletionID: deletionID,
+                                                      channelType: channel.channelType,
+                                                     deletionDate: deletionDate,
+                                                     type: "clear",
+                                                     name: UserDC.shared.userdata!.username,
+                                                     icon: UserDC.shared.userdata!.avatar,
+                                                     nUsers: 1,
+                                                     isOrigin: isOrigin)
+                return try CDMO.safeObject()
+            }
+            
             return SCD
         } else if let RU = RU {
-            try await MessageDC.shared.clearChannelMessages(channelID: channelID)
+            try await MessageDC.shared.clearChannelMessages(channelID: channel.channelID)
             
-            let SCD = try await DataPC.shared.createCD(deletionID: deletionID,
-                                                       channelType: "RU",
-                                                       deletionDate: deletionDate,
-                                                       type: "clear",
-                                                       name: RU.username,
-                                                       icon: RU.avatar,
-                                                       nUsers: 1,
-                                                       toDeleteUIDs: [RU.UID],
-                                                       isOrigin: isOrigin)
+            let SCD = try await DataPC.shared.backgroundPerformSync() {
+                let CDMO = try DataPC.shared.createCD(deletionID: deletionID,
+                                                      channelType: channel.channelType,
+                                                     deletionDate: deletionDate,
+                                                     type: "clear",
+                                                     name: RU.username,
+                                                     icon: RU.avatar,
+                                                     nUsers: 1,
+                                                      toDeleteUIDs: [RU.uID],
+                                                     isOrigin: isOrigin)
+                return try CDMO.safeObject()
+            }
+            
             return SCD
         } else {
             throw DCError.nilError(err: "RU is nil for non-personal channel")
         }
     }
     
-    func deleteChannelData(channelID: String,
+    func deleteChannelData(channel: SChannel,
                            RU: SRemoteUser,
-                           deletionID: String = UUID().uuidString,
+                           deletionID: UUID = UUID(),
                            deletionDate: Date = DateU.shared.currDT,
                            isOrigin: Bool) async throws -> SChannelDeletion {
         
-        if channelID != "personal" {
-            try await self.deleteChannel(channelID: channelID)
+        if channel.channelType != "personal" {
+            try await self.deleteChannel(channelID: channel.channelID)
             
-            try await MessageDC.shared.deleteChannelMessages(channelID: channelID)
+            try await MessageDC.shared.deleteChannelMessages(channelID: channel.channelID)
             
-            if let RU = try? await self.fetchRULocally(UID: RU.UID) {
-                try await self.deleteRU(UID: RU.UID)
+            if let RU = try? await self.fetchRULocally(uID: RU.uID) {
+                try await self.deleteRU(uID: RU.uID)
             }
             
-            let SCD = try await DataPC.shared.createCD(deletionID: deletionID,
-                                                       channelType: "RU",
-                                                       deletionDate: deletionDate,
-                                                       type: "delete",
-                                                       name: RU.username,
-                                                       icon: RU.avatar,
-                                                       nUsers: 1,
-                                                       toDeleteUIDs: [RU.UID],
-                                                       isOrigin: isOrigin)
+            let SCD = try await DataPC.shared.backgroundPerformSync() {
+                let CDMO = try DataPC.shared.createCD(deletionID: deletionID,
+                                                      channelType: channel.channelType,
+                                                     deletionDate: deletionDate,
+                                                     type: "delete",
+                                                     name: RU.username,
+                                                     icon: RU.avatar,
+                                                     nUsers: 1,
+                                                      toDeleteUIDs: [RU.uID],
+                                                     isOrigin: isOrigin)
+                return try CDMO.safeObject()
+            }
+            
             return SCD
         } else {
             throw DCError.invalidRequest(err: "cannot delete personal channel")
         }
     }
     
-    func deleteUserTrace(UID: String,
+    func deleteUserTrace(uID: UUID,
                          deletionDate: Date = DateU.shared.currDT) async throws {
         
         let RU: SRemoteUser?
         
         do {
-            RU = try await self.fetchRUOffOn(UID: UID)
+            RU = try await self.fetchRUOffOn(uID: uID)
         } catch {
             RU = nil
         }
         
         if let RU = RU {
             if let channel = try? await DataPC.shared.fetchSMO(entity: Channel.self,
-                                                               predObject: ["userID": UID]) {
+                                                               predObject: ["uID": uID]) {
                 
-                let SCD = try await self.deleteChannelData(channelID: channel.channelID,
+                let SCD = try await self.deleteChannelData(channel: channel,
                                                            RU: RU,
                                                            deletionDate: deletionDate,
                                                            isOrigin: false)
                 self.syncCD(CD: SCD)
             }
             
-            try? await self.deleteRU(UID: RU.UID)
+            try? await self.deleteRU(uID: RU.uID)
         } else {
             if let channel = try? await DataPC.shared.fetchSMO(entity: Channel.self,
-                                                               predObject: ["UID": UID]) {
+                                                               predObject: ["uID": uID]) {
                 
                 try await self.deleteChannel(channelID: channel.channelID)
                 
                 try await MessageDC.shared.deleteChannelMessages(channelID: channel.channelID)
             }
             
-            try? await DataPC.shared.deleteMO(entity: ChannelRequest.self,
-                                              predObject: ["UID": UID])
+            try await DataPC.shared.backgroundPerformSync() {
+                try? DataPC.shared.deleteMO(entity: ChannelRequest.self,
+                                                  predObject: ["uID": uID])
+            }
         }
     }
     
     func offline() {
         DispatchQueue.main.async {
-            self.onlineUsers = [String: Bool]()
+            self.onlineUsers = [UUID: Bool]()
         }
     }
     
     func shutdown() {
         DispatchQueue.main.async {
-            self.onlineUsers = [String: Bool]()
+            self.onlineUsers = [UUID: Bool]()
         }
     }
     
@@ -521,7 +552,7 @@ extension ChannelDC {
             
             self.RUChannels = [SChannel]()
             
-            self.onlineUsers = [String: Bool]()
+            self.onlineUsers = [UUID: Bool]()
             
             self.CRs = [SChannelRequest]()
             self.CDs = [SChannelDeletion]()

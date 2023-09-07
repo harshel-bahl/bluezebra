@@ -14,7 +14,7 @@ extension UserDC {
     ///
     func pinAuth(pin: String) throws -> Bool {
         
-        guard let storedPin = self.userSettings?.pin else { throw DCError.nilError(err: "userSettings is nil") }
+        let storedPin = try DataPC.shared.retrievePassword(account: "userPin")
         
         if storedPin == pin {
             return true
@@ -72,9 +72,12 @@ extension UserDC {
                 if success {
                     Task {
                         do {
-                            let userSettings = try await DataPC.shared.updateMO(entity: Settings.self,
-                                                                                property: ["biometricSetup"],
-                                                                                value: ["active"])
+                            let userSettings = try await DataPC.shared.backgroundPerformSync() {
+                                let MO = try DataPC.shared.updateMO(entity: Settings.self,
+                                                                    property: ["biometricSetup"],
+                                                                    value: ["active"])
+                                return try MO.safeObject()
+                            }
                             
                             DispatchQueue.main.async {
                                 self.userSettings = userSettings
@@ -92,9 +95,13 @@ extension UserDC {
         } else {
             Task {
                 do {
-                    let userSettings = try await DataPC.shared.updateMO(entity: Settings.self,
-                                                                        property: ["biometricSetup"],
-                                                                        value: ["inactive"])
+                    let userSettings = try await DataPC.shared.backgroundPerformSync() {
+                        let MO = try DataPC.shared.updateMO(entity: Settings.self,
+                                                            property: ["biometricSetup"],
+                                                            value: ["inactive"])
+                        return try MO.safeObject()
+                    }
+                    
                     DispatchQueue.main.async {
                         self.userSettings = userSettings
                     }
@@ -111,20 +118,19 @@ extension UserDC {
     ///
     func cancelBiometricAuthSetup() async throws {
         
-        guard let userSettings = self.userSettings else {
-            throw DCError.nilError(err: "userSettings is nil")
-        }
-        
-        guard userSettings.biometricSetup == "active" else {
+        guard self.userSettings?.biometricSetup == "active" else {
             throw DCError.authFailure(err: "biometrics is not active")
         }
         
-        let SMO = try await DataPC.shared.updateMO(entity: Settings.self,
-                                                   property: ["biometricSetup"],
-                                                   value: ["inactive"])
+        let userSettings = try await DataPC.shared.backgroundPerformSync() {
+            let MO = try DataPC.shared.updateMO(entity: Settings.self,
+                                                property: ["biometricSetup"],
+                                                value: ["inactive"])
+            return try MO.safeObject()
+        }
         
         DispatchQueue.main.async {
-            self.userSettings = SMO
+            self.userSettings = userSettings
         }
     }
 }

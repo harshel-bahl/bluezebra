@@ -9,15 +9,17 @@ import Foundation
 import CoreData
 
 struct SChannel {
-    var channelID: UUID
-    var uID: UUID
-    var creationDate: Date
-    var lastMessageDate: Date?
+    let channelID: UUID
+    let uID: UUID
+    let channelType: String
+    let creationDate: Date
+    let lastMessageDate: Date?
 }
 
 class Channel: NSManagedObject {
     @NSManaged var channelID: UUID
     @NSManaged var uID: UUID
+    @NSManaged var channelType: String
     @NSManaged var creationDate: Date
     @NSManaged var lastMessageDate: Date?
     
@@ -30,6 +32,7 @@ extension Channel: ToSafeObject {
     func safeObject() throws -> SChannel {
         return SChannel(channelID: self.channelID,
                         uID: self.uID,
+                        channelType: self.channelType,
                         creationDate: self.creationDate,
                         lastMessageDate: self.lastMessageDate)
     }

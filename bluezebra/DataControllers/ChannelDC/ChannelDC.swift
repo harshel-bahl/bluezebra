@@ -28,17 +28,14 @@ class ChannelDC: ObservableObject {
     @Published var RUChannels = [SChannel]() {
         didSet {
             for channel in RUChannels {
-                let channelID = channel.channelID
                 
-                if !MessageDC.shared.channelMessages.keys.contains(channelID) {
-                    MessageDC.shared.channelMessages[channelID] = [SMessage]()
+                if !MessageDC.shared.channelMessages.keys.contains(channel.channelID) {
+                    MessageDC.shared.channelMessages[channel.channelID] = [SMessage]()
                 }
                 
-                let UID = channel.UID
-                
-                if !self.RUs.keys.contains(UID) {
+                if !self.RUs.keys.contains(channel.uID) {
                     Task {
-                        if let SRU = try? await self.fetchRUOffOn(UID: UID) {
+                        if let SRU = try? await self.fetchRUOffOn(uID: channel.uID) {
                             self.syncRU(RU: SRU)
                         }
                     }
@@ -48,18 +45,17 @@ class ChannelDC: ObservableObject {
     }
     
     /// onlineUsers: [userID: online true/false]
-    @Published var onlineUsers = [String: Bool]()
+    @Published var onlineUsers = [UUID: Bool]()
 
     /// channelRequests:
     /// - uses an array since it is fetched in order of date
     @Published var CRs = [SChannelRequest]() {
         didSet {
             for CR in CRs {
-                let UID = CR.UID
                 
-                if !self.RUs.keys.contains(UID) {
+                if !self.RUs.keys.contains(CR.uID) {
                     Task {
-                        if let SRU = try? await self.fetchRUOffOn(UID: UID) {
+                        if let SRU = try? await self.fetchRUOffOn(uID: CR.uID) {
                             self.syncRU(RU: SRU)
                         }
                     }
@@ -74,7 +70,7 @@ class ChannelDC: ObservableObject {
     
     /// RUs
     /// - array is updated to sync with RUChannels and CRs
-    @Published var RUs = [String: SRemoteUser]()
+    @Published var RUs = [UUID: SRemoteUser]()
     
     /// serverRUChannelSync
     /// - checks RUChannel exists with server

@@ -56,11 +56,11 @@ extension UserDC {
         do {
             try checkSocketConnected()
             
-            let (userdata, password, publicKey, userSettings, personalChannel) = try await self.createUserLocally(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
-                                                                                             pin: pin,
-                                                                                             avatar: avatar)
+            let (userdata, userSettings, personalChannel, password, publicKey) = try await self.createUserLocally(username: username.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                                                                  pin: pin,
+                                                                                                                  avatar: avatar)
             
-            let packet = try DataU.shared.jsonEncode(data: UserPacket(UID: userdata.UID,
+            let packet = try DataU.shared.jsonEncode(data: UserPacket(uID: userdata.uID.uuidString,
                                                                       username: userdata.username,
                                                                       password: password,
                                                                       publicKey: publicKey,
@@ -87,7 +87,7 @@ extension UserDC {
                     }
             }
             
-            log.debug(message: "successfully created user", function: "UserDC.createUser", event: "createUser", info: "UID: \(userdata.UID)")
+            log.debug(message: "successfully created user locally and in server", function: "UserDC.createUser", event: "createUser", info: "uID: \(userdata.uID)")
             
             return (userdata, userSettings, personalChannel)
         } catch {
@@ -107,13 +107,13 @@ extension UserDC {
             
             try checkUserConnected()
             
-            guard let UID = self.userdata?.UID else {
+            guard let uID = self.userdata?.uID else {
                 throw DCError.nilError(err: "userdata is nil")
             }
             
             try await withCheckedThrowingContinuation() { continuation in
                 
-                SocketController.shared.clientSocket.emitWithAck("deleteUser", ["UID": UID] as [String : Any])
+                SocketController.shared.clientSocket.emitWithAck("deleteUser", ["uID": uID] as [String : Any])
                     .timingOut(after: 1) { data in
                         do {
                             if let queryStatus = data.first as? String,
@@ -134,7 +134,7 @@ extension UserDC {
             
             try await self.deleteUserLocally()
             
-            log.debug(message: "successfully deleted user", function: "UserDC.deleteUser", event: "deleteUser")
+            log.debug(message: "successfully deleted user locally and in server", function: "UserDC.deleteUser", event: "deleteUser")
         } catch {
             log.error(message: "failed to delete user", function: "UserDC.deleteUser", event: "deleteUser", error: error)
             throw error
@@ -147,12 +147,12 @@ extension UserDC {
         do {
             try checkSocketConnected()
             
-            guard let UID = self.userdata?.UID else { throw DCError.nilError( err: "userdata is nil") }
+            guard let uIDString = self.userdata?.uID.uuidString else { throw DCError.nilError( err: "userdata is nil") }
             
-            let password = try DataPC.shared.retrievePassword(account: "userPassword")
+            let password = try DataPC.shared.retrievePassword(account: "authPassword")
             
             try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("connectUser", ["UID": UID, "password": password] as [String : String])
+                SocketController.shared.clientSocket.emitWithAck("connectUser", ["uID": uIDString, "password": password] as [String : String])
                     .timingOut(after: 1, callback: { data in
                         do {
                             if let queryStatus = data.first as? String,
@@ -160,6 +160,8 @@ extension UserDC {
                                 throw DCError.serverTimeOut()
                             } else if let queryStatus = data.first as? String,
                                       queryStatus == "user does not exist" {
+                                
+                                log.debug(message: "user doesn't exist in server", function: "UserDC.connectUser", event: "connectUser")
                                 
                                 Task {
                                     try? await self.deleteUserLocally()

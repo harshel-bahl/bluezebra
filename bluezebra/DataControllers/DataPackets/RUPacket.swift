@@ -8,7 +8,7 @@
 import Foundation
 
 struct RUPacket: Codable {
-    var UID: String
+    var uID: String
     var username: String
     var avatar: String
     var creationDate: String

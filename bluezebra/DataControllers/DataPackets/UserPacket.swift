@@ -8,7 +8,7 @@
 import Foundation
 
 struct UserPacket: Codable {
-    let UID: String
+    let uID: String
     let username: String
     let password: String
     let publicKey: Data
