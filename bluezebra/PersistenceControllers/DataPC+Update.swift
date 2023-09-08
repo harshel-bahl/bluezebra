@@ -12,20 +12,27 @@ extension DataPC {
     
     public func updateMO<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "background",
+        queue: String = "main",
         property: [String],
         value: [Any?],
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:]
+        predDicEqual: [String: Any] = [:],
+        predDicNotEqual: [String: Any] = [:],
+        MODicEqual: [String: NSManagedObject] = [:],
+        MODicNotEqual: [String: NSManagedObject] = [:],
+        compoundPredicateType: String = "AND",
+        prefetchKeyPaths: [String]? = nil
     ) throws -> T {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
-            
+        
             let MO = try self.fetchMO(entity: entity,
-                                      queue: queue,
-                                      predObject: predObject,
-                                      predObjectNotEqual: predObjectNotEqual,
-                                      errOnMultiple: true)
+                                            queue: queue,
+                                            predDicEqual: predDicEqual,
+                                            predDicNotEqual: predDicNotEqual,
+                                            MODicEqual: MODicEqual,
+                                            MODicNotEqual: MODicNotEqual,
+                                            compoundPredicateType: compoundPredicateType,
+                                            errOnMultiple: true)
             
             for index in (0...(property.count-1)) {
                 MO.setValue(value[index], forKey: property[index])
@@ -42,13 +49,19 @@ extension DataPC {
     
     public func updateMOs<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "background",
+        queue: String = "main",
         property: [String],
         value: [Any?],
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
+        predDicEqual: [String: Any] = [:],
+        predDicNotEqual: [String: Any] = [:],
+        MODicEqual: [String: NSManagedObject] =  [:],
+        MODicNotEqual: [String: NSManagedObject] =  [:],
         datePredicates: [DatePredicate] = [],
+        compoundPredicateType: String = "AND",
         fetchLimit: Int? = nil,
+        batchSize: Int? = nil,
+        sortKey: String? = nil,
+        sortAscending: Bool = false,
         errOnEmpty: Bool = false
     ) throws -> [T] {
         do {
@@ -56,10 +69,16 @@ extension DataPC {
             
             let MOs = try self.fetchMOs(entity: entity,
                                         queue: queue,
-                                        predObject: predObject,
-                                        predObjectNotEqual: predObjectNotEqual,
+                                        predDicEqual: predDicEqual,
+                                        predDicNotEqual: predDicNotEqual,
+                                        MODicEqual: MODicEqual,
+                                        MODicNotEqual: MODicNotEqual,
                                         datePredicates: datePredicates,
+                                        compoundPredicateType: compoundPredicateType,
                                         fetchLimit: fetchLimit,
+                                        batchSize: batchSize,
+                                        sortKey: sortKey,
+                                        sortAscending: sortAscending,
                                         errOnEmpty: errOnEmpty)
             
             for MO in MOs {

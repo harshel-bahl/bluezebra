@@ -14,17 +14,25 @@ extension DataPC {
     ///
     public func deleteMO<T: NSManagedObject> (
         entity: T.Type,
-        queue: String = "background",
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:]
+        queue: String = "main",
+        predDicEqual: [String: Any] = [:],
+        predDicNotEqual: [String: Any] = [:],
+        MODicEqual: [String: NSManagedObject] = [:],
+        MODicNotEqual: [String: NSManagedObject] = [:],
+        compoundPredicateType: String = "AND",
+        errOnMultiple: Bool = true
     ) throws {
         do {
             let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
             
             let MO = try self.fetchMO(entity: entity,
-                                            queue: queue,
-            predObject: predObject,
-            predObjectNotEqual: predObjectNotEqual)
+                                      queue: queue,
+                                      predDicEqual: predDicEqual,
+                                      predDicNotEqual: predDicNotEqual,
+                                      MODicEqual: MODicEqual,
+                                      MODicNotEqual: MODicNotEqual,
+                                      compoundPredicateType: compoundPredicateType,
+                                      errOnMultiple: errOnMultiple)
             
             contextQueue.delete(MO)
             
@@ -37,25 +45,29 @@ extension DataPC {
     
     public func deleteMOs<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "background",
-        predObject: [String: Any] = [:],
-        predObjectNotEqual: [String: Any] = [:],
+        queue: String = "main",
+        predDicEqual: [String: Any] = [:],
+        predDicNotEqual: [String: Any] = [:],
+        MODicEqual: [String: NSManagedObject] =  [:],
+        MODicNotEqual: [String: NSManagedObject] =  [:],
         datePredicates: [DatePredicate] = [],
+        compoundPredicateType: String = "AND",
         fetchLimit: Int? = nil,
         errOnEmpty: Bool = false
     ) throws {
             do {
                 let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
                 
-                let MOs = try self.fetchMOs(
-                    entity: entity,
-                    queue: queue,
-                    predObject: predObject,
-                    predObjectNotEqual: predObjectNotEqual,
-                    datePredicates: datePredicates,
-                    fetchLimit: fetchLimit,
-                    errOnEmpty: errOnEmpty
-                )
+                let MOs = try self.fetchMOs(entity: entity,
+                                            queue: queue,
+                                            predDicEqual: predDicEqual,
+                                            predDicNotEqual: predDicNotEqual,
+                                            MODicEqual: MODicEqual,
+                                            MODicNotEqual: MODicNotEqual,
+                                            datePredicates: datePredicates,
+                                            compoundPredicateType: compoundPredicateType,
+                                            fetchLimit: fetchLimit,
+                                            errOnEmpty: errOnEmpty)
                 
                 var MOCount = 0
                 
