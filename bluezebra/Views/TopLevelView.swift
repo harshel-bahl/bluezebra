@@ -105,7 +105,7 @@ struct TopLevelView: View {
                 
                 fetchedUser = true
                 
-//                try await channelDC.syncAllData()
+                try await channelDC.syncAllData()
                 
                 if !socketController.connected {
                     socketController.establishConnection()

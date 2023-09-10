@@ -21,7 +21,7 @@ extension ChannelDC {
     
     func syncPersonalChannel() async throws {
         let SMO = try await DataPC.shared.fetchSMO(entity: Channel.self,
-                                                   predDicEqual: ["channelID": "personal"])
+                                                   predDicEqual: ["channelType": "personal"])
         DispatchQueue.main.async {
             self.personalChannel = SMO
         }
@@ -31,7 +31,7 @@ extension ChannelDC {
         
         if RUChannels.isEmpty {
             let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
-                                                         predDicNotEqual: ["channelID": "personal"],
+                                                         predDicNotEqual: ["channelType": "personal"],
                                                          fetchLimit: fetchLimit,
                                                          sortKey: "lastMessageDate")
             
@@ -44,7 +44,7 @@ extension ChannelDC {
             if let earliestDate = self.RUChannels.last?.lastMessageDate {
                 
                 let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
-                                                             predDicNotEqual: ["channelID": "personal"],
+                                                             predDicNotEqual: ["channelType": "personal"],
                                                              datePredicates: [DataPC.DatePredicate(key: "lastMessageDate", date: earliestDate, isAbove: false)],
                                                              fetchLimit: fetchLimit,
                                                              sortKey: "lastMessageDate")
@@ -58,7 +58,7 @@ extension ChannelDC {
                 guard let earliestDate = self.RUChannels.last?.creationDate else { return }
                 
                 let SMOs = try await DataPC.shared.fetchSMOs(entity: Channel.self,
-                                                             predDicNotEqual: ["channelID": "personal"],
+                                                             predDicNotEqual: ["channelType": "personal"],
                                                              datePredicates: [DataPC.DatePredicate(key: "lastMessageDate", date: earliestDate, isAbove: false)],
                                                              fetchLimit: fetchLimit,
                                                              sortKey: "lastMessageDate")

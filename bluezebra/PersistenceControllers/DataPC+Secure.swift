@@ -213,13 +213,19 @@ extension DataPC {
     func deleteAllKeys() throws {
         do {
             let query: [CFString: Any] = [
-                kSecClass: kSecClassKey,
-                kSecMatchLimit: kSecMatchLimitAll
+                kSecClass: kSecClassKey
             ]
             
             let status = SecItemDelete(query as CFDictionary)
             
-            guard status == errSecSuccess else { throw PError.securityFailure(err: "batch deletion failed") }
+            switch status {
+            case errSecSuccess:
+                log.debug(message: "deleted all keys", function: "DataPC.deleteAllKeys")
+            case errSecItemNotFound:
+                log.warning(message: "no keys found in keychain", function: "DataPC.deleteAllKeys")
+            default:
+                throw PError.securityFailure(err: "batch deletion failed with error code: \(status)")
+            }
             
             log.debug(message: "deleted all keys from keychain", function: "DataPC.deleteAllKeys")
         } catch {
@@ -231,13 +237,19 @@ extension DataPC {
     func deleteAllPasswords() throws {
         do {
             let query: [CFString: Any] = [
-                kSecClass: kSecClassGenericPassword,
-                kSecMatchLimit: kSecMatchLimitAll
+                kSecClass: kSecClassGenericPassword
             ]
             
             let status = SecItemDelete(query as CFDictionary)
             
-            guard status == errSecSuccess else { throw PError.securityFailure(err: "batch deletion failed") }
+            switch status {
+            case errSecSuccess:
+                log.debug(message: "deleted all passwords", function: "DataPC.deleteAllPasswords")
+            case errSecItemNotFound:
+                log.warning(message: "no passwords found in keychain", function: "DataPC.deleteAllPasswords")
+            default:
+                throw PError.securityFailure(err: "batch deletion failed with error code: \(status)")
+            }
             
             log.debug(message: "deleted all passwords from keychain", function: "DataPC.deleteAllPasswords")
         } catch {
@@ -255,14 +267,21 @@ extension DataPC {
         
         do {
             for keychainClass in keychainClasses {
+                
                 let query: [CFString: Any] = [
-                    kSecClass: keychainClass,
-                    kSecMatchLimit: kSecMatchLimitAll
+                    kSecClass: keychainClass
                 ]
                 
                 let status = SecItemDelete(query as CFDictionary)
                 
-                guard status == errSecSuccess else { throw PError.securityFailure(err: "batch deletion failed for class: \(keychainClass)") }
+                switch status {
+                case errSecSuccess:
+                    log.debug(message: "deleted all items of class: \(keychainClass)", function: "DataPC.deleteAllKeychainItems")
+                case errSecItemNotFound:
+                    log.warning(message: "no items found to delete for class: \(keychainClass)", function: "DataPC.deleteAllKeychainItems")
+                default:
+                    throw PError.securityFailure(err: "Batch deletion failed for class: \(keychainClass) with error code: \(status)")
+                }
             }
             
             log.debug(message: "deleted all items in keychain", function: "DataPC.deleteAllItems", info: "keychain classes: \(keychainClasses)")

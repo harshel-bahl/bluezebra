@@ -97,7 +97,9 @@ struct ChannelsList: View {
     func channelList() -> [SChannel] {
         var channelList = channelDC.RUChannels
         
-        channelList.insert(channelDC.personalChannel!, at: 0)
+        if let personalChannel = channelDC.personalChannel {
+            channelList.insert(personalChannel, at: 0)
+        }
         
         return channelList
     }

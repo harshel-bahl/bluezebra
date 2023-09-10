@@ -113,7 +113,7 @@ extension UserDC {
             
             try await withCheckedThrowingContinuation() { continuation in
                 
-                SocketController.shared.clientSocket.emitWithAck("deleteUser", ["uID": uID] as [String : Any])
+                SocketController.shared.clientSocket.emitWithAck("deleteUser", ["uID": uID.uuidString] as [String : Any])
                     .timingOut(after: 1) { data in
                         do {
                             if let queryStatus = data.first as? String,
