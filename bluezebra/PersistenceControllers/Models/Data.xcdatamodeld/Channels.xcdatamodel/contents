@@ -7,7 +7,7 @@
         <attribute name="lastMessageDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="uID" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="channel" inverseEntity="Message"/>
-        <relationship name="remoteUser" maxCount="1" deletionRule="Nullify" destinationEntity="RemoteUser" inverseName="channel" inverseEntity="RemoteUser"/>
+        <relationship name="remoteUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RemoteUser" inverseName="channel" inverseEntity="RemoteUser"/>
     </entity>
     <entity name="ChannelDeletion" representedClassName=".ChannelDeletion" syncable="YES">
         <attribute name="channelType" attributeType="String"/>
@@ -18,7 +18,7 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="nUsers" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="remoteDeletedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="toDeleteUIDs" attributeType="String"/>
+        <attribute name="toDeleteUID" attributeType="String"/>
         <attribute name="type" attributeType="String"/>
     </entity>
     <entity name="ChannelRequest" representedClassName=".ChannelRequest" syncable="YES">

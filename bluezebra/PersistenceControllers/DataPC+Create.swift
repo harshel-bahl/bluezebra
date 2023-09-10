@@ -87,7 +87,7 @@ extension DataPC {
         do {
             let checkMO = try? fetchMO(entity: RemoteUser.self,
                                        queue: "background",
-                                       predObject: ["uID": uID])
+                                       predDicEqual: ["uID": uID])
             
             if checkMO != nil { throw PError.recordExists(err: "RU object already exists in database") }
             
@@ -127,7 +127,7 @@ extension DataPC {
         do {
             let checkMO = try? fetchMO(entity: Channel.self,
                                        queue: "background",
-                                       predObject: ["channelID": channelID])
+                                       predDicEqual: ["channelID": channelID])
             
             if checkMO != nil { throw PError.recordExists() }
             
@@ -161,7 +161,7 @@ extension DataPC {
         do {
             let checkMO = try? fetchMO(entity: ChannelRequest.self,
                                        queue: "background",
-                                       predObject: ["requestID": requestID])
+                                       predDicEqual: ["requestID": requestID])
             
             if checkMO != nil { throw PError.recordExists(err: "CR object already exists in database") }
             
@@ -193,25 +193,25 @@ extension DataPC {
                          name: String,
                          icon: String,
                          nUsers: Int16,
-                         toDeleteUIDs: [UUID]? = nil,
+                         toDeleteUID: [UUID],
                          isOrigin: Bool) throws -> ChannelDeletion {
         do {
             let checkMO = try? fetchMO(entity: ChannelDeletion.self,
-                                             queue: "background",
-                                             predObject: ["deletionID": deletionID])
+                                       queue: "background",
+                                       predDicEqual: ["deletionID": deletionID])
             
             if checkMO != nil { throw PError.recordExists(err: "CD object already exists in database") }
             
-                let MO = ChannelDeletion(context: self.backgroundContext)
-                MO.deletionID = deletionID
-                MO.channelType = channelType
-                MO.deletionDate = deletionDate
-                MO.type = type
-                MO.name = name
-                MO.icon = icon
-                MO.nUsers = nUsers
-            if let toDeleteUIDs = toDeleteUIDs { MO.toDeleteUIDs = toDeleteUIDs.map({ $0.uuidString }).joined(separator: ",") }
-                MO.isOrigin = isOrigin
+            let MO = ChannelDeletion(context: self.backgroundContext)
+            MO.deletionID = deletionID
+            MO.channelType = channelType
+            MO.deletionDate = deletionDate
+            MO.type = type
+            MO.name = name
+            MO.icon = icon
+            MO.nUsers = nUsers
+            MO.toDeleteUID = toDeleteUID.map({ $0.uuidString }).joined(separator: ",")
+            MO.isOrigin = isOrigin
             
             log.debug(message: "created CD", function: "DataPC.createCD", info: "deletionID: \(deletionID)")
             
@@ -242,7 +242,7 @@ extension DataPC {
         do {
             let checkMO = try? fetchMO(entity: Message.self,
                                        queue: "background",
-                                       predObject: ["messageID": messageID])
+                                       predDicEqual: ["messageID": messageID])
             
             if checkMO != nil { throw PError.recordExists(err: "message object already exists in database") }
             
@@ -288,7 +288,7 @@ extension DataPC {
         do {
             let checkMO = try? fetchMO(entity: Event.self,
                                        queue: "background",
-                                       predObject: ["eventID": eventID])
+                                       predDicEqual: ["eventID": eventID])
             
             if checkMO != nil { throw PError.recordExists(err: "event object already exists in database") }
             

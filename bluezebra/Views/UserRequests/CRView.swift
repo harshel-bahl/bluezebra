@@ -21,7 +21,7 @@ struct CRView: View {
     
     @State var username = ""
     @FocusState var focusField: String?
-    @State var fetchedUsers = [RUPacket]()
+    @State var fetchedUsers = [RUP]()
     @State var searchFailure = false
     
     var body: some View {
@@ -46,7 +46,7 @@ struct CRView: View {
             if selected1 != 0 {
                 focusField = nil
                 self.username = ""
-                self.fetchedUsers = [RUPacket]()
+                self.fetchedUsers = [RUP]()
             }
         })
     }
@@ -66,7 +66,7 @@ struct CRView: View {
                 
                 ScrollView {
                     LazyVStack(spacing: 0){
-                        ForEach(filteredFUs(fetchedUsers: fetchedUsers), id: \.userID) { user in
+                        ForEach(filteredFUs(fetchedUsers: fetchedUsers), id: \.uID) { user in
                             AddRURow(RU: user)
                                 .edgePadding(top: 12.5,
                                              bottom: 12.5,
@@ -82,11 +82,11 @@ struct CRView: View {
         .keyboardAwarePadding()
     }
     
-    func filteredFUs(fetchedUsers: [RUPacket]) -> [RUPacket] {
+    func filteredFUs(fetchedUsers: [RUP]) -> [RUP] {
         let filteredFUs = fetchedUsers.filter({ RU in
-            if channelDC.CRs.contains(where: { $0.userID == RU.userID && !$0.isSender}) {
+            if channelDC.CRs.contains(where: { $0.uID == RU.uID && !$0.isSender}) {
                 return false
-            } else if userDC.userData!.userID == RU.userID {
+            } else if userDC.userdata!.uID == RU.uID {
                 return false
             } else {
                 return true
@@ -153,7 +153,7 @@ struct CRView: View {
                     LazyVStack(spacing: 0) {
                         if selected2==0 {
                             ForEach(channelDC.CRs.filter({ $0.isSender==false }), id: \.requestID) { CR in
-                                if let RU = channelDC.RUs[CR.userID] {
+                                if let RU = channelDC.RUs[CR.uID] {
                                     VStack(spacing: 0) {
                                         CRRow(CR: CR,
                                               RU: RU)
@@ -168,7 +168,7 @@ struct CRView: View {
                             }
                         } else if selected2==1 {
                             ForEach(channelDC.CRs.filter({ $0.isSender==true }), id: \.requestID) { CR in
-                                if let RU = channelDC.RUs[CR.userID] {
+                                if let RU = channelDC.RUs[CR.uID] {
                                     VStack(spacing: 0) {
                                         CRRow(CR: CR,
                                               RU: RU)

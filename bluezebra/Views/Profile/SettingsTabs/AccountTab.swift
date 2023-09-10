@@ -37,7 +37,7 @@ struct AccountTab: View {
             Form {
                 Section("Userdata") {
                     
-                    FixedText(text: "Username: " + (userDC.userData?.username ?? ""),
+                    FixedText(text: "Username: " + (userDC.userdata?.username ?? ""),
                               colour: Color("text2"),
                               fontSize: 16)
                     
@@ -46,7 +46,7 @@ struct AccountTab: View {
                                   colour: Color("text2"),
                                   fontSize: 16)
                         
-                        if let creationDate = userDC.userData?.creationDate {
+                        if let creationDate = userDC.userdata?.creationDate {
                             DateTimeLong(date: creationDate,
                                          fontSize: 16,
                                          colour: Color("text2"))
@@ -58,7 +58,7 @@ struct AccountTab: View {
                                   colour: Color("text2"),
                                   fontSize: 16)
                         
-                        if let lastOnline = userDC.userData?.lastOnline {
+                        if let lastOnline = userDC.userdata?.lastOnline {
                             DateTimeLong(date: lastOnline,
                                          fontSize: 16,
                                          colour: Color("text2"))
@@ -86,7 +86,7 @@ struct AccountTab: View {
                                   action: {
                             Task {
                                 do {
-                                    try await channelDC.resetChannels()
+//                                    try await channelDC.resetChannels()
                                 } catch {
                                     resetFailure = true
                                 }
@@ -126,14 +126,7 @@ struct AccountTab: View {
                 
                 Button("Clear Account", action: {
                     Task {
-                        try await DataPC.shared.fetchDeleteMOs(entity: RemoteUser.self)
-                        let custom = NSPredicate(format: "channelID != %@", argumentArray: ["personal"])
-                        try await DataPC.shared.fetchDeleteMOs(entity: Channel.self,
-                        customPredicate: custom)
-                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelRequest.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: ChannelDeletion.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: Message.self)
-                        try await DataPC.shared.fetchDeleteMOs(entity: Event.self)
+                        try await DataPC.shared.resetAccountData()
                         ChannelDC.shared.resetState(keepPersonalChannel: true)
                         MessageDC.shared.resetState()
                     }

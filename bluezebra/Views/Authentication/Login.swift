@@ -44,7 +44,7 @@ struct Login: View {
                                       fontSize: 38,
                                       fontWeight: .medium)
                             
-                            FixedText(text: userDC.userData?.username ?? "",
+                            FixedText(text: userDC.userdata?.username ?? "",
                                       colour: Color("text1"),
                                       fontSize: 38)
                             

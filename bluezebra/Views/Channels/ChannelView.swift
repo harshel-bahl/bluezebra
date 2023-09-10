@@ -28,10 +28,10 @@ struct ChannelView: View {
     init?(channel: SChannel,
          RU: SRemoteUser? = nil) {
         
-        if channel.channelID != "personal" && RU != nil {
+        if channel.channelType != "personal" && RU != nil {
             self.channel = channel
             self.RU = RU
-        } else if channel.channelID == "personal" {
+        } else if channel.channelType == "personal" {
             self.channel = channel
             self.RU = nil
         } else {
@@ -42,7 +42,7 @@ struct ChannelView: View {
     var body: some View {
         NavigationLink {
             
-            if channel.channelID != "personal" {
+            if channel.channelType != "personal" {
                 ChatInterface(channelType: .RU,
                               channel: self.channel,
                               RU: self.RU!)
@@ -55,9 +55,9 @@ struct ChannelView: View {
                 HStack(spacing: 0) {
                     VStack(spacing: 0) {
                         
-                        if channel.channelID != "personal",
+                        if channel.channelType != "personal",
                            let readReceipt = latestMessage?.read,
-                           userDC.userData!.userID == readReceipt  {
+                           userDC.userdata!.uID.uuidString == readReceipt  {
                             SystemIcon(systemName: "circle.fill",
                                        size: .init(width: 7.5, height: 7.5),
                                        colour: Color("accent1"))
@@ -67,7 +67,7 @@ struct ChannelView: View {
                     .edgePadding(trailing: 2.5)
                     
                     ZStack {
-                        EmojiIcon(avatar: channel.channelID != "personal" ? RU!.avatar : userDC.userData!.avatar,
+                        EmojiIcon(avatar: channel.channelType != "personal" ? RU!.avatar : userDC.userdata!.avatar,
                                   size: .init(width: 45, height: 45),
                                   emojis: BZEmojiProvider1.shared.getAll(),
                                   buttonAction: { avatar in
@@ -77,12 +77,12 @@ struct ChannelView: View {
                     
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
-                            FixedText(text: "@" + (channel.channelID != "personal" ? RU!.username : userDC.userData!.username),
+                            FixedText(text: "@" + (channel.channelType != "personal" ? RU!.username : userDC.userdata!.username),
                                       colour: Color("accent1"),
                                       fontSize: 17,
                                       fontWeight: .bold)
                             
-                            if channel.channelID == "personal" {
+                            if channel.channelType == "personal" {
                                 FixedText(text: "(Me)",
                                           colour: Color("accent6"),
                                           fontSize: 12,
@@ -90,8 +90,8 @@ struct ChannelView: View {
                                           padding: EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 0))
                             }
                             
-                            if channel.channelID != "personal",
-                               let online = channelDC.onlineUsers[RU!.userID],
+                            if channel.channelType != "personal",
+                               let online = channelDC.onlineUsers[RU!.uID],
                                online == true {
                                 
                                 PulsatingCircle(size: .init(width: 10, height: 10),
@@ -125,12 +125,14 @@ struct ChannelView: View {
                         
                             FixedText(text: {
                                 if let latestMessage = self.latestMessage {
-                                    if channel.channelID == "personal" && latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                    if channel.channelType == "personal" && latestMessage.imageIDs != nil && latestMessage.message == "" {
                                         return "📷 Sent something"
-                                    } else if latestMessage.imageIDs != nil && latestMessage.message == "" {
+                                    } else if latestMessage.imageIDs != nil && latestMessage.message == nil {
                                         return "📷 Sent you something!"
+                                    } else if let message = latestMessage.message {
+                                        return message
                                     } else {
-                                        return latestMessage.message
+                                        return ""
                                     }
                                 } else {
                                     return "Tap to chat!"
@@ -175,37 +177,33 @@ struct ChannelView: View {
                 Button("Clear channel", action: {
                     Task {
                         do {
-                            if channel.channelID == "personal" {
-                                try await messageDC.clearChannelMessages(channelID: "personal")
+                            if channel.channelType == "personal" {
+//                                try await messageDC.clearChannelMessages(channelID: "personal")
                             } else {
                                 if let RU = self.RU {
-                                    try await channelDC.sendCD(channel: self.channel,
-                                                               RU: RU)
+//                                    try await channelDC.sendCD(channel: self.channel,
+//                                                               RU: RU)
                                 }
                             }
-                            DataU.shared.handleSuccess(function: "Clear Channel")
                         } catch {
-                            DataU.shared.handleFailure(function: "Clear channel", err: error)
                         }
                     }
                 })
                 
-                if channel.channelID != "personal" {
+                if channel.channelType != "personal" {
                     Button("Delete channel", action: {
                         Task {
                             do {
-                                if channel.channelID == "personal" {
-                                    try await messageDC.deleteChannelMessages(channelID: "personal")
+                                if channel.channelType == "personal" {
+//                                    try await messageDC.deleteChannelMessages(channelID: "personal")
                                 } else {
                                     if let RU = self.RU {
-                                        try await channelDC.sendCD(channel: self.channel,
-                                                                   RU: RU,
-                                                                   type: "delete")
+//                                        try await channelDC.sendCD(channel: self.channel,
+//                                                                   RU: RU,
+//                                                                   type: "delete")
                                     }
                                 }
-                                DataU.shared.handleSuccess(function: "Delete Channel")
                             } catch {
-                                DataU.shared.handleFailure(function: "Delete channel", err: error)
                             }
                         }
                     })

@@ -107,9 +107,9 @@ struct ImageContainer: View {
                                 Button("Delete Message", action: {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                         Task {
-                                            if chatState.currChannel.channelID == "personal" {
-                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
-                                                                                     message: message)
+                                            if chatState.currChannel.channelType == "personal" {
+//                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+//                                                                                     message: message)
                                             } else {
                                                 
                                             }
@@ -133,9 +133,9 @@ struct ImageContainer: View {
                                 Button("Delete Message", action: {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                         Task {
-                                            if chatState.currChannel.channelID == "personal" {
-                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
-                                                                                     message: message)
+                                            if chatState.currChannel.channelType == "personal" {
+//                                                try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+//                                                                                     message: message)
                                             } else {
                                                 
                                             }
@@ -154,7 +154,7 @@ struct ImageContainer: View {
             Task {
                 let imageID = message.imageIDs?.components(separatedBy: ",")[0]
                 self.image = try await DataPC.shared.scaledImage(imageName: imageID,
-                                                                 intermidDirs: [chatState.currChannel.channelID, "images"],
+                                                                 intermidDirs: [chatState.currChannel.channelID.uuidString, "images"],
                                                                  maxDimension: fetchMaxDimension)
             }
         }
@@ -200,7 +200,7 @@ struct ImageContainer: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             
-            FixedText(text: message.message,
+            FixedText(text: message.message!,
                       colour: textColour,
                       fontSize: textSize,
                       lineLimit: lineLimit,

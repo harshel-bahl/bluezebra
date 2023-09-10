@@ -20,9 +20,7 @@ extension UserDC {
             
             log.info(message: "receivedPendingEvents triggered", event: "UserDC.receivedPendingEvents")
             
-            guard let self = self else { return }
-            
-            self.syncReceivedPendingEvents(result: true)
+            self?.syncReceivedPendingEvents(result: true)
             
             log.info(message: "handled received pending events successfully", event: "UserDC.receivedPendingEvents")
             

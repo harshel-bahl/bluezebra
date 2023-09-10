@@ -22,7 +22,7 @@
 		345EEF5329F4173A00861DB9 /* MessageDC+Local.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5229F4173A00861DB9 /* MessageDC+Local.swift */; };
 		345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5429F4174E00861DB9 /* MessageDC+Handlers.swift */; };
 		345EEF5729F4175B00861DB9 /* MessageDC+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5629F4175B00861DB9 /* MessageDC+Events.swift */; };
-		345EEF5929F4682800861DB9 /* MessagePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5829F4682800861DB9 /* MessagePacket.swift */; };
+		345EEF5929F4682800861DB9 /* MessageP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345EEF5829F4682800861DB9 /* MessageP.swift */; };
 		3463275D29935C3D00FACB50 /* ChannelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463275C29935C3D00FACB50 /* ChannelView.swift */; };
 		34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34632762299B7CCA00FACB50 /* NotificationsTab.swift */; };
 		346879CB298858AF002F3B5E /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 346879CA298858AF002F3B5E /* SocketIO */; };
@@ -32,9 +32,9 @@
 		346C303129EAD0BD0075107E /* DataPC+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C303029EAD0BD0075107E /* DataPC+Fetch.swift */; };
 		346C303329EAD10A0075107E /* DataPC+Delete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C303229EAD10A0075107E /* DataPC+Delete.swift */; };
 		346C303529EAD13A0075107E /* DataPC+Reset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C303429EAD13A0075107E /* DataPC+Reset.swift */; };
-		3475AE8D29EF9CD8001882D4 /* CRPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE8C29EF9CD8001882D4 /* CRPacket.swift */; };
-		3475AE8F29EF9DB4001882D4 /* UserPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE8E29EF9DB4001882D4 /* UserPacket.swift */; };
-		3475AE9129EF9E18001882D4 /* CDPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE9029EF9E18001882D4 /* CDPacket.swift */; };
+		3475AE8D29EF9CD8001882D4 /* CRP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE8C29EF9CD8001882D4 /* CRP.swift */; };
+		3475AE8F29EF9DB4001882D4 /* UserP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE8E29EF9DB4001882D4 /* UserP.swift */; };
+		3475AE9129EF9E18001882D4 /* CDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE9029EF9E18001882D4 /* CDP.swift */; };
 		3475AE9629EFB884001882D4 /* ChannelDC+Local.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE9529EFB884001882D4 /* ChannelDC+Local.swift */; };
 		3475AE9829EFB8DA001882D4 /* ChannelDC+Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE9729EFB8DA001882D4 /* ChannelDC+Handlers.swift */; };
 		3475AE9A29EFB9B0001882D4 /* ChannelDC+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3475AE9929EFB9B0001882D4 /* ChannelDC+Events.swift */; };
@@ -73,6 +73,7 @@
 		F00C29B32A9DF0FA00FE5839 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = F00C29B22A9DF0FA00FE5839 /* SwiftyBeaver */; };
 		F00C29B52A9E24A600FE5839 /* SecurityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29B42A9E24A600FE5839 /* SecurityUtilities.swift */; };
 		F00C29B82A9F877700FE5839 /* DCErrorUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29B72A9F877700FE5839 /* DCErrorUtils.swift */; };
+		F00C29BA2AAD3C9100FE5839 /* RUChannelP.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00C29B92AAD3C9100FE5839 /* RUChannelP.swift */; };
 		F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425B2A48764700CFCD32 /* BorderOverlay.swift */; };
 		F00E425E2A487B9B00CFCD32 /* FixedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425D2A487B9B00CFCD32 /* FixedText.swift */; };
 		F00E42602A48A66000CFCD32 /* SceneModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00E425F2A48A66000CFCD32 /* SceneModifier.swift */; };
@@ -88,8 +89,8 @@
 		F065C61E2A3384E4007E1D9F /* DateMed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61D2A3384E4007E1D9F /* DateMed.swift */; };
 		F065C6202A3384EB007E1D9F /* TimeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C61F2A3384EB007E1D9F /* TimeLabel.swift */; };
 		F065C6222A338D9B007E1D9F /* PError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F065C6212A338D9B007E1D9F /* PError.swift */; };
-		F07059172A412BAC002571A4 /* RUPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUPacket.swift */; };
-		F08C6F3C2A864C0A00A0C9B7 /* CRResultPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08C6F3B2A864C0A00A0C9B7 /* CRResultPacket.swift */; };
+		F07059172A412BAC002571A4 /* RUP.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07059162A412BAC002571A4 /* RUP.swift */; };
+		F08C6F3C2A864C0A00A0C9B7 /* CRResultP.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08C6F3B2A864C0A00A0C9B7 /* CRResultP.swift */; };
 		F09DFA812A438CBB008D4DB1 /* ButtonAni.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */; };
 		F09DFA882A4848F4008D4DB1 /* ExyteMediaPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA872A4848F4008D4DB1 /* ExyteMediaPicker */; };
 		F09DFA8B2A484BE6008D4DB1 /* FilePicker in Frameworks */ = {isa = PBXBuildFile; productRef = F09DFA8A2A484BE6008D4DB1 /* FilePicker */; };
@@ -162,7 +163,7 @@
 		345EEF5229F4173A00861DB9 /* MessageDC+Local.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageDC+Local.swift"; sourceTree = "<group>"; };
 		345EEF5429F4174E00861DB9 /* MessageDC+Handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageDC+Handlers.swift"; sourceTree = "<group>"; };
 		345EEF5629F4175B00861DB9 /* MessageDC+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageDC+Events.swift"; sourceTree = "<group>"; };
-		345EEF5829F4682800861DB9 /* MessagePacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePacket.swift; sourceTree = "<group>"; };
+		345EEF5829F4682800861DB9 /* MessageP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageP.swift; sourceTree = "<group>"; };
 		3463275C29935C3D00FACB50 /* ChannelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelView.swift; sourceTree = "<group>"; };
 		34632762299B7CCA00FACB50 /* NotificationsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTab.swift; sourceTree = "<group>"; };
 		346879CC2988596B002F3B5E /* SocketController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketController.swift; sourceTree = "<group>"; };
@@ -172,9 +173,9 @@
 		346C303029EAD0BD0075107E /* DataPC+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Fetch.swift"; sourceTree = "<group>"; };
 		346C303229EAD10A0075107E /* DataPC+Delete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Delete.swift"; sourceTree = "<group>"; };
 		346C303429EAD13A0075107E /* DataPC+Reset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataPC+Reset.swift"; sourceTree = "<group>"; };
-		3475AE8C29EF9CD8001882D4 /* CRPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRPacket.swift; sourceTree = "<group>"; };
-		3475AE8E29EF9DB4001882D4 /* UserPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPacket.swift; sourceTree = "<group>"; };
-		3475AE9029EF9E18001882D4 /* CDPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPacket.swift; sourceTree = "<group>"; };
+		3475AE8C29EF9CD8001882D4 /* CRP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRP.swift; sourceTree = "<group>"; };
+		3475AE8E29EF9DB4001882D4 /* UserP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserP.swift; sourceTree = "<group>"; };
+		3475AE9029EF9E18001882D4 /* CDP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDP.swift; sourceTree = "<group>"; };
 		3475AE9529EFB884001882D4 /* ChannelDC+Local.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChannelDC+Local.swift"; sourceTree = "<group>"; };
 		3475AE9729EFB8DA001882D4 /* ChannelDC+Handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChannelDC+Handlers.swift"; sourceTree = "<group>"; };
 		3475AE9929EFB9B0001882D4 /* ChannelDC+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChannelDC+Events.swift"; sourceTree = "<group>"; };
@@ -211,6 +212,7 @@
 		F00C29AF2A9DED0800FE5839 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		F00C29B42A9E24A600FE5839 /* SecurityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityUtilities.swift; sourceTree = "<group>"; };
 		F00C29B72A9F877700FE5839 /* DCErrorUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCErrorUtils.swift; sourceTree = "<group>"; };
+		F00C29B92AAD3C9100FE5839 /* RUChannelP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUChannelP.swift; sourceTree = "<group>"; };
 		F00E425B2A48764700CFCD32 /* BorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderOverlay.swift; sourceTree = "<group>"; };
 		F00E425D2A487B9B00CFCD32 /* FixedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedText.swift; sourceTree = "<group>"; };
 		F00E425F2A48A66000CFCD32 /* SceneModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModifier.swift; sourceTree = "<group>"; };
@@ -226,8 +228,8 @@
 		F065C61D2A3384E4007E1D9F /* DateMed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateMed.swift; sourceTree = "<group>"; };
 		F065C61F2A3384EB007E1D9F /* TimeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabel.swift; sourceTree = "<group>"; };
 		F065C6212A338D9B007E1D9F /* PError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PError.swift; sourceTree = "<group>"; };
-		F07059162A412BAC002571A4 /* RUPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUPacket.swift; sourceTree = "<group>"; };
-		F08C6F3B2A864C0A00A0C9B7 /* CRResultPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRResultPacket.swift; sourceTree = "<group>"; };
+		F07059162A412BAC002571A4 /* RUP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RUP.swift; sourceTree = "<group>"; };
+		F08C6F3B2A864C0A00A0C9B7 /* CRResultP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRResultP.swift; sourceTree = "<group>"; };
 		F09DFA802A438CBB008D4DB1 /* ButtonAni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonAni.swift; sourceTree = "<group>"; };
 		F0AE43652A49EF7800A1E181 /* EmojiPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPicker.swift; sourceTree = "<group>"; };
 		F0AE43672A49EF8A00A1E181 /* PaginatedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginatedScrollView.swift; sourceTree = "<group>"; };
@@ -341,12 +343,13 @@
 		3475AE8929EF9BD0001882D4 /* DataPackets */ = {
 			isa = PBXGroup;
 			children = (
-				3475AE8E29EF9DB4001882D4 /* UserPacket.swift */,
-				F07059162A412BAC002571A4 /* RUPacket.swift */,
-				3475AE8C29EF9CD8001882D4 /* CRPacket.swift */,
-				F08C6F3B2A864C0A00A0C9B7 /* CRResultPacket.swift */,
-				3475AE9029EF9E18001882D4 /* CDPacket.swift */,
-				345EEF5829F4682800861DB9 /* MessagePacket.swift */,
+				3475AE8E29EF9DB4001882D4 /* UserP.swift */,
+				F07059162A412BAC002571A4 /* RUP.swift */,
+				3475AE8C29EF9CD8001882D4 /* CRP.swift */,
+				F08C6F3B2A864C0A00A0C9B7 /* CRResultP.swift */,
+				3475AE9029EF9E18001882D4 /* CDP.swift */,
+				345EEF5829F4682800861DB9 /* MessageP.swift */,
+				F00C29B92AAD3C9100FE5839 /* RUChannelP.swift */,
 			);
 			path = DataPackets;
 			sourceTree = "<group>";
@@ -787,7 +790,7 @@
 				F0AE43B42A60337100A1E181 /* TopLevelTabView.swift in Sources */,
 				34E1E08C29E25054007319C3 /* KeyboardAwareModifier.swift in Sources */,
 				3445BEBE297D946B0033269B /* AppDelegate.swift in Sources */,
-				3475AE9129EF9E18001882D4 /* CDPacket.swift in Sources */,
+				3475AE9129EF9E18001882D4 /* CDP.swift in Sources */,
 				F0AF8D712A7B8AEE00B45249 /* SimpleButton.swift in Sources */,
 				349CE1F02969ECE500F8E4F9 /* ProfileHome.swift in Sources */,
 				345EEF5529F4174E00861DB9 /* MessageDC+Handlers.swift in Sources */,
@@ -814,15 +817,15 @@
 				F00E425C2A48764700CFCD32 /* BorderOverlay.swift in Sources */,
 				F0AE43B02A5820BC00A1E181 /* SafeAreaScreen.swift in Sources */,
 				34632763299B7CCA00FACB50 /* NotificationsTab.swift in Sources */,
-				3475AE8F29EF9DB4001882D4 /* UserPacket.swift in Sources */,
+				3475AE8F29EF9DB4001882D4 /* UserP.swift in Sources */,
 				F0AE43802A4BA8AA00A1E181 /* LikeAni.swift in Sources */,
-				F07059172A412BAC002571A4 /* RUPacket.swift in Sources */,
+				F07059172A412BAC002571A4 /* RUP.swift in Sources */,
 				3489D5D729F850630074EF5E /* ChannelDeletion.swift in Sources */,
 				341D53D42A1CA41700DC28C5 /* BZEmojiProvider1.swift in Sources */,
 				F00C29B52A9E24A600FE5839 /* SecurityUtilities.swift in Sources */,
 				F0AE43AC2A5607BA00A1E181 /* SimpleScrollView.swift in Sources */,
 				F0AE437A2A4BA25100A1E181 /* VariableText.swift in Sources */,
-				F08C6F3C2A864C0A00A0C9B7 /* CRResultPacket.swift in Sources */,
+				F08C6F3C2A864C0A00A0C9B7 /* CRResultP.swift in Sources */,
 				F065C6222A338D9B007E1D9F /* PError.swift in Sources */,
 				F0AE43662A49EF7800A1E181 /* EmojiPicker.swift in Sources */,
 				F0AF8D6D2A6E01D800B45249 /* FileContainer.swift in Sources */,
@@ -858,6 +861,7 @@
 				341065DF2962E1DA001644B0 /* BlueZebraApp.swift in Sources */,
 				3475AEA029EFBD2F001882D4 /* UserDC+Authentication.swift in Sources */,
 				F0AE43862A4BA90300A1E181 /* TypingAni.swift in Sources */,
+				F00C29BA2AAD3C9100FE5839 /* RUChannelP.swift in Sources */,
 				F0AE43A62A53B56800A1E181 /* InfoAlert.swift in Sources */,
 				34AFD46729DD1EC700B2AC74 /* CRView.swift in Sources */,
 				3489D5E529F9D90C0074EF5E /* Settings.swift in Sources */,
@@ -888,7 +892,7 @@
 				341A0DA92A21C09500C5B00C /* DCError.swift in Sources */,
 				341D53D22A14767700DC28C5 /* ImageAni1.swift in Sources */,
 				F0AE43AE2A56FD8200A1E181 /* SignUp.swift in Sources */,
-				345EEF5929F4682800861DB9 /* MessagePacket.swift in Sources */,
+				345EEF5929F4682800861DB9 /* MessageP.swift in Sources */,
 				3489D5E129F851F40074EF5E /* Message.swift in Sources */,
 				F065C6152A2E8D9A007E1D9F /* EncryptionTab.swift in Sources */,
 				3475AE9C29EFBC78001882D4 /* UserDC+Local.swift in Sources */,
@@ -905,7 +909,7 @@
 				F0AE43682A49EF8A00A1E181 /* PaginatedScrollView.swift in Sources */,
 				F065C6112A2E8894007E1D9F /* PinBoxes.swift in Sources */,
 				3489D5E329F852320074EF5E /* User.swift in Sources */,
-				3475AE8D29EF9CD8001882D4 /* CRPacket.swift in Sources */,
+				3475AE8D29EF9CD8001882D4 /* CRP.swift in Sources */,
 				F0AE43BC2A613AC100A1E181 /* SimpleImageSegment.swift in Sources */,
 				346C303129EAD0BD0075107E /* DataPC+Fetch.swift in Sources */,
 				346C302D29EACFBF0075107E /* DataPC+Create.swift in Sources */,
@@ -1115,7 +1119,7 @@
 				341065E82962E1DF001644B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		341065E92962E1DF001644B0 /* Build configuration list for PBXNativeTarget "bluezebra" */ = {
 			isa = XCConfigurationList;
@@ -1124,7 +1128,7 @@
 				341065EB2962E1DF001644B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

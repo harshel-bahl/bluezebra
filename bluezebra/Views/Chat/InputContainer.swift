@@ -233,10 +233,10 @@ struct InputContainer: View {
                    buttonAction: {
             Task {
                 do {
-                    try await handleSend(channelID: chatState.currChannel.channelID,
-                                         message: self.message,
-                                         selectedImages: self.selectedImages.isEmpty ? nil : self.selectedImages,
-                                         selectedFiles: self.selectedFiles.isEmpty ? nil : self.selectedFiles)
+//                    try await handleSend(channelID: chatState.currChannel.channelID,
+//                                         message: self.message,
+//                                         selectedImages: self.selectedImages.isEmpty ? nil : self.selectedImages,
+//                                         selectedFiles: self.selectedFiles.isEmpty ? nil : self.selectedFiles)
                 } catch {
                     
                 }
@@ -245,40 +245,40 @@ struct InputContainer: View {
         .disabled(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedImages.isEmpty && selectedFiles.isEmpty)
     }
     
-    func handleSend(channelID: String,
-                    message: String,
-                    selectedImages: [IdentifiableImage]? = nil,
-                    selectedFiles: [Data]? = nil) async throws {
-        
-        if selectedImages == nil && selectedFiles == nil {
-            
-            let SMessage = try await messageDC.createTextMessage(channelID: chatState.currChannel.channelID,
-                                                                 userID: chatState.currChannel.userID,
-                                                                 message: self.message)
-
-            messageDC.addMessage(channelID: chatState.currChannel.channelID,
-                                 message: SMessage)
-
-            self.message.removeAll()
-            
-        } else if let selectedImages = selectedImages {
-            
-            let SMessage = try await messageDC.createImageMessage(channelID: chatState.currChannel.channelID,
-                                                                  userID: chatState.currChannel.userID,
-                                                                  message: self.message,
-                                                                  selectedImages: selectedImages)
-            
-            messageDC.addMessage(channelID: chatState.currChannel.channelID,
-                                 message: SMessage)
-            
-            self.message.removeAll()
-            withAnimation() { self.selectedImages = [IdentifiableImage]() }
-            
-        } else if let selectedFiles = selectedFiles {
-            
-            
-        }
-        
-    }
+//    func handleSend(channelID: String,
+//                    message: String,
+//                    selectedImages: [IdentifiableImage]? = nil,
+//                    selectedFiles: [Data]? = nil) async throws {
+//
+//        if selectedImages == nil && selectedFiles == nil {
+//
+//            let SMessage = try await messageDC.createTextMessage(channelID: chatState.currChannel.channelID,
+//                                                                 userID: chatState.currChannel.userID,
+//                                                                 message: self.message)
+//
+//            messageDC.addMessage(channelID: chatState.currChannel.channelID,
+//                                 message: SMessage)
+//
+//            self.message.removeAll()
+//
+//        } else if let selectedImages = selectedImages {
+//
+//            let SMessage = try await messageDC.createImageMessage(channelID: chatState.currChannel.channelID,
+//                                                                  userID: chatState.currChannel.userID,
+//                                                                  message: self.message,
+//                                                                  selectedImages: selectedImages)
+//
+//            messageDC.addMessage(channelID: chatState.currChannel.channelID,
+//                                 message: SMessage)
+//
+//            self.message.removeAll()
+//            withAnimation() { self.selectedImages = [IdentifiableImage]() }
+//
+//        } else if let selectedFiles = selectedFiles {
+//
+//
+//        }
+//
+//    }
 }
 

@@ -12,7 +12,7 @@ extension DataPC {
     
     public func updateMO<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "main",
+        queue: String = "background",
         property: [String],
         value: [Any?],
         predDicEqual: [String: Any] = [:],
@@ -23,8 +23,6 @@ extension DataPC {
         prefetchKeyPaths: [String]? = nil
     ) throws -> T {
         do {
-            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
-        
             let MO = try self.fetchMO(entity: entity,
                                             queue: queue,
                                             predDicEqual: predDicEqual,
@@ -49,7 +47,7 @@ extension DataPC {
     
     public func updateMOs<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "main",
+        queue: String = "background",
         property: [String],
         value: [Any?],
         predDicEqual: [String: Any] = [:],
@@ -65,8 +63,6 @@ extension DataPC {
         errOnEmpty: Bool = false
     ) throws -> [T] {
         do {
-            let contextQueue = (queue == "main") ? self.mainContext : self.backgroundContext
-            
             let MOs = try self.fetchMOs(entity: entity,
                                         queue: queue,
                                         predDicEqual: predDicEqual,

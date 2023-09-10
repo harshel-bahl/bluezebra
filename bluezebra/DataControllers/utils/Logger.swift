@@ -29,14 +29,22 @@ class Logger {
         
         self.log = SwiftyBeaver.self
         
-        #if DEBUG
+        var minLevel: SwiftyBeaver.Level = .info
+        
+#if DEBUG
+        minLevel = .debug
+#endif
+        
+#if DEBUG
         let console = ConsoleDestination()
-        console.format = "$DHH:mm:ss$d $C$L$c: $M"
+        console.format = "$DHH:mm:ss.SSS$d $C$L$c: $M"
+        console.minLevel = minLevel
         log.addDestination(console)
-        #endif
+#endif
         
         let file = FileDestination()
         file.format = "$Dyyyy-MM-dd HH:mm:ss.SSS$d $L: $M"
+        file.minLevel = minLevel
         log.addDestination(file)
     }
     
@@ -48,39 +56,41 @@ class Logger {
         info: String? = nil,
         UID: String? = nil,
         recUID: String? = nil
-    ) {
+    ) -> String {
+        
         var baseS = ""
         
         if let message = message {
-            baseS += "\(message) | "
+            baseS += "\(message)"
         }
         
         if let function = function {
-            baseS += "func: \(function) | "
+            baseS += " | func: \(function)"
         }
         
         if let event = event {
-            baseS += "event: \(event) | "
+            baseS += " | event: \(event)"
         }
         
         if let error = error {
-            baseS += "err: \(error) | "
+            baseS += " | err: \(error)"
         }
         
         if let info = info {
-            baseS += "info: (\(info)) | "
+            baseS += " | info: (\(info))"
         }
         
         if let UID = UID {
-            baseS += "UID: \(UID) | "
-        } else if let UID = UserDC.shared.userData?.userID {
-            baseS += "UID: \(UID) | "
+            baseS += " | UID: \(UID)"
+        } else if let UID = UserDC.shared.userdata?.uID {
+            baseS += " | UID: \(UID)"
         }
         
         if let recUID = recUID {
-            baseS += "recUID: \(recUID) | "
+            baseS += " | recUID: \(recUID)"
         }
         
+        return baseS
     }
     
     func debug(

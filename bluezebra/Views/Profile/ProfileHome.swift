@@ -39,7 +39,7 @@ struct ProfileHome: View {
                         
                         Spacer()
                         
-                        EmojiIcon(avatar: userDC.userData?.avatar ?? "",
+                        EmojiIcon(avatar: userDC.userdata?.avatar ?? "",
                                   size: .init(width: 90, height: 90),
                                   emojis: BZEmojiProvider1.shared.getAll())
                         
@@ -47,7 +47,7 @@ struct ProfileHome: View {
                     }
                     .edgePadding(bottom: 15)
                     
-                    FixedText(text: "@" + (userDC.userData?.username ?? ""),
+                    FixedText(text: "@" + (userDC.userdata?.username ?? ""),
                               colour: Color("accent1"),
                               fontSize: 22.5,
                               fontWeight: .bold)
@@ -59,7 +59,7 @@ struct ProfileHome: View {
                                   fontSize: 15)
                         .edgePadding(trailing: 5)
                         
-                        if userDC.userOnline {
+                        if userDC.userConnected {
                             PulsatingCircle(size: .init(width: 9, height: 9),
                                             colour: Color.green,
                                             scaleRatio: 0.6,
@@ -90,7 +90,7 @@ struct ProfileHome: View {
                                   fontSize: 15)
                         .edgePadding(trailing: 3)
                         
-                        if let lastOnline = userDC.userData?.lastOnline {
+                        if let lastOnline = userDC.userdata?.lastOnline {
                             DateTimeLong(date: lastOnline,
                                          fontSize: 15,
                                          colour: Color("text2"))

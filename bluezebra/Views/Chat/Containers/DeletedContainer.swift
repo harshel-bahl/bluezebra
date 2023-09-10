@@ -75,7 +75,7 @@ struct DeletedContainer: View {
         HStack(spacing: removeButtonSpacing) {
             
             if let remoteDeleted = message.remoteDeleted?.components(separatedBy: ","),
-               chatState.currChannel.userID == remoteDeleted[0] {
+               chatState.currChannel.uID.uuidString == remoteDeleted[0] {
                 SystemIcon(systemName: "trash",
                            colour: receiptColour)
             }
@@ -83,7 +83,7 @@ struct DeletedContainer: View {
             VStack(spacing: bubbleSpacing) {
                 HStack(spacing: 0) {
                     if let remoteDeleted = message.remoteDeleted?.components(separatedBy: ","),
-                       chatState.currChannel.userID == remoteDeleted[0] {
+                       chatState.currChannel.uID.uuidString == remoteDeleted[0] {
                         SystemIcon(systemName: completedDeletionIcon,
                                    size: receiptSize,
                                    colour: receiptColour)

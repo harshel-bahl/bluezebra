@@ -23,7 +23,7 @@ class Channel: NSManagedObject {
     @NSManaged var creationDate: Date
     @NSManaged var lastMessageDate: Date?
     
-    @NSManaged var remoteUser: RemoteUser
+    @NSManaged var remoteUser: RemoteUser?
     @NSManaged var messages: Set<Message>?
 }
 

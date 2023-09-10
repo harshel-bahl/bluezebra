@@ -37,9 +37,9 @@ struct ChannelsList: View {
                 LazyVStack(spacing: 0) {
                     ForEach(channelList(), id: \.channelID) { channel in
                         
-                        if channel.channelID == "personal" {
+                        if channel.channelType == "personal" {
                             ChannelView(channel: channel)
-                        } else if let RU = channelDC.RUs[channel.userID] {
+                        } else if let RU = channelDC.RUs[channel.uID] {
                             ChannelView(channel: channel,
                                         RU: RU)
                         }

@@ -13,6 +13,26 @@ extension DataPC {
     /// DataPC Deletion Functions
     ///
     
+    public func resetAccountData() async throws {
+        
+        // Core Data
+        try await self.backgroundPerformSync() {
+            try self.deleteMOs(entity: RemoteUser.self)
+            try self.deleteMOs(entity: Channel.self,
+                               predDicNotEqual: ["channelType": "personal"])
+            try self.deleteMOs(entity: ChannelRequest.self)
+            try self.deleteMOs(entity: ChannelDeletion.self)
+            try self.deleteMOs(entity: Message.self)
+            try self.deleteMOs(entity: Event.self)
+        }
+        
+        // FileSystem
+        try await self.clearDir(dir: "")
+        
+        // Keychain
+        try self.deleteAllKeychainItems()
+    }
+    
     public func deletePCData() async throws {
         
         // Core Data

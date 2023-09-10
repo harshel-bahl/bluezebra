@@ -73,31 +73,32 @@ class SecurityU {
         return SymmetricKey(size: size)
     }
 
-    func encryptAES(plainText: String,
-                    symmetricKey: SymmetricKey) -> Data? {
-        guard let data = plainText.data(using: .utf8) else {
-            print("Failed to convert plain text to Data")
-            return nil
-        }
-
+    func encryptAES(data: Data,
+                    symmetricKey: SymmetricKey) throws -> Data {
         do {
             let sealedBox = try AES.GCM.seal(data, using: symmetricKey)
-            return sealedBox.combined
+            
+            guard let encryptedData = sealedBox.combined else { throw DCError.securityFailure(err: "encrypting data failed") }
+                    
+            log.debug(message: "successfully encrypted data", function: "SecurityU.encryptAES")
+            
+            return encryptedData
         } catch {
-            print("Encryption failed: \(error)")
-            return nil
+            
+            throw error
         }
     }
 
     func decryptAES(encryptedData: Data,
-                    symmetricKey: SymmetricKey) -> String? {
+                    symmetricKey: SymmetricKey) throws -> Data {
         do {
             let sealedBox = try AES.GCM.SealedBox(combined: encryptedData)
+            
             let decryptedData = try AES.GCM.open(sealedBox, using: symmetricKey)
-            return String(data: decryptedData, encoding: .utf8)
+            
+            return decryptedData
         } catch {
-            print("Decryption failed: \(error)")
-            return nil
+            throw error
         }
     }
     

@@ -24,18 +24,18 @@ struct TopLevelView: View {
     
     var body: some View {
         ZStack {
-            if (userDC.userData == nil || userDC.loggedIn != true) {
+            if (userDC.userdata == nil || userDC.loggedIn != true) {
                 
                 ZStack {
                     if (fetchedUser == false) {
                         
                         Color("background2")
                         
-                    } else if (fetchedUser == true && userDC.userData == nil) {
+                    } else if (fetchedUser == true && userDC.userdata == nil) {
                         
                         SignUp()
                         
-                    } else if (userDC.userData != nil && userDC.loggedIn == false) {
+                    } else if (userDC.userdata != nil && userDC.loggedIn == false) {
                         
                         Login()
                         
@@ -43,11 +43,11 @@ struct TopLevelView: View {
                 }
                 .onAppear { tab = "channels" }
                 
-            } else if (userDC.userData != nil && userDC.loggedIn == true) {
+            } else if (userDC.userdata != nil && userDC.loggedIn == true) {
                 
                 topLevelTabView
                     .onAppear() {
-                        if !userDC.userOnline && socketController.connected {
+                        if !userDC.userConnected && socketController.connected {
                             userConnection()
                         }
                         
@@ -65,7 +65,7 @@ struct TopLevelView: View {
         .sceneModifier(activeAction: {
             startup()
         }, inactiveAction: {
-            if userDC.userOnline {
+            if userDC.userConnected {
                 prepareShutdown()
             }
         }, backgroundAction: {
@@ -73,7 +73,7 @@ struct TopLevelView: View {
         })
         .onChange(of: SocketController.shared.connected, perform: { connected in
             
-            if connected && !userDC.userOnline && userDC.userData != nil {
+            if connected && !userDC.userConnected && userDC.userdata != nil {
                 userConnection()
             }
             
@@ -82,7 +82,7 @@ struct TopLevelView: View {
                 channelDC.offline()
             }
         })
-        .onChange(of: userDC.userOnline, perform: { userOnline in
+        .onChange(of: userDC.userConnected, perform: { userConnected in
             
         })
         .onChange(of: userDC.receivedPendingEvents, perform: { receivedPendingEvents in
@@ -97,20 +97,21 @@ struct TopLevelView: View {
     func startup() {
         Task {
             do {
-                if userDC.userData == nil || userDC.userSettings == nil {
-                    try await userDC.syncUserData()
+                
+                if userDC.userdata == nil || userDC.userSettings == nil {
+                    try await userDC.syncUserdata()
                     try await userDC.syncUserSettings()
                 }
                 
                 fetchedUser = true
                 
-                try await channelDC.syncAllData()
+//                try await channelDC.syncAllData()
                 
                 if !socketController.connected {
                     socketController.establishConnection()
                 }
                 
-                try await messageDC.syncMessageDC()
+//                try await messageDC.syncMessageDC()
             } catch {
                 fetchedUser = true
                 
@@ -155,7 +156,7 @@ struct TopLevelView: View {
         if socketController.connected { SocketController.shared.closeConnection() }
         userDC.shutdown()
         channelDC.shutdown()
-        messageDC.shutdown()
+//        messageDC.shutdown()
     }
     
     var topLevelTabView: some View {

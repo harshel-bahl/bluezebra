@@ -16,7 +16,7 @@ struct SChannelDeletion {
     var name: String
     var icon: String
     var nUsers: Int16
-    var toDeleteUIDs: String
+    var toDeleteUID: String
     var isOrigin: Bool
     var remoteDeletedDate: Date?
 }
@@ -29,7 +29,7 @@ class ChannelDeletion: NSManagedObject {
     @NSManaged var name: String
     @NSManaged var icon: String
     @NSManaged var nUsers: Int16
-    @NSManaged var toDeleteUIDs: String
+    @NSManaged var toDeleteUID: String
     @NSManaged var isOrigin: Bool
     @NSManaged var remoteDeletedDate: Date?
 }
@@ -44,7 +44,7 @@ extension ChannelDeletion: ToSafeObject {
                                 name: self.name,
                                 icon: self.icon,
                                 nUsers: self.nUsers,
-                                toDeleteUIDs: self.toDeleteUIDs,
+                                toDeleteUID: self.toDeleteUID,
                                 isOrigin: self.isOrigin,
                                 remoteDeletedDate: self.remoteDeletedDate)
     }

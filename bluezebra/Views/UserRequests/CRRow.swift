@@ -66,10 +66,9 @@ struct CRRow: View {
                    buttonAction: {
             Task {
                 do {
-                    try await channelDC.sendCRResult(CR: self.CR,
-                                                     result: result)
+//                    try await channelDC.sendCRResult(CR: self.CR,
+//                                                     result: result)
                 } catch {
-                    DataU.shared.handleFailure(function: "sendCRResult", err: error)
                     requestFailure = true
                 }
             }

@@ -15,7 +15,7 @@ class MessageDC: ObservableObject {
     
     /// channelMessages: [channelID: Messages]
     /// First message is the latest message
-    @Published var channelMessages = [String: [SMessage]]()
+    @Published var channelMessages = [UUID: [SMessage]]()
     
     @Published var unreadChannels: Int?
     
@@ -27,12 +27,9 @@ class MessageDC: ObservableObject {
     ///
     func resetState() {
         DispatchQueue.main.async {
-            self.channelMessages = [String: [SMessage]]()
+            self.channelMessages = [UUID: [SMessage]]()
             self.unreadChannels = nil
             
-            #if DEBUG
-            print("CLIENT \(DateU.shared.logTS) -- MessageDC.resetState: SUCCESS")
-            #endif
         }
     }
 }

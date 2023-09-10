@@ -67,7 +67,7 @@ struct ChatInterface: View {
                 }
                 
                 if channelType == .RU {
-                    if channelDC.onlineUsers[RU!.userID] == true {
+                    if channelDC.onlineUsers[RU!.uID] == true {
                         PulsatingCircle(text: "online",
                                         textColour: Color("text1"))
                         .edgePadding(leading: 10)
@@ -92,7 +92,7 @@ struct ChatInterface: View {
     func getAvatar() -> String {
         switch self.channelType {
         case .personal:
-            return userDC.userData!.avatar
+            return userDC.userdata!.avatar
         case .RU:
             return RU!.avatar
         }
@@ -101,7 +101,7 @@ struct ChatInterface: View {
     func getName() -> String {
         switch self.channelType {
         case .personal:
-            return userDC.userData!.username
+            return userDC.userdata!.username
         case .RU:
             return RU!.username
         }

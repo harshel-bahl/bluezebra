@@ -74,7 +74,7 @@ struct TextContainer: View {
     var basicMessage: some View {
         VStack(alignment: .leading, spacing: imageWithTextSpacing) {
             
-            Text(message.message)
+            Text(message.message ?? "")
                 .font(textFont)
                 .foregroundColor(textColour)
                 .overlay {
@@ -146,9 +146,9 @@ struct TextContainer: View {
                     Button("Delete Message", action: {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             Task {
-                                if chatState.currChannel.channelID == "personal" {
-                                    try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
-                                                                         message: message)
+                                if chatState.currChannel.channelType == "personal" {
+//                                    try? await messageDC.messageDeletion(channelID: chatState.currChannel.channelID,
+//                                                                         message: message)
                                 } else {
                                     
                                 }

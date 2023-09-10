@@ -14,7 +14,7 @@ extension DataPC {
     ///
     public func deleteMO<T: NSManagedObject> (
         entity: T.Type,
-        queue: String = "main",
+        queue: String = "background",
         predDicEqual: [String: Any] = [:],
         predDicNotEqual: [String: Any] = [:],
         MODicEqual: [String: NSManagedObject] = [:],
@@ -45,7 +45,7 @@ extension DataPC {
     
     public func deleteMOs<T: NSManagedObject>(
         entity: T.Type,
-        queue: String = "main",
+        queue: String = "background",
         predDicEqual: [String: Any] = [:],
         predDicNotEqual: [String: Any] = [:],
         MODicEqual: [String: NSManagedObject] =  [:],

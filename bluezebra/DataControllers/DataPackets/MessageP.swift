@@ -7,11 +7,10 @@
 
 import Foundation
 
-struct MessagePacket: Codable {
-    var messageID: String = UUID().uuidString
+struct MessageP: Codable {
+    var messageID: String 
     var channelID: String
-    var UID: String
-    var type: String
+    var uID: String
     var date: String
     var message: String
 }

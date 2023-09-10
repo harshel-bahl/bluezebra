@@ -60,12 +60,12 @@ extension UserDC {
                                                                                                                   pin: pin,
                                                                                                                   avatar: avatar)
             
-            let packet = try DataU.shared.jsonEncode(data: UserPacket(uID: userdata.uID.uuidString,
+            let packet = try DataU.shared.jsonEncode(data: UserP(uID: userdata.uID,
                                                                       username: userdata.username,
                                                                       password: password,
                                                                       publicKey: publicKey,
                                                                       avatar: userdata.avatar,
-                                                                      creationDate: DateU.shared.stringFromDate(userdata.creationDate, TimeZone(identifier: "UTC")!)))
+                                                                      creationDate: userdata.creationDate))
             
             try await withCheckedThrowingContinuation { continuation in
                 SocketController.shared.clientSocket.emitWithAck("createUser", ["packet": packet])

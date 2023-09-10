@@ -10,6 +10,7 @@ import SocketIO
 
 extension ChannelDC {
     
+    
     /// Socket Handlers
     ///
     
@@ -17,11 +18,12 @@ extension ChannelDC {
         self.userOnlineHandler()
         self.userDisconnectedHandler()
         self.receivedCRHandler()
-        self.receivedCRResultHandler()
-        self.receivedCDHandler()
-        self.receivedCDResultHandler()
-        self.deleteUserTraceHandler()
+//        self.receivedCRResultHandler()
+//        self.receivedCDHandler()
+//        self.receivedCDResultHandler()
+//        self.deleteUserTraceHandler()
     }
+    
     
     /// Event Handlers
     ///
@@ -29,7 +31,7 @@ extension ChannelDC {
     func userOnlineHandler() {
         SocketController.shared.clientSocket.on("userOnline") { [weak self] (data, ack) in
             
-            log.info(message: "userOnline triggered", event: "ChannelDC.userOnline")
+            log.info(message: "userOnline triggered", event: "userOnline")
             
             self?.userOnline(data: data, ack: ack)
         }
@@ -38,7 +40,7 @@ extension ChannelDC {
     func userDisconnectedHandler() {
         SocketController.shared.clientSocket.on("userDisconnected") { [weak self] (data, ack) in
             
-            log.info(message: "userDisconnected triggered", event: "ChannelDC.userDisconnected")
+            log.info(message: "userDisconnected triggered", event: "userDisconnected")
             
             self?.userDisconnected(data: data, ack: ack)
         }
@@ -47,53 +49,51 @@ extension ChannelDC {
     func receivedCRHandler() {
         SocketController.shared.clientSocket.on("receivedCR") { [weak self] (data, ack) in
             
-            log.info(message: "receivedCR triggered", event: "ChannelDC.receivedCR")
+            log.info(message: "receivedCR triggered", event: "receivedCR")
             
             self?.receivedCR(data: data, ack: ack)
         }
     }
     
-    func receivedCRResultHandler() {
-        SocketController.shared.clientSocket.on("receivedCRResult") { [weak self] (data, ack) in
-            
-            log.debug(message: "receivedCRResult triggered", event: "receivedCRResult")
-            
-            self?.receivedCRResult(data: data, ack: ack)
-            
-        }
-    }
-    
-    func receivedCDHandler() {
-        SocketController.shared.clientSocket.on("receivedCD") { [weak self] (data, ack) in
-            
-            log.debug(message: "receivedCD triggered", event: "receivedCD")
-         
-            self?.receivedCD(data: data, ack: ack)
-        }
-    }
-    
-    func receivedCDResultHandler() {
-        SocketController.shared.clientSocket.on("receivedCDResult") { [weak self] (data, ack) in
-            
-            log.debug(message: "receivedCDResult triggered", event: "receivedCDResult")
-         
-            self?.receivedCDResult(data: data, ack: ack)
-        }
-    }
-    
-    func deleteUserTraceHandler() {
-        SocketController.shared.clientSocket.on("deleteUserTrace") { [weak self] (data, ack) in
-            
-            log.debug(message: "deleteUserTrace triggered", event: "deleteUserTrace")
-         
-            self?.deleteUserTrace(data: data, ack: ack)
-        }
-    }
-    
-    
+//    func receivedCRResultHandler() {
+//        SocketController.shared.clientSocket.on("receivedCRResult") { [weak self] (data, ack) in
+//
+//            log.debug(message: "receivedCRResult triggered", event: "receivedCRResult")
+//
+//            self?.receivedCRResult(data: data, ack: ack)
+//
+//        }
+//    }
+//
+//    func receivedCDHandler() {
+//        SocketController.shared.clientSocket.on("receivedCD") { [weak self] (data, ack) in
+//
+//            log.debug(message: "receivedCD triggered", event: "receivedCD")
+//
+//            self?.receivedCD(data: data, ack: ack)
+//        }
+//    }
+//
+//    func receivedCDResultHandler() {
+//        SocketController.shared.clientSocket.on("receivedCDResult") { [weak self] (data, ack) in
+//
+//            log.debug(message: "receivedCDResult triggered", event: "receivedCDResult")
+//
+//            self?.receivedCDResult(data: data, ack: ack)
+//        }
+//    }
+//
+//    func deleteUserTraceHandler() {
+//        SocketController.shared.clientSocket.on("deleteUserTrace") { [weak self] (data, ack) in
+//
+//            log.debug(message: "deleteUserTrace triggered", event: "deleteUserTrace")
+//
+//            self?.deleteUserTrace(data: data, ack: ack)
+//        }
+//    }
     
     
-    /// Event Handler Functions
+    /// ChannelDC Event Handler Functions
     ///
     
     func userOnline(data: [Any],
@@ -109,13 +109,13 @@ extension ChannelDC {
                 }
             }
         } catch {
-            log.error(message: "failed to handle userOnline", event: "ChannelDC.userOnline", error: error)
+            log.error(message: "failed to handle userOnline", event: "userOnline", error: error)
         }
         
     }
     
     func userDisconnected(data: [Any],
-                          ack: SocketAckEmitter) {
+                          ack: SocketAckEmitter? = nil) {
         Task {
             do {
                 guard let uIDString = data.first as? String else { throw DCError.jsonError(err: "data was nil or failed to convert to a String") }
@@ -132,264 +132,295 @@ extension ChannelDC {
                     let RUMO = try DataPC.shared.updateMO(entity: RemoteUser.self,
                                                           property: ["lastOnline"],
                                                           value: [DateU.shared.currDT],
-                                                          predObject: ["uID": uID])
+                                                          predDicEqual: ["uID": uID])
                     return try RUMO.safeObject()
                 }
                 
                 self.syncRU(RU: SRU)
                 
-                log.debug(message: "successfully handled userDisconnected", event: "ChannelDC.userDisconnected")
+                log.debug(message: "successfully handled userDisconnected", event: "userDisconnected")
             } catch {
-                log.error(message: "failed to handle userDiconnected", event: "ChannelDC.userDisconnected", error: error)
+                log.error(message: "failed to handle userDiconnected", event: "userDisconnected", error: error)
             }
         }
     }
     
     func receivedCR(data: [Any],
-                    ack: SocketAckEmitter) {
-        Task {
-            do {
-                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
-                
-                let CRPacket = try DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
-                                                                   data: data)
-                
-                let date = try DateU.shared.dateFromString(CRPacket.date)
-                let RUCreationDate = try DateU.shared.dateFromStringTZ(CRPacket.RU.creationDate)
-                
-                let RULastOnline: Date?
-                
-                if let lastOnline = CRPacket.RU.lastOnline {
-                    RULastOnline = try DateU.shared.dateFromStringTZ(lastOnline)
-                } else {
-                    RULastOnline = nil
-                }
-                
-                guard let requestID = UUID(uuidString: CRPacket.requestID),
-                      let uID = UUID(uuidString: CRPacket.RU.uID) else { throw DCError.jsonError(err: "requestID or uID failed to convert to UUID") }
-                
-                let (SRU, SCR) = try await DataPC.shared.backgroundPerformSync() {
-                    let RUMO = try DataPC.shared.createRU(uID: uID,
-                                                          username: CRPacket.RU.username,
-                                                          avatar: CRPacket.RU.avatar,
-                                                          creationDate: RUCreationDate)
-                    
-                    let CRMO = try DataPC.shared.createCR(requestID: requestID,
-                                                          uID: uID,
-                                                          date: date,
-                                                          isSender: false,
-                                                          remoteUser: RUMO)
-                    
-                    return (try RUMO.safeObject(), try CRMO.safeObject())
-                }
-                
-                self.syncRU(RU: SRU)
-                self.syncCR(CR: SCR)
-                
-                
-                ack.with(NSNull())
-                log.debug(message: "successfully handled receivedCR", event: "channelDC.receivedCR")
-            } catch {
-                log.error(message: "failed to handle receivedCR", event: "ChannelDC.receivedCR", error: error)
-                ack.with(false)
-            }
-        }
-    }
-    
-    func receivedCRResult(data: [Any],
-                          ack: SocketAckEmitter) {
+                    ack: SocketAckEmitter? = nil) {
         Task {
             do {
                 guard let data = data.first as? Data else { throw DCError.typecastError(err: "data failed to typecast to Data or is nil") }
                 
-                let CRResultPacket = try DataU.shared.jsonDecodeFromData(packet: CRResultPacket.self,
-                                                                         data: data)
-                
-                guard let requestID = UUID(uuidString: CRResultPacket.requestID),
-                      let channelID = UUID(uuidString: CRResultPacket.channelID) else { throw DCError.jsonError(err: "failed to convert string IDs to UUIDs") }
-                
-                let creationDate = try DateU.shared.dateFromString(CRResultPacket.creationDate)
-                
-                if CRResultPacket.result == true {
-                    
-                    let SChannel = try await DataPC.shared.backgroundPerformSync() {
-                        
-                        let CRMO = try DataPC.shared.fetchMO(entity: ChannelRequest.self,
-                                                             predObject: ["requestID": requestID])
-                        
-                        let channelMO = try DataPC.shared.createChannel(channelID: channelID,
-                                                                        uID: CRMO.remoteUser.uID,
-                                                                        channelType: "RU",
-                                                                        creationDate: creationDate,
-                                                                        remoteUser: CRMO.remoteUser)
-                        
-                        try DataPC.shared.deleteMO(entity: ChannelRequest.self,
-                                                   predObject: ["requestID": requestID])
-                        
-                        return try channelMO.safeObject()
-                    }
-                    
-                    ack.with(NSNull())
-                    
-                    self.removeCR(requestID: requestID)
-                    self.syncChannel(channel: SChannel)
-                    
-                    log.debug(message: "successfully handled receivedCRResult", event: "receivedCRResult", info: "result: \(CRResultPacket.result)")
-                } else {
-                    
-                    try await DataPC.shared.backgroundPerformSync() {
-                        
-                        let CRMO = try DataPC.shared.fetchMO(entity: ChannelRequest.self,
-                                                             predObject: ["requestID": requestID])
-                        
-                        try DataPC.shared.deleteMO(entity: RemoteUser.self,
-                                                   predObject: ["channelRequest": CRMO])
-                        
-                        try DataPC.shared.deleteMO(entity: ChannelRequest.self,
-                                                   predObject: ["requestID": requestID])
-                    }
-                    
-                    ack.with(NSNull())
-                    
-                    self.removeCR(requestID: requestID)
-                    
-                    log.debug(message: "successfully handled receivedCRResult", event: "receivedCRResult", info: "result: \(CRResultPacket.result)")
-                }
-            } catch {
-                log.error(message: "failed to handle receivedCRResult", event: "ChannelDC.receivedCRResult", error: error)
-                ack.with(false)
-            }
-        }
-    }
-    
-    func receivedCD(data: [Any],
-                    ack: SocketAckEmitter) {
-        Task {
-            do {
-                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
-                
-                let CDPacket = try DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
+                let packet = try DataU.shared.jsonDecodeFromData(packet: CRP.self,
                                                                    data: data)
                 
-                let deletionDate = try DateU.shared.dateFromString(CDPacket.deletionDate)
+                let (SRU, SCR) = try await self.createCR(requestID: packet.requestID,
+                                                         requestDate: packet.requestDate,
+                                                         RU: packet.RU)
                 
-                let SChannel = try await DataPC.shared.fetchSMO(entity: Channel.self,
-                                                                predObject: ["channelID": CDPacket.channelID])
+                self.syncRU(RU: SRU)
+                self.syncCR(CR: SCR)
                 
-                let SRU = try await DataPC.shared.fetchSMO(entity: RemoteUser.self,
-                                                           predObject: ["uID": SChannel.uID])
-                
-                let SCD = try await DataPC.shared.createCD(deletionID: CDPacket.deletionID,
-                                                           channelType: "RU",
-                                                           deletionDate: deletionDate,
-                                                           type: CDPacket.type,
-                                                           name: SRU.username,
-                                                           icon: SRU.avatar,
-                                                           nUsers: 1,
-                                                           isOrigin: false)
-                self.syncCD(CD: SCD)
-                
-                if CDPacket.type == "clear" {
-                    let SChannel = try await DataPC.shared.updateMO(entity: Channel.self,
-                                                                    predicateProperty: "channelID",
-                                                                    predicateValue: CDPacket.channelID,
-                                                                    property: ["lastMessageDate"],
-                                                                    value: [nil])
-                    self.syncChannel(channel: SChannel)
-
-                    try await MessageDC.shared.clearChannelMessages(channelID: CDPacket.channelID)
-                } else if CDPacket.type == "delete" {
-                    try await DataPC.shared.fetchDeleteMO(entity: Channel.self,
-                                                          predicateProperty: "channelID",
-                                                          predicateValue: CDPacket.channelID)
-                    self.removeChannel(channelID: CDPacket.channelID)
-
-                    try await DataPC.shared.fetchDeleteMO(entity: RemoteUser.self,
-                                                          predicateProperty: "uID",
-                                                          predicateValue: SRU.uID)
-
-                    try await MessageDC.shared.deleteChannelMessages(channelID: CDPacket.channelID)
-                }
-                
-                ack.with(NSNull())
-                
-                do {
-                    try await self.sendCDResult(deletionID: CDPacket.deletionID,
-                                                uID: SRU.uID)
-                    
-                } catch {
-                }
-            } catch {
-                ack.with(false)
-            }
-        }
-    }
-    
-    func receivedCDResult(data: [Any],
-                          ack: SocketAckEmitter) {
-        Task {
-            do {
-                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
-                
-                let CDResult = try DataU.shared.jsonDataToDictionary(data)
-                
-                guard let deletionID = CDResult["deletionID"] as? String,
-                      let uID = CDResult["uID"] as? String,
-                      let date = CDResult["date"] as? String else { throw DCError.jsonError() }
-                
-                let remoteDeletedDate = try DateU.shared.dateFromString(date)
-                
-                let SCD = try await DataPC.shared.fetchSMO(entity: ChannelDeletion.self,
-                                                           predObject: ["deletionID": deletionID])
-                
-                if var toDeleteuIDs = SCD.toDeleteuIDs?.components(separatedBy: ",") {
-                    toDeleteuIDs = toDeleteuIDs.filter { $0 != uID }
-                    let uIDs = toDeleteuIDs.joined(separator: ",")
-                    
-                    if toDeleteuIDs.isEmpty {
-                        let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
-                                                                          property: ["toDeleteuIDs", "remoteDeletedDate"],
-                                                                          value: [uIDs, remoteDeletedDate],
-                                                                          predObject: ["deletionID": deletionID])
-                        self.removeCD(deletionID: deletionID)
-                        self.syncCD(CD: updatedSCD)
-                    } else {
-                        let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
-                                                                          property: ["toDeleteuIDs"],
-                                                                          value: [uIDs],
-                                                                          predObject: ["deletionID": deletionID])
-                        self.removeCD(deletionID: deletionID)
-                        self.syncCD(CD: updatedSCD)
-                    }
-                    
+                if let ack = ack {
                     ack.with(NSNull())
-                    
-                } else {
-                    throw DCError.nilError()
                 }
+                
+                log.debug(message: "successfully handled receivedCR", event: "receivedCR")
             } catch {
-                ack.with(false)
+                log.error(message: "failed to handle receivedCR", event: "receivedCR", error: error)
+                
+                if let ack = ack {
+                    ack.with(false)
+                }
             }
         }
     }
     
-    func deleteUserTrace(data: [Any],
-                         ack: SocketAckEmitter) {
-        Task {
-            do {
-                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
-                
-                let deletionData = try DataU.shared.jsonDataToDictionary(data)
-                
-                guard let uID = deletionData["uID"] as? String else { throw DCError.jsonError() }
-                
-                try await self.deleteUserTrace(uID: uID)
-                
-                ack.with(NSNull())
-                
-            } catch {
-                ack.with(error.localizedDescription)
-            }
-        }
-    }
+//    func receivedCRResult(data: [Any],
+//                          ack: SocketAckEmitter? = nil) {
+//        Task {
+//            do {
+//                guard let data = data.first as? Data else { throw DCError.typecastError(err: "data failed to typecast to Data or is nil") }
+//
+//                let CRResultP = try DataU.shared.jsonDecodeFromData(packet: CRResultP.self,
+//                                                                         data: data)
+//
+//                if CRResultP.result == true {
+//
+//                    let SChannel = try await DataPC.shared.backgroundPerformSync() {
+//
+//                        let CRMO = try DataPC.shared.fetchMO(entity: ChannelRequest.self,
+//                                                             predDicEqual: ["requestID": CRResultP.requestID])
+//
+//                        let channelMO = try DataPC.shared.createChannel(channelID: CRResultP.channelID,
+//                                                                        uID: CRMO.remoteUser.uID,
+//                                                                        channelType: "RU",
+//                                                                        creationDate: CRResultP.creationDate,
+//                                                                        remoteUser: CRMO.remoteUser)
+//
+//                        try DataPC.shared.deleteMO(entity: ChannelRequest.self,
+//                                                   predDicEqual: ["requestID": CRResultP.requestID])
+//
+//                        return try channelMO.safeObject()
+//                    }
+//
+//                    if let ack = ack {
+//                        ack.with(NSNull())
+//                    }
+//
+//                    self.removeCR(requestID: requestID)
+//                    self.syncChannel(channel: SChannel)
+//
+//                    log.debug(message: "successfully handled receivedCRResult", event: "receivedCRResult", info: "result: \(CRResultPacket.result)")
+//                } else {
+//
+//                    try await DataPC.shared.backgroundPerformSync() {
+//
+//                        let CRMO = try DataPC.shared.fetchMO(entity: ChannelRequest.self,
+//                                                             predDicEqual: ["requestID": requestID])
+//
+//                        try DataPC.shared.deleteMO(entity: RemoteUser.self,
+//                                                   MODicEqual: ["channelRequest": CRMO])
+//
+//                        try DataPC.shared.deleteMO(entity: ChannelRequest.self,
+//                                                   predDicEqual: ["requestID": requestID])
+//                    }
+//
+//                    if let ack = ack {
+//                        ack.with(NSNull())
+//                    }
+//
+//                    self.removeCR(requestID: requestID)
+//                    self.remove
+//
+//
+//                    log.debug(message: "successfully handled receivedCRResult", event: "receivedCRResult", info: "result: \(CRResultPacket.result)")
+//                }
+//            } catch {
+//                log.error(message: "failed to handle receivedCRResult", event: "receivedCRResult", error: error)
+//
+//                if let ack = ack {
+//                    ack.with(false)
+//                }
+//            }
+//        }
+//    }
+//
+//    func receivedCD(data: [Any],
+//                    ack: SocketAckEmitter? = nil) {
+//        Task {
+//            do {
+//                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
+//
+//                let CDPacket = try DataU.shared.jsonDecodeFromData(packet: CDPacket.self,
+//                                                                   data: data)
+//
+//                guard let deletionID = UUID(uuidString: CDPacket.deletionID),
+//                      let channelID = UUID(uuidString: CDPacket.channelID) else { throw DCError.jsonError(err: "failed to convert string to UUID") }
+//
+//                let deletionDate = try DateU.shared.dateFromString(CDPacket.deletionDate)
+//
+//                var RUID: UUID
+//
+//                if CDPacket.type == "clear" {
+//
+//                    let SCD = try await DataPC.shared.backgroundPerformSync() {
+//
+//                        let channelMO = try DataPC.shared.updateMO(entity: Channel.self,
+//                                                                   property: ["lastMessageDate"],
+//                                                                   value: [nil],
+//                                                                   predDicEqual: ["channelID": channelID])
+//
+//                        RUID = channelMO.remoteUser.uID
+//
+//                        let CDMO = try DataPC.shared.createCD(deletionID: UUID(),
+//                                                              channelType: "RU",
+//                                                              deletionDate: deletionDate,
+//                                                              type: "clear",
+//                                                              name: channelMO.remoteUser.username,
+//                                                              icon: channelMO.remoteUser.avatar,
+//                                                              nUsers: 1,
+//                                                              toDeleteUIDs: [channelMO.remoteUser.uID],
+//                                                              isOrigin: false)
+//
+//                        return try CDMO.safeObject()
+//                    }
+//
+//                        try await MessageDC.shared.clearChannelMessages(channelID: channelID)
+//
+//                    self.syncCD(CD: SCD)
+//
+//                } else if CDPacket.type == "delete" {
+//
+//                    self.removeChannel(channelID: channelID)
+//
+//                    let SCD = try await DataPC.shared.backgroundPerformSync() {
+//
+//                        let channelMO = try DataPC.shared.fetchMO(entity: Channel.self,
+//                                                                  predDicEqual: ["channelID": channelID])
+//
+//                        RUID = channelMO.remoteUser.uID
+//
+//                        let CDMO = try DataPC.shared.createCD(deletionID: UUID(),
+//                                                              channelType: "RU",
+//                                                              deletionDate: deletionDate,
+//                                                              type: "delete",
+//                                                              name: channelMO.remoteUser.username,
+//                                                              icon: channelMO.remoteUser.avatar,
+//                                                              nUsers: 1,
+//                                                              toDeleteUIDs: [channelMO.remoteUser.uID],
+//                                                              isOrigin: false)
+//
+//                        try DataPC.shared.deleteMO(entity: Channel.self,
+//                                                   predDicEqual: ["channelID": channelID])
+//                        self.removeChannel(channelID: channelID)
+//
+//                        try DataPC.shared.deleteMO(entity: RemoteUser.self,
+//                                                   predDicEqual: ["uID": channelMO.remoteUser.uID])
+//                        self.removeRU(uID: RUID)
+//
+//                        return try CDMO.safeObject()
+//                    }
+//
+//                    try await MessageDC.shared.deleteChannelMessages(channelID: CDPacket.channelID)
+//
+//                    self.syncCD(CD: SCD)
+//                }
+//
+//                if let ack = ack {
+//                    ack.with(NSNull())
+//                }
+//
+//                log.debug(message: "successfully handled receivedCD", event: "receivedCD")
+//
+//                try? await self.sendCDResult(deletionID: CDPacket.deletionID,
+//                                             uID: RUID)
+//
+//            } catch {
+//                log.error(message: "failed to handle receivedCD", event: "receivedCD", error: error)
+//
+//                if let ack = ack {
+//                    ack.with(false)
+//                }
+//            }
+//        }
+//    }
+//
+//    func receivedCDResult(data: [Any],
+//                          ack: SocketAckEmitter? = nil) {
+//        Task {
+//            do {
+//                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
+//
+//                let CDResult = try DataU.shared.jsonDataToDictionary(data)
+//
+//                guard let deletionID = CDResult["deletionID"] as? String,
+//                      let uID = CDResult["uID"] as? String,
+//                      let date = CDResult["date"] as? String else { throw DCError.jsonError() }
+//
+//                let remoteDeletedDate = try DateU.shared.dateFromString(date)
+//
+//                let SCD = try await DataPC.shared.fetchSMO(entity: ChannelDeletion.self,
+//                                                           predDicEqual: ["deletionID": deletionID])
+//
+//                if var toDeleteuIDs = SCD.toDeleteuIDs?.components(separatedBy: ",") {
+//                    toDeleteuIDs = toDeleteuIDs.filter { $0 != uID }
+//                    let uIDs = toDeleteuIDs.joined(separator: ",")
+//
+//                    if toDeleteuIDs.isEmpty {
+//                        let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
+//                                                                          property: ["toDeleteuIDs", "remoteDeletedDate"],
+//                                                                          value: [uIDs, remoteDeletedDate],
+//                                                                          predDicEqual: ["deletionID": deletionID])
+//                        self.removeCD(deletionID: deletionID)
+//                        self.syncCD(CD: updatedSCD)
+//                    } else {
+//                        let updatedSCD = try await DataPC.shared.updateMO(entity: ChannelDeletion.self,
+//                                                                          property: ["toDeleteuIDs"],
+//                                                                          value: [uIDs],
+//                                                                          predDicEqual: ["deletionID": deletionID])
+//                        self.removeCD(deletionID: deletionID)
+//                        self.syncCD(CD: updatedSCD)
+//                    }
+//
+//                    if let ack = ack {
+//                        ack.with(NSNull())
+//                    }
+//
+//                } else {
+//                    throw DCError.nilError()
+//                }
+//            } catch {
+//
+//                if let ack = ack {
+//                    ack.with(false)
+//                }
+//            }
+//        }
+//    }
+//
+//    func deleteUserTrace(data: [Any],
+//                         ack: SocketAckEmitter? = nil) {
+//        Task {
+//            do {
+//                guard let data = data.first as? Data else { throw DCError.typecastError( err: "data failed to typecast to Data or is nil") }
+//
+//                let deletionData = try DataU.shared.jsonDataToDictionary(data)
+//
+//                guard let uID = deletionData["uID"] as? String else { throw DCError.jsonError() }
+//
+//                try await self.deleteUserTrace(uID: uID)
+//
+//                if let ack = ack {
+//                    ack.with(NSNull())
+//                }
+//
+//            } catch {
+//
+//                if let ack = ack {
+//                    ack.with(false)
+//                }
+//            }
+//        }
+//    }
 }

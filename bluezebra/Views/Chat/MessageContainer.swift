@@ -24,19 +24,12 @@ struct MessageContainer: View {
     }
     
     @ViewBuilder func messageContainer(message: SMessage) -> some View {
-        switch message.type {
-        case "text":
-            TextContainer(message: message,
-                          messageStatus: messageStatus)
-        case "image":
-            ImageContainer(message: message,
-                           messageStatus: messageStatus)
-            
-        case "deleted":
+        if message.localDeleted == true {
             DeletedContainer(message: message)
-            
-        default:
-            Color.clear
+        } else if message.imageIDs != nil {
+            ImageContainer(message: message)
+        } else if message.message != nil {
+            TextContainer(message: message)
         }
     }
 }

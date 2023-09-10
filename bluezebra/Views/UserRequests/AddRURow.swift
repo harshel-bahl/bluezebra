@@ -13,7 +13,7 @@ struct AddRURow: View {
     
     @ObservedObject var channelDC = ChannelDC.shared
     
-    let RU: RUPacket
+    let RU: RUP
     
     @State var requestSent = false
     @State var requestFailure = false
@@ -36,7 +36,7 @@ struct AddRURow: View {
             
             Spacer()
             
-            if checkRequests(userID: RU.userID) {
+            if checkRequests(uID: RU.uID) {
                 SystemIcon(systemName: "checkmark.circle.fill",
                            size: .init(width: 25, height: 25),
                            colour: Color("accent1"))
@@ -65,13 +65,7 @@ struct AddRURow: View {
                             self.requestSent = true
                         }
                         
-#if DEBUG
-                        DataU.shared.handleSuccess(function: "ChannelDC.sendCR", info: "username: \(RU.username)")
-#endif
                     } catch {
-#if DEBUG
-                        DataU.shared.handleFailure(function: "ChannelDC.sendCR", err: error, info: "username: \(RU.username)")
-#endif
                         withAnimation {
                             self.requestFailure = true
                         }
@@ -86,8 +80,8 @@ struct AddRURow: View {
         }
     }
     
-    func checkRequests(userID: String) -> Bool {
-        if let _ = channelDC.CRs.first(where: { $0.userID == userID }) {
+    func checkRequests(uID: UUID) -> Bool {
+        if let _ = channelDC.CRs.first(where: { $0.uID == uID }) {
             return true
         } else {
             return false

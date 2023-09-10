@@ -34,22 +34,14 @@ class DataPC: ObservableObject {
     /// Save Functions
     ///
     func mainSave() throws {
-        do {
-            if self.mainContext.hasChanges {
-                try self.mainContext.save()
-            }
-        } catch {
-            throw PError.persistenceError(err: error.localizedDescription)
+        if self.mainContext.hasChanges {
+            try self.mainContext.save()
         }
     }
     
     func backgroundSave() throws {
-        do {
-            if self.backgroundContext.hasChanges {
-                try self.backgroundContext.save()
-            }
-        } catch {
-            throw PError.persistenceError(err: error.localizedDescription)
+        if self.backgroundContext.hasChanges {
+            try self.backgroundContext.save()
         }
     }
     
@@ -172,6 +164,11 @@ class DataPC: ObservableObject {
         
         return objectIDs
     }
+    
+//    func checkObjects() async throws {
+//
+//        let
+//    }
 }
 
 

@@ -21,19 +21,19 @@ class ChatState: ObservableObject {
     }
     
     func computeReceipt(message: SMessage) -> String? {
-        if currChannel.channelID == "personal" {
+        if currChannel.channelType == "personal" {
             return nil
         } else if !message.isSender {
             return nil
         } else {
             if let readUsers = message.read?.components(separatedBy: ","),
-               self.currChannel.userID == readUsers[0] {
+               self.currChannel.uID.uuidString == readUsers[0] {
                 return "read"
             } else if let deliveredUsers = message.delivered?.components(separatedBy: ","),
-                      self.currChannel.userID == deliveredUsers[0] {
+                      self.currChannel.uID.uuidString == deliveredUsers[0] {
                 return "delivered"
             } else if let sentUsers = message.sent?.components(separatedBy: ","),
-                      sentUsers[0] == self.currChannel.userID {
+                      sentUsers[0] == self.currChannel.uID.uuidString {
                 return "sent"
             } else {
                 return "notSent"
