@@ -38,7 +38,7 @@ extension UserDC {
                     }
             }
             
-            log.debug(message: "successfully checked username", function: "UserDC.checkUsername", event: "checkUsername")
+            log.debug(message: "successfully checked username", function: "UserDC.checkUsername", event: "checkUsername", info: "username: \(username)")
             
             return result
             
@@ -146,13 +146,13 @@ extension UserDC {
     func connectUser() async throws {
         do {
             try checkSocketConnected()
-            
+
             guard let uIDString = self.userdata?.uID.uuidString else { throw DCError.nilError( err: "userdata is nil") }
-            
+
             let password = try DataPC.shared.retrievePassword(account: "authPassword")
-            
+
             try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("connectUser", ["uID": uIDString, "password": password] as [String : String])
+                SocketController.shared.clientSocket.emitWithAck("connectUser", ["uID": uIDString, "password": password] as [String: String])
                     .timingOut(after: 1, callback: { data in
                         do {
                             if let queryStatus = data.first as? String,
@@ -160,13 +160,13 @@ extension UserDC {
                                 throw DCError.serverTimeOut()
                             } else if let queryStatus = data.first as? String,
                                       queryStatus == "user does not exist" {
-                                
+
                                 log.debug(message: "user doesn't exist in server", function: "UserDC.connectUser", event: "connectUser")
-                                
+
                                 Task {
                                     try? await self.deleteUserLocally()
                                 }
-                                
+
                                 throw DCError.serverFailure(err: "user does not exist")
                             } else if let queryStatus = data.first as? String {
                                 throw DCError.serverFailure( err: queryStatus)
@@ -180,9 +180,9 @@ extension UserDC {
                         }
                     })
             }
-            
+
             self.syncUserConnected(result: true)
-            
+
             log.debug(message: "successfully connected user", function: "UserDC.connectUser", event: "connectUser")
         } catch {
             self.syncUserConnected(result: false)

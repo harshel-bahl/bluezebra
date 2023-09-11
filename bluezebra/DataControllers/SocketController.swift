@@ -26,8 +26,19 @@ class SocketController: NSObject, ObservableObject {
     override init() {
         super.init()
         //        self.ipAddress = "24.199.84.35"
-        self.socketManager = SocketManager(socketURL: URL(string: "http://\(ipAddress ?? "localhost"):3000")!, config: [.log(false), .compress])
+        
+        self.socketManager = SocketManager(socketURL: URL(string: "http://\(ipAddress ?? "localhost"):3000")!,
+                                           config: [
+                                            .log(false),
+                                            .compress,
+                                            .forceNew(true),
+                                            .reconnectAttempts(10),
+                                            .reconnectWait(6000),
+                                            .forceWebsockets(true),
+                                           ])
+        
         self.clientSocket = socketManager.defaultSocket
+        
         self.createConnectionHandlers()
     }
     
@@ -38,6 +49,14 @@ class SocketController: NSObject, ObservableObject {
             guard let self = self else { return }
             
             self.connected = true
+            
+            Task {
+                do {
+                    try await UserDC.shared.connectUser()
+                } catch {
+                    
+                }
+            }
         }
         
         clientSocket.on(clientEvent: .disconnect) { [weak self] data, ack in
@@ -58,8 +77,19 @@ class SocketController: NSObject, ObservableObject {
         
     }
     
-    func establishConnection() {
-        clientSocket.connect() // manager.socket.connect(withPayload: ["auth": "xxx"])
+    func establishConnection(updateConnectParams: Bool = true) {
+        
+        if updateConnectParams {
+            var connectParams: [String: Any] = [:]
+            
+            // add token param
+            
+            if !connectParams.isEmpty {
+                self.socketManager.config.insert(.connectParams(connectParams))
+            }
+        }
+        
+        clientSocket.connect()
     }
     
     func closeConnection() {

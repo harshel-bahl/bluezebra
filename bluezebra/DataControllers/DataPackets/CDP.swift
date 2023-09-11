@@ -8,7 +8,6 @@
 import Foundation
 
 struct CDP: Codable {
-    
     let channelID: UUID
     let deletionDate: Date
     let deletionType: String

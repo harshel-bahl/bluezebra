@@ -18,7 +18,7 @@ extension UserDC {
                            creationDate: Date = DateU.shared.currDT) async throws -> (SUser, SSettings, SChannel, String, Data) {
         
         let (userdata, userSettings, personalChannel) = try await DataPC.shared.backgroundPerformSync(saveOnComplete: true,
-                                                                                      rollbackOnErr: true) {
+                                                                                                      rollbackOnErr: true) {
             
             let userdataMO = try DataPC.shared.createUser(uID: uID,
                                                           username: username,
@@ -147,7 +147,7 @@ extension UserDC {
     func resetState() {
         DispatchQueue.main.async {
             self.userdata = nil
-          self.userSettings = nil
+            self.userSettings = nil
             self.loggedIn = false
             self.userConnected = false
             self.receivedPendingEvents = false

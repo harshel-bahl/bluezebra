@@ -47,9 +47,9 @@ struct TopLevelView: View {
                 
                 topLevelTabView
                     .onAppear() {
-                        if !userDC.userConnected && socketController.connected {
-                            userConnection()
-                        }
+//                        if !userDC.userConnected && socketController.connected {
+//                            userConnection()
+//                        }
                         
                         if (userDC.userSettings?.biometricSetup == nil) {
                             userDC.setupBiometricAuth() { result in
@@ -72,10 +72,6 @@ struct TopLevelView: View {
             shutdown()
         })
         .onChange(of: SocketController.shared.connected, perform: { connected in
-            
-            if connected && !userDC.userConnected && userDC.userdata != nil {
-                userConnection()
-            }
             
             if !connected {
                 userDC.offline()
@@ -122,15 +118,15 @@ struct TopLevelView: View {
         }
     }
     
-    func userConnection() {
-        Task {
-            do {
-                try await userDC.connectUser()
-                
-            } catch {
-            }
-        }
-    }
+//    func userConnection() {
+//        Task {
+//            do {
+//                try await userDC.connectUser()
+//
+//            } catch {
+//            }
+//        }
+//    }
     
     func startupNetworking() {
         Task {

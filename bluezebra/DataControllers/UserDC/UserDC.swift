@@ -19,7 +19,7 @@ class UserDC: ObservableObject {
     /// loggedIn: controls whether user has authenticated into app
     @Published var loggedIn = false {
         didSet {
-            log.info(message: "user is logged in", info: "UserDC.loggedIn: \(loggedIn)")
+            log.info(info: "UserDC.loggedIn: \(loggedIn)")
         }
     }
     
@@ -27,7 +27,7 @@ class UserDC: ObservableObject {
     /// - whether user is authenticated and connected to server
     @Published var userConnected: Bool = false {
         didSet {
-            log.info(message: "user is connected", info: "UserDC.userConnected: \(userConnected)")
+            log.info(info: "UserDC.userConnected: \(userConnected)")
         }
     }
     
@@ -35,7 +35,7 @@ class UserDC: ObservableObject {
     // - whether user has received server's pending events
     @Published var receivedPendingEvents: Bool = false {
         didSet {
-            log.info(message: "user received pending events", info: "UserDC.receivedPendingEvents: \(receivedPendingEvents)")
+            log.info(info: "UserDC.receivedPendingEvents: \(receivedPendingEvents)")
         }
     }
     

@@ -65,29 +65,29 @@ class Logger {
         }
         
         if let function = function {
-            baseS += " | func: \(function)"
+            baseS += baseS == "" ? "func: \(function)" : " | func: \(function)"
         }
         
         if let event = event {
-            baseS += " | event: \(event)"
+            baseS += baseS == "" ? "event: \(event)" : " | event: \(event)"
         }
         
         if let error = error {
-            baseS += " | err: \(error)"
+            baseS += baseS == "" ? "err: \(error)" : " | err: \(error)"
         }
         
         if let info = info {
-            baseS += " | info: (\(info))"
+            baseS += baseS == "" ? "info: (\(info))" : " | info: (\(info))"
         }
         
         if let UID = UID {
-            baseS += " | UID: \(UID)"
+            baseS += baseS == "" ? "UID: \(UID)" : " | UID: \(UID)"
         } else if let UID = UserDC.shared.userdata?.uID {
-            baseS += " | UID: \(UID)"
+            baseS += baseS == "" ? "UID: \(UID)" : " | UID: \(UID)"
         }
         
         if let recUID = recUID {
-            baseS += " | recUID: \(recUID)"
+            baseS += baseS == "" ? "recUID: \(recUID)" : " | recUID: \(recUID)"
         }
         
         return baseS
