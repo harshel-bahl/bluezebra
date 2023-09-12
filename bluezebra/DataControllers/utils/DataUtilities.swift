@@ -29,7 +29,8 @@ class DataU {
             let dataPacket = try JSONDecoder().decode(T.self, from: data)
             return dataPacket
         } catch {
-            throw DCError.jsonError(err: error.localizedDescription)
+            log.debug(message: "failed to decode data", function: "DataU.jsonDecodeFromData", error: error, info: "JSON: \(String(data: data, encoding: .utf8) ?? "-")")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     
@@ -42,7 +43,8 @@ class DataU {
             let dataPacket = try JSONDecoder().decode(T.self, from: data)
             return dataPacket
         } catch {
-            throw DCError.jsonError(err: error.localizedDescription)
+            log.debug(message: "failed to decode data", function: "DataU.jsonDecodeFromObject", error: error, info: "JSON: \(data)")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     
@@ -53,25 +55,23 @@ class DataU {
             let jsonData = try JSONSerialization.data(withJSONObject: dictionary, options: [])
             return jsonData
         } catch {
-            throw DCError.jsonError(err: error.localizedDescription)
+            log.debug(message: "failed to decode data", function: "DataU.dictionaryToJSONData", error: error, info: "JSON: \(dictionary)")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     
     /// jsonDataToDictionary
     ///
-    func jsonDataToDictionary(_ jsonData: Data) throws -> [String: Any] {
+    func jsonDataToDictionary(_ inputData: Data) throws -> [String: Any] {
         do {
-            let data = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            let data = try JSONSerialization.jsonObject(with: inputData, options: [])
             
             guard let dictionary = data as? [String: Any] else { throw DCError.typecastError(err: "couldn't cast data to [String: Any] dictionary") }
             
             return dictionary
         } catch {
-            if let error = error as? DCError {
-                throw error
-            } else {
-                throw DCError.jsonError(err: error.localizedDescription)
-            }
+            log.debug(message: "failed to decode data", function: "DataU.jsonDataToDictionary", error: error, info: "JSON: \(String(data: inputData, encoding: .utf8) ?? "-")")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     
@@ -80,19 +80,21 @@ class DataU {
             let jsonData = try JSONSerialization.data(withJSONObject: array, options: [])
             return jsonData
         } catch {
-            throw DCError.jsonError(err: error.localizedDescription)
+            log.debug(message: "failed to decode data", function: "DataU.jsonDecodeFromObject", error: error, info: "JSON: \(array)")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     
-    func jsonDataToArray(_ jsonData: Data) throws -> [Any] {
+    func jsonDataToArray(_ inputData: Data) throws -> [Any] {
         do {
-            if let array = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [Any] {
+            if let array = try JSONSerialization.jsonObject(with: inputData, options: .allowFragments) as? [Any] {
                 return array
             } else {
                 throw DCError.jsonError(err: "Data is not an array")
             }
         } catch {
-            throw DCError.jsonError(err: error.localizedDescription)
+            log.debug(message: "failed to decode data", function: "DataU.jsonDataToDictionary", error: error, info: "JSON: \(String(data: inputData, encoding: .utf8) ?? "-")")
+            throw DCError.jsonError(err: String(describing: error))
         }
     }
     

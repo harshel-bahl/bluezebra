@@ -72,7 +72,7 @@ extension ChannelDC {
             }
             
             let packets = try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("fetchRUs", username)
+                SocketController.shared.clientSocket.emitWithAck("fetchRUsByUsername", ["username": username])
                     .timingOut(after: 1, callback: { data in
                         
                         do {
@@ -82,8 +82,9 @@ extension ChannelDC {
                             } else if let queryStatus = data.first as? String {
                                 throw DCError.serverFailure(err: queryStatus)
                             } else if let _ = data.first as? NSNull,
-                                      data.indices.contains(1) {
-                                continuation.resume(returning: data[1])
+                                      data.indices.contains(1),
+                                      let packets = data[1] as? Data {
+                                continuation.resume(returning: packets)
                             } else {
                                 throw DCError.serverFailure()
                             }
@@ -93,14 +94,14 @@ extension ChannelDC {
                     })
             }
             
-            let RUPackets = try DataU.shared.jsonDecodeFromObject(packet: [RUP].self,
-                                                                  data: packets)
+            let RUPackets = try DataU.shared.jsonDecodeFromData(packet: [RUP].self,
+                                                                data: packets)
             
-            log.debug(message: "successfully fetched RUs", function: "ChannelDC.fetchRUs", event: "fetchRUs")
+            log.debug(message: "successfully fetched RUs", function: "ChannelDC.fetchRUs", event: "fetchRUsByUsername")
             
             return RUPackets
         } catch {
-            log.error(message: "failed to fetch RUs", function: "ChannelDC.fetchRUs", event: "fetchRUs", error: error)
+            log.error(message: "failed to fetch RUs", function: "ChannelDC.fetchRUs", event: "fetchRUsByUsername", error: error)
             throw error
         }
     }
@@ -492,13 +493,11 @@ extension ChannelDC {
             
             try checkUserConnected()
             
-            guard let originUser = UserDC.shared.userdata else { throw DCError.nilError(err: "userdata is nil") }
-            
             if checkuID {
                 guard RU.uID != UserDC.shared.userdata?.uID else { throw DCError.invalidRequest(err: "cannot send CR to self") }
             }
             
-            let packet = try DataU.shared.dictionaryToJSONData(["requestID": requestID,
+            let packet = try DataU.shared.dictionaryToJSONData(["requestID": requestID.uuidString,
                                                                 "requestDate": DateU.shared.stringFromDate(requestDate)])
             
             try await withCheckedThrowingContinuation() { continuation in

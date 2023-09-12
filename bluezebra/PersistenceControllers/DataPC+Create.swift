@@ -78,6 +78,7 @@ extension DataPC {
     ///
     public func createRU(uID: UUID,
                          username: String,
+                         publicKey: Data,
                          avatar: String,
                          creationDate: Date,
                          lastOnline: Date? = nil,
@@ -94,6 +95,7 @@ extension DataPC {
             let MO = RemoteUser(context: self.backgroundContext)
             MO.uID = uID
             MO.username = username
+            MO.publicKey = publicKey
             MO.avatar = avatar
             MO.creationDate = creationDate
             MO.lastOnline = lastOnline

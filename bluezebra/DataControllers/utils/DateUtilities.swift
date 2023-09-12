@@ -52,17 +52,6 @@ class DateU {
         return date
     }
     
-    /// dateFromStringTZ
-    /// current datetime with timezone as UTC
-    func dateFromISOString(_ dateString: String) throws -> Date {
-        let df = ISO8601DateFormatter()
-        df.timeZone = TimeZone(identifier: "UTC")
-        
-        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(err: "date: \(dateString)")}
-        
-        return date
-    }
-
     /// stringFromDate
     /// converts date to dateString in the relevant timezone from UTC datetime
     func stringFromDate(_ date: Date,
@@ -71,6 +60,28 @@ class DateU {
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = timezone
         df.locale = Locale(identifier: "en_US_POSIX")
+        return df.string(from: date)
+    }
+    
+    /// dateFromISOString
+    /// current datetime with timezone as UTC
+    func dateFromISOString(_ dateString: String) throws -> Date {
+        let df = ISO8601DateFormatter()
+        df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        df.timeZone = TimeZone(identifier: "UTC")
+        
+        guard let date = df.date(from: dateString) else { throw DCError.dateFailure(err: "date: \(dateString)")}
+        
+        return date
+    }
+    
+    /// ISOStringFromDate
+    ///
+    func ISOStringFromDate(_ date: Date) -> String {
+        let df = ISO8601DateFormatter()
+        df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        df.timeZone = TimeZone(identifier: "UTC")
+        
         return df.string(from: date)
     }
     

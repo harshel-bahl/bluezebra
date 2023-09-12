@@ -378,6 +378,7 @@ extension ChannelDC {
                 
                 let RUMO = try DataPC.shared.createRU(uID: RUP.uID,
                                                       username: RUP.username,
+                                                      publicKey: RUP.publicKey,
                                                       avatar: RUP.avatar,
                                                       creationDate: RUP.creationDate,
                                                       lastOnline: RUP.lastOnline)
@@ -418,6 +419,7 @@ extension ChannelDC {
                 
                 let RUMO = try DataPC.shared.createRU(uID: RU.uID,
                                                       username: RU.username,
+                                                      publicKey: RU.publicKey,
                                                       avatar: RU.avatar,
                                                       creationDate: RU.creationDate,
                                                       lastOnline: RU.lastOnline)

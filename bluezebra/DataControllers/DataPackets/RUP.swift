@@ -11,22 +11,25 @@ struct RUP: Codable {
     
     let uID: UUID
     let username: String
+    let publicKey: Data
     let avatar: String
     let creationDate: Date
     let lastOnline: Date?
     
     init(uID: UUID,
          username: String,
+         publicKey: Data,
          avatar: String,
          creationDate: Date,
          lastOnline: Date?
     ) {
-         self.uID = uID
-         self.username = username
-         self.avatar = avatar
-         self.creationDate = creationDate
-         self.lastOnline = lastOnline
-     }
+        self.uID = uID
+        self.username = username
+        self.publicKey = publicKey
+        self.avatar = avatar
+        self.creationDate = creationDate
+        self.lastOnline = lastOnline
+    }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -38,6 +41,11 @@ struct RUP: Codable {
         self.uID = uID
         
         self.username = try container.decode(String.self, forKey: .username)
+        let publicKeyBase64 = try container.decode(String.self, forKey: .publicKey)
+        guard let publicKeyData = Data(base64Encoded: publicKeyBase64) else {
+            throw DecodingError.dataCorruptedError(forKey: .publicKey, in: container, debugDescription: "Invalid base64 string")
+        }
+        self.publicKey = publicKeyData
         self.avatar = try container.decode(String.self, forKey: .avatar)
         
         let creationDateString = try container.decode(String.self, forKey: .creationDate)
@@ -61,6 +69,8 @@ struct RUP: Codable {
         
         try container.encode(uID.uuidString, forKey: .uID)
         try container.encode(username, forKey: .username)
+        let publicKeyBase64 = publicKey.base64EncodedString()
+        try container.encode(publicKeyBase64, forKey: .publicKey)
         try container.encode(avatar, forKey: .avatar)
         try container.encode(DateU.shared.stringFromDate(creationDate), forKey: .creationDate)
         
@@ -72,6 +82,7 @@ struct RUP: Codable {
     enum CodingKeys: String, CodingKey {
         case uID
         case username
+        case publicKey
         case avatar
         case creationDate
         case lastOnline

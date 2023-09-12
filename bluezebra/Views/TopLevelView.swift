@@ -118,16 +118,6 @@ struct TopLevelView: View {
         }
     }
     
-//    func userConnection() {
-//        Task {
-//            do {
-//                try await userDC.connectUser()
-//
-//            } catch {
-//            }
-//        }
-//    }
-    
     func startupNetworking() {
         Task {
             do {

@@ -9,17 +9,19 @@ import Foundation
 import CoreData
 
 struct SRemoteUser {
-    var uID: UUID
-    var username: String
-    var avatar: String
-    var creationDate: Date
-    var lastOnline: Date?
-    var blocked: Bool
+    let uID: UUID
+    let username: String
+    let publicKey: Data
+    let avatar: String
+    let creationDate: Date
+    let lastOnline: Date?
+    let blocked: Bool
 }
 
 class RemoteUser: NSManagedObject {
     @NSManaged var uID: UUID
     @NSManaged var username: String
+    @NSManaged var publicKey: Data
     @NSManaged var avatar: String
     @NSManaged var creationDate: Date
     @NSManaged var lastOnline: Date?
@@ -35,6 +37,7 @@ extension RemoteUser: ToSafeObject {
     func safeObject() throws -> SRemoteUser {
         return SRemoteUser(uID: self.uID,
                            username: self.username,
+                           publicKey: self.publicKey,
                            avatar: self.avatar,
                            creationDate: self.creationDate,
                            lastOnline: self.lastOnline,

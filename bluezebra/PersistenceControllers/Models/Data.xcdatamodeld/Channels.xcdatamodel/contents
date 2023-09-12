@@ -57,6 +57,7 @@
         <attribute name="blocked" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastOnline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="publicKey" optional="YES" attributeType="Binary"/>
         <attribute name="uID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="username" attributeType="String"/>
         <relationship name="channel" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Channel" inverseName="remoteUser" inverseEntity="Channel"/>

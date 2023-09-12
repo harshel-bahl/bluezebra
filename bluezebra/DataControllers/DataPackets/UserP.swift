@@ -42,7 +42,11 @@ struct UserP: Codable {
         
         self.username = try container.decode(String.self, forKey: .username)
         self.password = try container.decode(String.self, forKey: .password)
-        self.publicKey = try container.decode(Data.self, forKey: .publicKey)
+        let publicKeyBase64 = try container.decode(String.self, forKey: .publicKey)
+        guard let publicKeyData = Data(base64Encoded: publicKeyBase64) else {
+            throw DecodingError.dataCorruptedError(forKey: .publicKey, in: container, debugDescription: "Invalid base64 string for public key")
+        }
+        self.publicKey = publicKeyData
         self.avatar = try container.decode(String.self, forKey: .avatar)
         
         let creationDateString = try container.decode(String.self, forKey: .creationDate)
@@ -58,7 +62,7 @@ struct UserP: Codable {
         try container.encode(uID.uuidString, forKey: .uID)
         try container.encode(username, forKey: .username)
         try container.encode(password, forKey: .password)
-        try container.encode(publicKey, forKey: .publicKey)
+        try container.encode(publicKey.base64EncodedString(), forKey: .publicKey)
         try container.encode(avatar, forKey: .avatar)
         try container.encode(DateU.shared.stringFromDate(creationDate), forKey: .creationDate)
     }
