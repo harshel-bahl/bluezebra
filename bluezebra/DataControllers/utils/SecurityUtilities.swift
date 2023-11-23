@@ -36,10 +36,9 @@ class SecurityU {
             let privateKeyData = try privateKey.data()
             let publicKeyData = try publicKey.data()
     
-            
             return ["publicKey": publicKeyData, "privateKey": privateKeyData]
         } catch {
-            throw DCError.securityFailure(err: error.localizedDescription)
+            throw DCError.securityFailure(err: String(describing: error))
         }
     }
     

@@ -110,7 +110,7 @@ struct CRView: View {
             
             Task {
                 do {
-                    let RUPackets = try await channelDC.fetchRUs(username: username,
+                    let RUPackets = try await channelDC.fetchRUPs(username: username,
                                                                  checkUsername: false)
                     self.fetchedUsers = RUPackets
                 } catch {

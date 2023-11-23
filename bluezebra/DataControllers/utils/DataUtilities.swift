@@ -19,6 +19,17 @@ class DataU {
         let jsonEncoder = JSONEncoder()
         let data = try jsonEncoder.encode(data)
         return data
+    } 
+    
+    func jsonDecode(_ inputData: Data) throws -> Any {
+        do {
+            let decoded = try JSONSerialization.jsonObject(with: inputData)
+            
+            return decoded as Any
+        } catch {
+            log.debug(message: "failed to decode data", function: "DataU.jsonDecode", error: error, info: "JSON: \(String(data: inputData, encoding: .utf8) ?? "-")")
+            throw DCError.jsonError(err: String(describing: error))
+        }
     }
     
     /// jsonDecodeFromData
@@ -37,13 +48,13 @@ class DataU {
     /// jsonDecodeFromObject
     /// Decodes a foundation object into a data packet
     func jsonDecodeFromObject<T: Codable>(packet: T.Type,
-                                          data: Any) throws -> T {
+                                          dataObject: Any) throws -> T {
         do {
-            let data = try JSONSerialization.data(withJSONObject: data, options: [])
+            let data = try JSONSerialization.data(withJSONObject: dataObject, options: [])
             let dataPacket = try JSONDecoder().decode(T.self, from: data)
             return dataPacket
         } catch {
-            log.debug(message: "failed to decode data", function: "DataU.jsonDecodeFromObject", error: error, info: "JSON: \(data)")
+            log.debug(message: "failed to decode data", function: "DataU.jsonDecodeFromObject", error: error, info: "JSON: \(dataObject)")
             throw DCError.jsonError(err: String(describing: error))
         }
     }

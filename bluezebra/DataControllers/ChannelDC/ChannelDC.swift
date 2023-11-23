@@ -84,7 +84,7 @@ class ChannelDC: ObservableObject {
     
     
     init() {
-        self.addSocketHandlers()
+//        self.addSocketHandlers()
     }
     
 }

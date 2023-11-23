@@ -13,9 +13,10 @@ extension ChannelDC {
     /// Server Fetch Functions
     ///
     
-    func fetchRU(uID: UUID,
-                 checkuID: Bool = true) async throws -> RUP {
-        
+    func fetchRUP(
+        uID: UUID,
+        checkuID: Bool = true
+    ) async throws -> RUP {
         do {
             try checkSocketConnected()
             
@@ -26,7 +27,7 @@ extension ChannelDC {
             }
             
             let packet = try await withCheckedThrowingContinuation() { continuation in
-                SocketController.shared.clientSocket.emitWithAck("fetchRU", uID.uuidString)
+                SocketController.shared.clientSocket.emitWithAck("fetchRUP", uID.uuidString)
                     .timingOut(after: 1, callback: { data in
                         do {
                             if let queryStatus = data.first as? String,
@@ -47,21 +48,22 @@ extension ChannelDC {
             }
             
             let RUPacket = try DataU.shared.jsonDecodeFromObject(packet: RUP.self,
-                                                                 data: packet)
+                                                                 dataObject: packet)
             
-            log.debug(message: "successfully fetched RU", function: "ChannelDC.fetchRU", event: "fetchRU")
+            log.debug(message: "successfully fetched RUP", function: "ChannelDC.fetchRUP", event: "fetchRUP")
             
             return RUPacket
         } catch {
-            log.error(message: "failed to fetch RU", function: "ChannelDC.fetchRU", event: "fetchRU", error: error)
+            log.error(message: "failed to fetch RUP", function: "ChannelDC.fetchRUP", event: "fetchRUP", error: error)
             throw error
         }
     }
     
     
-    func fetchRUs(username: String,
-                  checkUsername: Bool = true) async throws -> [RUP] {
-        
+    func fetchRUPs(
+        username: String,
+        checkUsername: Bool = true
+    ) async throws -> [RUP] {
         do {
             try checkSocketConnected()
             
@@ -97,386 +99,343 @@ extension ChannelDC {
             let RUPackets = try DataU.shared.jsonDecodeFromData(packet: [RUP].self,
                                                                 data: packets)
             
-            log.debug(message: "successfully fetched RUs", function: "ChannelDC.fetchRUs", event: "fetchRUsByUsername")
+            log.debug(message: "successfully fetched RUPs", function: "ChannelDC.fetchRUPs", event: "fetchRUPsByUsername")
             
             return RUPackets
         } catch {
-            log.error(message: "failed to fetch RUs", function: "ChannelDC.fetchRUs", event: "fetchRUsByUsername", error: error)
+            log.error(message: "failed to fetch RUPs", function: "ChannelDC.fetchRUPs", event: "fetchRUPsByUsername", error: error)
             throw error
         }
     }
     
-//    func fetchCR() async throws -> CRP {
-//
-//    }
-//
-//    func fetchCRs() async throws -> [CRP] {
-//        do {
-//            try checkSocketConnected()
-//
-//            try checkUserConnected()
-//
-////            let packet = try await withCheckedThrowingContinuation() { continuation in
-////                SocketController.shared.clientSocket.emitWithAck("fetchCRs", requestIDs)
-////                    .timingOut(after: 1, callback: { data in
-////                        do {
-////                            if let queryStatus = data.first as? String,
-////                               queryStatus == SocketAckStatus.noAck {
-////                                throw DCError.serverTimeOut(func: "ChannelDC.fetchCRs")
-////                            } else if let queryStatus = data.first as? String {
-////                                throw DCError.serverFailure(func: "ChannelDC.fetchCRs", err: queryStatus)
-////                            } else if let _ = data.first as? NSNull,
-////                                      data.indices.contains(1) {
-////                                continuation.resume(returning: data[1])
-////                            } else {
-////                                throw DCError.serverFailure(func: "ChannelDC.fetchCRs")
-////                            }
-////                        } catch {
-////                            continuation.resume(throwing: error)
-////                        }
-////                    })
-////            }
-//        } catch {
-//
-//        }
-//    }
-//
-//    func fetchRUChannel() async throws -> RUChannelP {
-//
-//    }
-//
-//    func fetchRUChannels() async throws -> [RUChannelP] {
-//
-//    }
+    func fetchCRP(
+        requestID: UUID
+    ) async throws -> CRP {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            let packet = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("fetchCRP", ["requestID": requestID])
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1),
+                                      let packet = data[1] as? Data {
+                                continuation.resume(returning: packet)
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            let CRP = try DataU.shared.jsonDecodeFromData(packet: CRP.self,
+                                                          data: packet)
+            
+            log.debug(message: "successfully fetched CRP", function: "ChannelDC.fetchCRP", event: "fetchCRP")
+            
+            return CRP
+        } catch {
+            log.error(message: "failed to fetch CRP", function: "ChannelDC.fetchCRP", event: "fetchCRP", error: error)
+            throw error
+        }
+    }
     
-    /// checkCRs
-    /// - checks the list of all CRs in device with CRs in server
-    /// - if device has a CR that server doesn't then the CR and associated RU is deleted from device
-    /// - if server has a CR that device doesn't then the CR and associated RU is created in device
-    /// 
-//    func checkCRs(requestIDs: [String]) async throws {
-//
-//        do {
-//            try checkSocketConnected()
-//
-//            try checkUserConnected()
-//
-//            let packet = try await withCheckedThrowingContinuation() { continuation in
-//                SocketController.shared.clientSocket.emitWithAck("checkCRs", requestIDs)
-//                    .timingOut(after: 1, callback: { data in
-//                        do {
-//                            if let queryStatus = data.first as? String,
-//                               queryStatus == SocketAckStatus.noAck {
-//                                throw DCError.serverTimeOut(func: "ChannelDC.checkCRs")
-//                            } else if let queryStatus = data.first as? String {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkCRs", err: queryStatus)
-//                            } else if let _ = data.first as? NSNull,
-//                                      data.indices.contains(1) {
-//                                continuation.resume(returning: data[1])
-//                            } else {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkCRs")
-//                            }
-//                        } catch {
-//                            continuation.resume(throwing: error)
-//                        }
-//                    })
-//            }
-//
-//            guard let jsonObject = packet as? [String: Any] else { throw DCError.typecastError(func: "ChannelDC.checkCRs") }
-//
-//            for requestID in jsonObject.keys {
-//                do {
-//                    if let requestStatus = jsonObject[requestID] as? Bool,
-//                       requestStatus == false {
-//                        try await self.deleteCR(requestID: requestID)
-//                    } else if let missingRequest = jsonObject[requestID] {
-//
-//                        guard let missingRequest = missingRequest as? [String: Any],
-//                              let packetData = missingRequest["packet"] as? Data else { throw DCError.typecastError(func: "ChannelDC.checkCRs") }
-//
-//                        guard let isOrigin = missingRequest["isOrigin"] as? Bool else { throw DCError.jsonError(func: "ChannelDC.checkCRs") }
-//
-//                        let CRPacket = try DataU.shared.jsonDecodeFromData(packet: CRPacket.self,
-//                                                                           data: packetData)
-//
-//                        let SCR = try await DataPC.shared.createCR(requestID: requestID,
-//                                                                   uID: CRPacket.originUser.uID,
-//                                                                   date: try DateU.shared.dateFromStringTZ(CRPacket.date),
-//                                                                   isSender: isOrigin)
-//                        self.syncCR(CR: SCR)
-//
-//                        if let _ = try? await self.fetchRULocally(uID: CRPacket.originUser.uID) {
-//                            try await self.deleteRU(uID: CRPacket.originUser.uID)
-//                        }
-//
-//                        let SRU = try await DataPC.shared.createRU(uID: CRPacket.originUser.uID,
-//                                                                   username: CRPacket.originUser.username,
-//                                                                   avatar: CRPacket.originUser.avatar,
-//                                                                   creationDate: try DateU.shared.dateFromStringTZ(CRPacket.originUser.creationDate))
-//
-//                    }
-//
-//#if DEBUG
-//                    DataU.shared.handleSuccess(function: "ChannelDC.checkCRs", info: "requestID: \(requestID)")
-//#endif
-//                } catch {
-//#if DEBUG
-//                    DataU.shared.handleFailure(function: "ChannelDC.checkCRs", err: error, info: "requestID: \(requestID)")
-//#endif
-//                }
-//            }
-//
-//#if DEBUG
-//            DataU.shared.handleSuccess(function: "ChannelDC.checkCRs")
-//#endif
-//        } catch {
-//#if DEBUG
-//            DataU.shared.handleFailure(function: "ChannelDC.checkCRs", err: error)
-//#endif
-//
-//            throw error
-//        }
-//    }
-//
-//
-//    /// checkRUChannels
-//    ///
-//    func checkRUChannels(channelIDs: [String]) async throws {
-//        do {
-//            guard SocketController.shared.connected else {
-//                throw DCError.serverDisconnected(func: "ChannelDC.checkRUChannels")
-//            }
-//
-//            guard UserDC.shared.userOnline else {
-//                throw DCError.userDisconnected(func: "ChannelDC.checkRUChannels")
-//            }
-//
-//            let packet = try await withCheckedThrowingContinuation() { continuation in
-//                SocketController.shared.clientSocket.emitWithAck("checkRUChannels", channelIDs)
-//                    .timingOut(after: 1, callback: { data in
-//                        do {
-//                            if let queryStatus = data.first as? String,
-//                               queryStatus == SocketAckStatus.noAck {
-//                                throw DCError.serverTimeOut(func: "ChannelDC.checkRUChannels")
-//                            } else if let queryStatus = data.first as? String {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkRUChannels", err: queryStatus)
-//                            } else if let _ = data.first as? NSNull,
-//                                      data.indices.contains(1) {
-//                                continuation.resume(returning: data[1])
-//                            } else {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkRUChannels")
-//                            }
-//                        } catch {
-//                            continuation.resume(throwing: error)
-//                        }
-//                    })
-//            }
-//
-//            guard let packet = packet as? [String: Any] else { throw DCError.typecastError(func: "checkRUChannels", err: "couldn't cast result to [String: Any]") }
-//
-//            var channelsRemoved = [String]()
-//
-//            for channelID in packet.keys {
-//                do {
-//                    if let channelStatus = packet[channelID] as? Bool,
-//                       channelStatus == false {
-//
-//                        let SChannel = try await self.fetchChannelLocally(channelID: channelID)
-//
-//                        try await self.deleteUserTrace(uID: SChannel.uID)
-//
-//                        channelsRemoved.append(channelID)
-//                    }
-//#if DEBUG
-//            DataU.shared.handleSuccess(function: "ChannelDC.checkRUChannels", info: "channelID: \(channelID)")
-//#endif
-//                } catch {
-//#if DEBUG
-//                    DataU.shared.handleFailure(function: "ChannelDC.checkRUChannels", err: error, info: "channelID: \(channelID)")
-//#endif
-//                }
-//            }
-//
-//#if DEBUG
-//            DataU.shared.handleSuccess(function: "ChannelDC.checkRUChannels", info: "channelsRemoved: \(channelsRemoved)")
-//#endif
-//        } catch {
-//#if DEBUG
-//            DataU.shared.handleFailure(function: "ChannelDC.checkRUChannels", err: error)
-//#endif
-//
-//            throw error
-//        }
-//    }
-//
-//    func checkMissingRUChannels() async throws {
-//        do {
-//            guard SocketController.shared.connected else {
-//                throw DCError.serverDisconnected(func: "ChannelDC.checkMissingRUChannels")
-//            }
-//
-//            guard UserDC.shared.userOnline else {
-//                throw DCError.userDisconnected(func: "ChannelDC.checkMissingRUChannels")
-//            }
-//
-//            let predicate = NSPredicate(format: "channelID != %@", argumentArray: ["personal"])
-//
-//            let channels = try await DataPC.shared.fetchSMOs(entity: Channel.self,
-//                                                             customPredicate: predicate)
-//
-//            let channelIDs = channels.map { return $0.channelID }
-//
-//            let packet = try await withCheckedThrowingContinuation() { continuation in
-//                SocketController.shared.clientSocket.emitWithAck("checkMissingRUChannels", channelIDs)
-//                    .timingOut(after: 1, callback: { data in
-//                        do {
-//                            if let queryStatus = data.first as? String,
-//                               queryStatus == SocketAckStatus.noAck {
-//                                throw DCError.serverTimeOut(func: "ChannelDC.checkMissingRUChannels")
-//                            } else if let queryStatus = data.first as? String {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkMissingRUChannels", err: queryStatus)
-//                            } else if let _ = data.first as? NSNull,
-//                                      data.indices.contains(1) {
-//                                continuation.resume(returning: data[1])
-//                            } else {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkMissingRUChannels")
-//                            }
-//                        } catch {
-//                            continuation.resume(throwing: error)
-//                        }
-//                    })
-//            }
-//
-//            guard let packet = packet as? [String: Any] else { throw DCError.typecastError(func: "ChannelDC.checkMissingRUChannels", err: "couldn't cast result to [String: Any]") }
-//
-//            var channelsAdded = [String]()
-//
-//            for channelID in packet.keys {
-//                do {
-//                    guard let packetData = packet[channelID] as? Data else { throw DCError.typecastError(func: "ChannelDC.checkMissingRUChannels", err: "couldn't cast to Data") }
-//
-//                    let channelData = try DataU.shared.jsonDataToDictionary(packetData)
-//
-//                    guard let creationDateS = channelData["creationDate"] as? String,
-//                          let RU = channelData["RU"] as? Data else { throw DCError.jsonError(func: "ChannelDC.checkMissingRUChannels") }
-//
-//                    let RUPacket = try DataU.shared.jsonDecodeFromData(packet: RUPacket.self,
-//                                                                       data: RU)
-//
-//                    try await self.createChannel(channelID: channelID,
-//                                                 uID: RUPacket.uID,
-//                                                 creationDate: try DateU.shared.dateFromStringTZ(creationDateS))
-//
-//                    if let _ = try? await self.fetchRULocally(uID: RUPacket.uID) {
-//                        try await self.deleteRU(uID: RUPacket.uID)
-//                    }
-//
-//                    let SRU = try await DataPC.shared.createRU(uID: RUPacket.uID,
-//                                                               username: RUPacket.username,
-//                                                               avatar: RUPacket.avatar,
-//                                                               creationDate: try DateU.shared.dateFromStringTZ(RUPacket.creationDate))
-//
-//                    channelsAdded.append(channelID)
-//#if DEBUG
-//                    DataU.shared.handleSuccess(function: "ChannelDC.checkMissingRUChannels", info: "channelID: \(channelID)")
-//#endif
-//                } catch {
-//#if DEBUG
-//                    DataU.shared.handleFailure(function: "ChannelDC.checkMissingRUChannels", err: error, info: "channelID: \(channelID)")
-//#endif
-//                }
-//            }
-//
-//#if DEBUG
-//            DataU.shared.handleSuccess(function: "ChannelDC.checkMissingRUChannels", info: "channelsAdded: \(channelsAdded)")
-//#endif
-//        } catch {
-//#if DEBUG
-//            DataU.shared.handleFailure(function: "ChannelDC.checkMissingRUChannels", err: error)
-//#endif
-//
-//            throw error
-//        }
-//    }
-//
-//    func checkOnline(uIDs: [String]) async throws {
-//        do {
-//            guard SocketController.shared.connected else {
-//                throw DCError.serverDisconnected(func: "ChannelDC.checkOnline")
-//            }
-//
-//            guard UserDC.shared.userOnline else {
-//                throw DCError.userDisconnected(func: "ChannelDC.checkOnline")
-//            }
-//
-//            let packet = try await withCheckedThrowingContinuation() { continuation in
-//                SocketController.shared.clientSocket.emitWithAck("checkOnline", uIDs)
-//                    .timingOut(after: 1, callback: { data in
-//                        do {
-//                            if let queryStatus = data.first as? String,
-//                               queryStatus == SocketAckStatus.noAck {
-//                                throw DCError.serverTimeOut(func: "ChannelDC.checkOnline")
-//                            } else if let queryStatus = data.first as? String {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkOnline", err: queryStatus)
-//                            } else if let _ = data.first as? NSNull,
-//                                      data.indices.contains(1) {
-//                                continuation.resume(returning: data[1])
-//                            } else {
-//                                throw DCError.serverFailure(func: "ChannelDC.checkOnline")
-//                            }
-//                        } catch {
-//                            continuation.resume(throwing: error)
-//                        }
-//                    })
-//            }
-//
-//            guard let packet = packet as? [String: Any] else { throw DCError.typecastError(func: "ChannelDC.checkOnline", err: "couldn't cast result to [String: Any]") }
-//
-//            var RUStatusUpdated = 0
-//
-//            for uID in packet.keys {
-//                do {
-//                    if let userStatus = packet[uID] as? Bool,
-//                       userStatus == true {
-//
-//                        DispatchQueue.main.async {
-//                            self.onlineUsers[uID] = true
-//                        }
-//
-//                    } else if let lastOnline = packet[uID] as? String {
-//
-//                        DispatchQueue.main.async {
-//                            self.onlineUsers[uID] = false
-//                        }
-//
-//                        let RULastOnline = try DateU.shared.dateFromStringTZ(lastOnline)
-//
-//                        let RU = try await DataPC.shared.updateMO(entity: RemoteUser.self,
-//                                                                  predicateProperty: "uID",
-//                                                                  predicateValue: uID,
-//                                                                  property: ["lastOnline"],
-//                                                                  value: [RULastOnline])
-//                    }
-//
-//                    RUStatusUpdated += 1
-//                } catch {
-//#if DEBUG
-//                    DataU.shared.handleFailure(function: "ChannelDC.checkOnline", err: error, info: "uID: \(uID)")
-//#endif
-//                }
-//            }
-//
-//#if DEBUG
-//            DataU.shared.handleSuccess(function: "ChannelDC.checkOnline", info: "RUStatusUpdated: \(RUStatusUpdated)")
-//#endif
-//        } catch {
-//#if DEBUG
-//            DataU.shared.handleFailure(function: "ChannelDC.checkOnline", err: error)
-//#endif
-//
-//            throw error
-//        }
-//    }
+    func fetchCRPs(requestIDs: [String]? = nil) async throws -> [CRP] {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            let packets = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("fetchCRPs", ["requestIDs": requestIDs])
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1),
+                                      let packets = data[1] as? Data {
+                                continuation.resume(returning: packets)
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            let CRPs = try DataU.shared.jsonDecodeFromData(packet: [CRP].self,
+                                                           data: packets)
+            
+            log.debug(message: "successfully fetched CRP", function: "ChannelDC.fetchCRP", event: "fetchCRP")
+            
+            return CRPs
+        } catch {
+            log.error(message: "failed to fetch CRP", function: "ChannelDC.fetchCRP", event: "fetchCRP", error: error)
+            throw error
+        }
+    }
+    
+    func fetchCRRequestIDs(limit: Int? = nil) async throws -> [UUID] {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            let packet = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("fetchCRRequestIDs", ["limit": limit])
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1),
+                                      let packet = data[1] as? Data {
+                                continuation.resume(returning: packet)
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            let requestsData = try DataU.shared.jsonDataToArray(packet)
+            
+            guard let requestIDs = requestsData as? [String] else { throw DCError.typecastError(err: "failed to typecast to [String]") }
+            
+            let requestUUIDs = requestIDs.compactMap() { return UUID(uuidString: $0) }
+            
+            log.debug(message: "successfully fetched CR requestIDs", function: "ChannelDC.fetchCRRequestIDs", event: "fetchCRRequestIDs")
+            
+            return requestUUIDs
+        } catch {
+            log.error(message: "failed to fetch CR requestIDs", function: "ChannelDC.fetchCRRequestIDs", event: "fetchCRRequestIDs", error: error)
+            throw error
+        }
+    }
+    
+    func deleteCRs(
+        requestIDs: [String]
+    ) async throws {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("deleteCRs", requestIDs)
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull {
+                                continuation.resume(returning: ())
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            log.info(message: "deleted CRs in server", function: "ChannelDC.deleteCRs", event: "deleteCRs", info: "requestIDs: \(requestIDs)")
+        } catch {
+            log.error(message: "failed to delete CRs", function: "ChannelDC.deleteCRs", event: "deleteCRs", error: error)
+            throw error
+        }
+    }
+    
+    func fetchRUChannelP(
+        channelID: UUID
+    ) async throws -> RUChannelP {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            let packet = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("fetchRUChannelP", ["channelID": channelID.uuidString])
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1),
+                                      let packet = data[1] as? Data {
+                                continuation.resume(returning: packet)
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            let RUChannelP = try DataU.shared.jsonDecodeFromData(packet: RUChannelP.self,
+                                                                 data: packet)
+            
+            log.info(message: "fetched RUChannelP", function: "ChannelDC.fetchRUChannelP", event: "fetchRUChannelP", info: "channelID: \(channelID.uuidString)")
+            
+            return RUChannelP
+            
+        } catch {
+            log.error(message: "failed to fetch RUChannelP", function: "ChannelDC.fetchRUChannelP", event: "fetchRUChannelP", error: error)
+            throw error
+        }
+    }
+    
+    func fetchRUChannelPs(
+        channelIDs: [String]? = nil
+    ) async throws -> [RUChannelP] {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+            
+            let packets = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("fetchRUChannelPs", ["channelIDs": channelIDs])
+                    .timingOut(after: 1, callback: { data in
+                        
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1),
+                                      let packets = data[1] as? Data {
+                                continuation.resume(returning: packets)
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+            
+            let RUChannelPs = try DataU.shared.jsonDecodeFromData(packet: [RUChannelP].self,
+                                                                  data: packets)
+            
+            log.info(message: "fetched RUChannelPs", function: "ChannelDC.fetchRUChannelPs", event: "fetchRUChannelPs", info: "channelIDs: \(String(describing: channelIDs))")
+            
+            return RUChannelPs
+            
+        } catch {
+            log.error(message: "failed to fetch RUChannelPs", function: "ChannelDC.fetchRUChannelPs", event: "fetchRUChannelPs", error: error)
+            throw error
+        }
+    }
+    
+    func checkRUsOnline(
+        uIDs: [String]
+    ) async {
+        do {
+            try checkSocketConnected()
+            
+            try checkUserConnected()
+
+            let packet = try await withCheckedThrowingContinuation() { continuation in
+                SocketController.shared.clientSocket.emitWithAck("checkRUsOnline", uIDs)
+                    .timingOut(after: 1, callback: { data in
+                        do {
+                            if let queryStatus = data.first as? String,
+                               queryStatus == SocketAckStatus.noAck {
+                                throw DCError.serverTimeOut()
+                            } else if let queryStatus = data.first as? String {
+                                throw DCError.serverFailure(err: queryStatus)
+                            } else if let _ = data.first as? NSNull,
+                                      data.indices.contains(1) {
+                                continuation.resume(returning: data[1])
+                            } else {
+                                throw DCError.serverFailure()
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    })
+            }
+
+            guard let packet = packet as? [String: Any] else { throw DCError.typecastError(err: "couldn't cast result to [String: Any]") }
+
+            var RUStatusUpdated = 0
+
+            for uIDS in packet.keys {
+                do {
+                    guard let uID = UUID(uuidString: uIDS) else { throw DCError.jsonError(err: "failed to convert string to UUID") }
+                    
+                    if let userStatus = packet[uIDS] as? Bool,
+                       userStatus == true {
+                        
+                        DispatchQueue.main.async {
+                            self.onlineUsers[uID] = true
+                        }
+                        
+                    } else if let lastOnlineS = packet[uIDS] as? String {
+                        
+                        DispatchQueue.main.async {
+                            self.onlineUsers[uID] = false
+                        }
+                        
+                        let lastOnline = try DateU.shared.dateFromISOString(lastOnlineS)
+                        
+                        let SRU = try await DataPC.shared.backgroundPerformSync() {
+                            let RUMO = try DataPC.shared.updateMO(entity: RemoteUser.self,
+                                                                  property: ["lastOnline"],
+                                                                  value: [lastOnline],
+                                                                  predDicEqual: ["uID": uID])
+                            return try RUMO.safeObject()
+                        }
+                        
+                        self.syncRU(RU: SRU)
+                    }
+                    
+                    RUStatusUpdated += 1
+                    
+                    log.debug(message: "updated lastOnline for RU", function: "ChannelDC.checkRUsOnline", event: "checkRUsOnline", info: "RUID: \(uIDS)")
+                } catch {
+                    log.debug(message: "failed to update lastOnline for RU", function: "ChannelDC.checkRUsOnline", event: "checkRUsOnline", info: "RUID: \(uIDS)")
+                }
+            }
+            
+            log.info(message: "checked RUs online", function: "ChannelDC.checkRUsOnline", event: "checkRUsOnline", info: "updatedRUs: \(RUStatusUpdated)")
+        } catch {
+            log.error(message: "failed to check RUs Online", function: "ChannelDC.checkRUsOnline", event: "checkRUsOnline")
+        }
+    }
     
     /// sendCR:
     /// - Failure event is created first in local persistence in case of A going offline suddenly so that event can be emitted on next startup
@@ -530,7 +489,7 @@ extension ChannelDC {
             log.info(message: "successfully sent CR", function: "ChannelDC.sendCR", event: "sendCR", info: "RUID: \(RU.uID)")
             
         } catch {
-            
+            log.debug(message: "failed to send CR", function: "ChannelDC.sendCR", event: "sendCR", info: "RUID: \(RU.uID)")
             throw error
         }
     }

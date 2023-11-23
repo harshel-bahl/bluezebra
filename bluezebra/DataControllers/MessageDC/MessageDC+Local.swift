@@ -11,7 +11,7 @@ import SwiftUI
 extension MessageDC {
     
     /// Local Create Functions
-    ///
+    /// 
 //    func createTextMessage(channelID: String = "personal",
 //                           userID: String = UserDC.shared.userData!.userID,
 //                           type: String = MessageType.text.rawValue,

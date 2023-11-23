@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct RUChannelP {
+struct RUChannelP: Codable {
     
 }

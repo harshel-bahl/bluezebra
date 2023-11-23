@@ -145,6 +145,9 @@
 		F0AF8D732A7FAED200B45249 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AF8D722A7FAED200B45249 /* Event.swift */; };
 		F0AF8D762A808D6800B45249 /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F0AF8D752A808D6800B45249 /* ScreenshotPreventingSwiftUI */; };
 		F0E311792A36CA5C00CF74B9 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */; };
+		F0F8B9FD2AB23AEB00552CCE /* EventDC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F8B9FC2AB23AEB00552CCE /* EventDC.swift */; };
+		F0F8B9FF2AB23D2F00552CCE /* EventDC+Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F8B9FE2AB23D2F00552CCE /* EventDC+Handlers.swift */; };
+		F0F8BA012AB241BA00552CCE /* EventP.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F8BA002AB241BA00552CCE /* EventP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -280,6 +283,9 @@
 		F0AF8D702A7B8AEE00B45249 /* SimpleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		F0AF8D722A7FAED200B45249 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		F0E311782A36CA5C00CF74B9 /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
+		F0F8B9FC2AB23AEB00552CCE /* EventDC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDC.swift; sourceTree = "<group>"; };
+		F0F8B9FE2AB23D2F00552CCE /* EventDC+Handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventDC+Handlers.swift"; sourceTree = "<group>"; };
+		F0F8BA002AB241BA00552CCE /* EventP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventP.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -350,6 +356,7 @@
 				3475AE9029EF9E18001882D4 /* CDP.swift */,
 				345EEF5829F4682800861DB9 /* MessageP.swift */,
 				F00C29B92AAD3C9100FE5839 /* RUChannelP.swift */,
+				F0F8BA002AB241BA00552CCE /* EventP.swift */,
 			);
 			path = DataPackets;
 			sourceTree = "<group>";
@@ -441,6 +448,7 @@
 				3475AE9329EFB82C001882D4 /* UserDC */,
 				3475AE9229EFB81F001882D4 /* ChannelDC */,
 				3475AE9429EFB834001882D4 /* MessageDC */,
+				F0F8B9FB2AB23ADD00552CCE /* EventDC */,
 				3475AE8929EF9BD0001882D4 /* DataPackets */,
 				346879CC2988596B002F3B5E /* SocketController.swift */,
 			);
@@ -695,6 +703,15 @@
 			path = Containers;
 			sourceTree = "<group>";
 		};
+		F0F8B9FB2AB23ADD00552CCE /* EventDC */ = {
+			isa = PBXGroup;
+			children = (
+				F0F8B9FC2AB23AEB00552CCE /* EventDC.swift */,
+				F0F8B9FE2AB23D2F00552CCE /* EventDC+Handlers.swift */,
+			);
+			path = EventDC;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -851,8 +868,11 @@
 				34E1E08529E21541007319C3 /* TextCellStyle.swift in Sources */,
 				F00E42672A49630200CFCD32 /* DebounceTextField.swift in Sources */,
 				F0AE43A22A5385DF00A1E181 /* DateTimeLong.swift in Sources */,
+				F0F8B9FF2AB23D2F00552CCE /* EventDC+Handlers.swift in Sources */,
 				F0AE43B62A60BF9600A1E181 /* SheetModifier.swift in Sources */,
 				F0AE43882A4BA91200A1E181 /* SimpleTextSegment.swift in Sources */,
+				F0F8BA012AB241BA00552CCE /* EventP.swift in Sources */,
+				F0F8B9FD2AB23AEB00552CCE /* EventDC.swift in Sources */,
 				F0AE43A42A538A7100A1E181 /* DateDMY.swift in Sources */,
 				3489D5D929F850AF0074EF5E /* Channel.swift in Sources */,
 				3445BEBC297D902A0033269B /* TopLevelView.swift in Sources */,

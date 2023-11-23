@@ -20,7 +20,7 @@ class MessageDC: ObservableObject {
     @Published var unreadChannels: Int?
     
     init() {
-        self.addSocketHandlers()
+//        self.addSocketHandlers()
     }
     
     /// MessageDC reset function

@@ -371,7 +371,7 @@ extension ChannelDC {
         if let RU = try? await self.fetchRULocally(uID: uID) {
             return RU
         } else {
-            let RUP = try await self.fetchRU(uID: uID)
+            let RUP = try await self.fetchRUP(uID: uID)
             
             let SRU = try await DataPC.shared.backgroundPerformSync() {
                 

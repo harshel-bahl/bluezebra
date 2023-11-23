@@ -11,95 +11,12 @@ import SocketIO
 extension ChannelDC {
     
     
-    /// Socket Handlers
-    ///
-    
-    func addSocketHandlers() {
-        self.userOnlineHandler()
-        self.userDisconnectedHandler()
-        self.receivedCRHandler()
-//        self.receivedCRResultHandler()
-//        self.receivedCDHandler()
-//        self.receivedCDResultHandler()
-//        self.deleteUserTraceHandler()
-    }
-    
-    
-    /// Event Handlers
-    ///
-    
-    func userOnlineHandler() {
-        SocketController.shared.clientSocket.on("userOnline") { [weak self] (data, ack) in
-            
-            log.info(message: "userOnline triggered", event: "userOnline")
-            
-            self?.userOnline(data: data, ack: ack)
-        }
-    }
-    
-    func userDisconnectedHandler() {
-        SocketController.shared.clientSocket.on("userDisconnected") { [weak self] (data, ack) in
-            
-            log.info(message: "userDisconnected triggered", event: "userDisconnected")
-            
-            self?.userDisconnected(data: data, ack: ack)
-        }
-    }
-    
-    func receivedCRHandler() {
-        SocketController.shared.clientSocket.on("receivedCR") { [weak self] (data, ack) in
-            
-            log.info(message: "receivedCR triggered", event: "receivedCR")
-            
-            self?.receivedCR(data: data, ack: ack)
-        }
-    }
-    
-//    func receivedCRResultHandler() {
-//        SocketController.shared.clientSocket.on("receivedCRResult") { [weak self] (data, ack) in
-//
-//            log.debug(message: "receivedCRResult triggered", event: "receivedCRResult")
-//
-//            self?.receivedCRResult(data: data, ack: ack)
-//
-//        }
-//    }
-//
-//    func receivedCDHandler() {
-//        SocketController.shared.clientSocket.on("receivedCD") { [weak self] (data, ack) in
-//
-//            log.debug(message: "receivedCD triggered", event: "receivedCD")
-//
-//            self?.receivedCD(data: data, ack: ack)
-//        }
-//    }
-//
-//    func receivedCDResultHandler() {
-//        SocketController.shared.clientSocket.on("receivedCDResult") { [weak self] (data, ack) in
-//
-//            log.debug(message: "receivedCDResult triggered", event: "receivedCDResult")
-//
-//            self?.receivedCDResult(data: data, ack: ack)
-//        }
-//    }
-//
-//    func deleteUserTraceHandler() {
-//        SocketController.shared.clientSocket.on("deleteUserTrace") { [weak self] (data, ack) in
-//
-//            log.debug(message: "deleteUserTrace triggered", event: "deleteUserTrace")
-//
-//            self?.deleteUserTrace(data: data, ack: ack)
-//        }
-//    }
-    
-    
     /// ChannelDC Event Handler Functions
     ///
     
-    func userOnline(data: [Any],
-                    ack: SocketAckEmitter) {
+    func userOnline(data: Any) {
         do {
-            guard let uIDString = data.first as? String else { throw DCError.jsonError(err: "data was nil or failed to convert to a String") }
+            guard let uIDString = data as? String else { throw DCError.jsonError(err: "data was nil or failed to convert to a String") }
             
             guard let uID = UUID(uuidString: uIDString) else { throw DCError.jsonError(err: "data failed to be convertred to a UUID") }
             
@@ -111,68 +28,92 @@ extension ChannelDC {
         } catch {
             log.error(message: "failed to handle userOnline", event: "userOnline", error: error)
         }
-        
     }
     
-    func userDisconnected(data: [Any],
-                          ack: SocketAckEmitter? = nil) {
-        Task {
-            do {
-                guard let uIDString = data.first as? String else { throw DCError.jsonError(err: "data was nil or failed to convert to a String") }
-                
-                guard let uID = UUID(uuidString: uIDString) else { throw DCError.jsonError(err: "data failed to be convertred to a UUID") }
-                
-                if self.onlineUsers.keys.contains(uID) {
-                    DispatchQueue.main.async {
-                        self.onlineUsers[uID] = false
-                    }
+    func userDisconnected(data: Any) async throws {
+        do {
+            guard let uIDString = data as? String else { throw DCError.jsonError(err: "data was nil or failed to convert to a String") }
+            
+            guard let uID = UUID(uuidString: uIDString) else { throw DCError.jsonError(err: "data failed to be convertred to a UUID") }
+            
+            if self.onlineUsers.keys.contains(uID) {
+                DispatchQueue.main.async {
+                    self.onlineUsers[uID] = false
                 }
-                
-                let SRU = try await DataPC.shared.backgroundPerformSync() {
-                    let RUMO = try DataPC.shared.updateMO(entity: RemoteUser.self,
-                                                          property: ["lastOnline"],
-                                                          value: [DateU.shared.currDT],
-                                                          predDicEqual: ["uID": uID])
-                    return try RUMO.safeObject()
-                }
-                
-                self.syncRU(RU: SRU)
-                
-                log.debug(message: "successfully handled userDisconnected", event: "userDisconnected")
-            } catch {
-                log.error(message: "failed to handle userDiconnected", event: "userDisconnected", error: error)
             }
+            
+            let SRU = try await DataPC.shared.backgroundPerformSync() {
+                let RUMO = try DataPC.shared.updateMO(entity: RemoteUser.self,
+                                                      property: ["lastOnline"],
+                                                      value: [DateU.shared.currDT],
+                                                      predDicEqual: ["uID": uID])
+                return try RUMO.safeObject()
+            }
+            
+            self.syncRU(RU: SRU)
+            
+            log.debug(message: "successfully handled userDisconnected", event: "userDisconnected")
+        } catch {
+            log.error(message: "failed to handle userDiconnected", event: "userDisconnected", error: error)
+            throw error
         }
     }
     
-    func receivedCR(data: [Any],
-                    ack: SocketAckEmitter? = nil) {
-        Task {
-            do {
-                guard let data = data.first as? Data else { throw DCError.typecastError(err: "data failed to typecast to Data or is nil") }
-                
-                let packet = try DataU.shared.jsonDecodeFromData(packet: CRP.self,
-                                                                   data: data)
-                
-                let (SRU, SCR) = try await self.createCR(requestID: packet.requestID,
-                                                         requestDate: packet.requestDate,
-                                                         RU: packet.RU)
-                
-                self.syncRU(RU: SRU)
-                self.syncCR(CR: SCR)
-                
-                if let ack = ack {
-                    ack.with(NSNull())
-                }
-                
-                log.debug(message: "successfully handled receivedCR", event: "receivedCR")
-            } catch {
-                log.error(message: "failed to handle receivedCR", event: "receivedCR", error: error)
-                
-                if let ack = ack {
-                    ack.with(false)
-                }
-            }
+    func receivedCR(data: Any) async throws {
+        do {
+            guard let data = data as? Data else { throw DCError.typecastError(err: "failed to typecast data to Data") }
+            
+            let packet = try DataU.shared.jsonDecodeFromData(packet: CRP.self,
+                                                             data: data)
+            
+            let (SRU, SCR) = try await self.createCR(requestID: packet.requestID,
+                                                     requestDate: packet.requestDate,
+                                                     RU: packet.RU)
+            
+            self.syncRU(RU: SRU)
+            self.syncCR(CR: SCR)
+            
+            log.debug(message: "successfully handled receivedCR", event: "receivedCR")
+        } catch {
+            log.error(message: "failed to handle receivedCR", event: "receivedCR", error: error)
+            throw error
+        }
+    }
+    
+    func receivedCRResult(data: Any) async throws {
+        do {
+            guard let data = data as? Data else { throw DCError.typecastError(err: "failed to typecast data to Data") }
+            
+            let packet = try DataU.shared.jsonDecodeFromData(packet: CRResultP.self,
+                                                             data: data)
+            
+            
+        } catch {
+            
+        }
+    }
+    
+    func receivedCD(data: Any) async throws {
+        do {
+            guard let data = data as? Data else { throw DCError.typecastError(err: "failed to typecast data to Data") }
+        } catch {
+            
+        }
+    }
+    
+    func receivedCDResult(data: Any) async throws {
+        do {
+            guard let data = data as? Data else { throw DCError.typecastError(err: "failed to typecast data to Data") }
+        } catch {
+            
+        }
+    }
+    
+    func deleteUserTrace(data: Any) async throws {
+        do {
+            
+        } catch {
+            
         }
     }
     
